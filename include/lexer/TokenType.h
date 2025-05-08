@@ -1,10 +1,11 @@
-export module Token;
+#pragma once
 
-import <cstddef>;
-import <format>;
-import <string>;
+#include "llvm/ADT/DenseMap.h"
+#include "llvm/ADT/StringRef.h"
 
+namespace chocopy {
 #define TOKEN_TYPES                                                            \
+  TOKEN_TYPE(INVALID)                                                          \
   TOKEN_TYPE(AND)                                                              \
   TOKEN_TYPE(AS)                                                               \
   TOKEN_TYPE(ASSERT)                                                           \
@@ -68,36 +69,59 @@ import <string>;
   TOKEN_TYPE(DEDENT)                                                           \
   TOKEN_TYPE(ID)
 
-export enum class TokenType {
+enum class TokenType {
 #define TOKEN_TYPE(name) name,
   TOKEN_TYPES
 #undef TOKEN_TYPE
 };
 
-export std::string to_string(const TokenType &token) {
-  switch (token) {
+/// Get the string representation of an ErrorType.
+/// @param type The TokenType to get the string representation of.
+/// @returns The string representation of the TokenType.
+constexpr std::string_view toString(TokenType type) {
+  switch (type) {
 #define TOKEN_TYPE(name)                                                       \
   case TokenType::name:                                                        \
     return #name;
     TOKEN_TYPES
 #undef TOKEN_TYPE
-  default:
-    return "UNKNOWN";
   }
 }
 
-export struct Token {
-  Token(TokenType type, std::string_view text, std::size_t line_no = 0,
-        std::size_t col_no = 0)
-      : type{type}, text{text}, line_no{line_no}, col_no{col_no} {};
-
-  [[nodiscard]] std::string to_string() const {
-    return std::format("[{}:{}] {}, {}", line_no, col_no, ::to_string(type),
-                       text);
-  }
-
-  const TokenType type;
-  const std::string text;
-  const std::size_t line_no;
-  const std::size_t col_no;
-};
+const llvm::DenseMap<llvm::StringRef, TokenType> keywords = {
+    {"and", TokenType::AND},
+    {"as", TokenType::AS},
+    {"assert", TokenType::ASSERT},
+    {"async", TokenType::ASYNC},
+    {"await", TokenType::AWAIT},
+    {"break", TokenType::BREAK},
+    {"class", TokenType::CLASS},
+    {"continue", TokenType::CONTINUE},
+    {"def", TokenType::DEF},
+    {"del", TokenType::DEL},
+    {"elif", TokenType::ELIF},
+    {"else", TokenType::ELSE},
+    {"except", TokenType::EXCEPT},
+    {"False", TokenType::FALSE},
+    {"finally", TokenType::FINALLY},
+    {"for", TokenType::FOR},
+    {"from", TokenType::FROM},
+    {"global", TokenType::GLOBAL},
+    {"if", TokenType::IF},
+    {"import", TokenType::IMPORT},
+    {"in", TokenType::IN},
+    {"is", TokenType::IS},
+    {"lambda", TokenType::LAMBDA},
+    {"None", TokenType::NONE},
+    {"nonlocal", TokenType::NONLOCAL},
+    {"not", TokenType::NOT},
+    {"or", TokenType::OR},
+    {"pass", TokenType::PASS},
+    {"raise", TokenType::RAISE},
+    {"return", TokenType::RETURN},
+    {"True", TokenType::TRUE},
+    {"try", TokenType::TRY},
+    {"while", TokenType::WHILE},
+    {"with", TokenType::WITH},
+    {"yield", TokenType::YIELD}};
+} // namespace chocopy
