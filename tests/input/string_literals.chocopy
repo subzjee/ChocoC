@@ -1,0 +1,17 @@
+# Valid IDSTRING
+"abc"
+
+# Valid STRING
+"0abc"
+
+# Valid escape characters
+"\n"
+"\\"
+"\t"
+"\""
+
+# Invalid escape character
+"\b"
+
+# Unterminated string
+"abc

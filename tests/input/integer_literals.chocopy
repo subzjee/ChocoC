@@ -1,0 +1,9 @@
+-2147483648     # Minimum value
+2147483647      # Maximum value
+0
+
+-2147483649     # Too small
+2147483648      # Too large
+00              # Leading zeros
+-02147483649    # Leading zeros, too small
+02147483648     # Leading zeros, too large

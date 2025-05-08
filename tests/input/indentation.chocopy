@@ -1,0 +1,7 @@
+  # This is a comment that shouldn't cause indentation
+x: int = 2
+# Another comment but this one shouldn't cause a dedentation
+  x = 3
+    x = 4
+      x = 5
+    x = 6
