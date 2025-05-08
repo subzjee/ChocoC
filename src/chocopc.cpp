@@ -8,9 +8,6 @@
 using namespace llvm;
 using namespace chocopy;
 
-#include <iostream>
-#include <chrono>
-
 static cl::list<std::string> input_file_names(cl::Positional, cl::desc("<input_files>"), cl::OneOrMore);
 static cl::opt<std::string> output_file_name("o", cl::desc("Output filename"), cl::value_desc("filename"));
 
@@ -32,39 +29,18 @@ int main(int argc, char* argv[]) {
 
     Lexer lexer{buffer_id, source_manager};
 
-    // Record start time
-    auto start_time = std::chrono::high_resolution_clock::now();
+    auto tokens = lexer.lex();
+    bool had_error = false;
 
-    // Process the tokens
-    int token_count = lexer.lex().size();
+    for (const auto& diagnostic : lexer.getDiagnostics()) {
+      had_error |= diagnostic.getKind() == SourceMgr::DK_Error;
+      diagnostic.print("", errs());
+    }
 
-    // Record end time
-    auto end_time = std::chrono::high_resolution_clock::now();
-
-    // Calculate elapsed time in seconds
-    std::chrono::duration<double> elapsed_seconds = end_time - start_time;
-    double tokens_per_second = token_count / elapsed_seconds.count();
-
-    // Output the results
-    std::cout << "Processed " << token_count << " tokens in "
-              << elapsed_seconds.count() << " seconds.\n";
-    std::cout << "Tokens per second: " << tokens_per_second << " tokens/sec.\n";
-
-    // auto tokens = lexer.lex();
-    // bool had_error = false;
-
-    // for (const auto& diagnostic : lexer.getDiagnostics()) {
-    //   had_error |= diagnostic.getKind() == SourceMgr::DK_Error;
-    //   diagnostic.print("", errs());
-    // }
-
-    // if (had_error) {
-    //   continue;
-    // }
+    if (had_error) {
+      continue;
+    }
   }
-
-  // Parser parser{tokens};
-  // auto root = parser.parse();
 
   return 0;
 }
