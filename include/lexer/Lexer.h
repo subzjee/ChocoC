@@ -123,8 +123,6 @@ private:
   const char *const m_buffer_end;  // Pointer to the end of the buffer.
   std::size_t m_lexeme_offset{0}; // Length of the current lexeme.
 
-  unsigned int m_buffer_id;
-
   bool m_is_blank_line{true};  // Defaults to true because an empty program is a blank line.
 };
 } // namespace chocopy

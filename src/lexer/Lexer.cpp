@@ -1,13 +1,10 @@
 #include "lexer/Lexer.h"
 #include "lexer/TokenType.h"
 
-#include "llvm/ADT/STLExtras.h"
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/Support/FormatVariadic.h"
 #include "llvm/Support/SMLoc.h"
 #include "llvm/Support/SourceMgr.h"
-
-#include <iostream>
 
 using namespace llvm;
 using namespace chocopy;
@@ -15,8 +12,7 @@ using namespace chocopy;
 Lexer::Lexer(const unsigned buffer_id, SourceMgr& source_manager)
     : m_source_manager(source_manager),
       m_lexeme_start(source_manager.getMemoryBuffer(buffer_id)->getBufferStart()),
-      m_buffer_end(source_manager.getMemoryBuffer(buffer_id)->getBufferEnd()),
-      m_buffer_id(buffer_id) {};
+      m_buffer_end(source_manager.getMemoryBuffer(buffer_id)->getBufferEnd()) {};
 
 std::span<const Token> Lexer::lex() {
   handleIndentation();
