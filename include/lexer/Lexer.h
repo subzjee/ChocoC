@@ -15,10 +15,11 @@ public:
   /// Constructor for a Lexer.
   /// @param buffer_id The ID of the buffer within \p SourceManager.
   /// @param source_manager The source manager managing the buffer.
-  Lexer(const unsigned buffer_id, const llvm::SourceMgr& source_manager, DiagnosticsManager& diagnostics_manager);
+  Lexer(const unsigned buffer_id, const llvm::SourceMgr& source_manager,
+        DiagnosticsManager& diagnostics_manager);
 
-  Lexer(const Lexer &) = delete;
-  Lexer &operator=(const Lexer &) = delete;
+  Lexer(const Lexer&) = delete;
+  Lexer& operator=(const Lexer&) = delete;
 
   /// Tokenize the source code into its constituent tokens.
   /// @returns The tokens.
@@ -56,10 +57,10 @@ private:
   /// Check if the current character matches the given character.
   /// Unlike `match`, it will emit an error if no match is found.
   /// This should be used for multi-character tokens where a single character
-  /// would not constitute a valid token. An example of this being the division operator //,
-  /// where / is not valid. Whereas the right-arrow operator -> should still use
-  /// `match` because - is a valid operator.
-  /// @param ch The characters to compare the current character to.
+  /// would not constitute a valid token. An example of this being the division
+  /// operator //, where / is not valid. Whereas the right-arrow operator ->
+  /// should still use `match` because - is a valid operator.
+  /// @param ch The character to compare the current character to.
   /// @returns Whether the current character matches \p ch.
   [[nodiscard]] bool expect(const char ch);
 
@@ -108,13 +109,14 @@ private:
       {0}};
 
   std::vector<Token> m_tokens;
-  const llvm::SourceMgr &m_source_manager;
+  const llvm::SourceMgr& m_source_manager;
   DiagnosticsManager& m_diag_manager;
 
-  const char *m_lexeme_start; // Pointer to the start of the current lexeme.
-  const char *const m_buffer_end;  // Pointer to the end of the buffer.
+  const char* m_lexeme_start;     // Pointer to the start of the current lexeme.
+  const char* const m_buffer_end; // Pointer to the end of the buffer.
   std::size_t m_lexeme_length{0}; // Length of the current lexeme.
 
-  bool m_is_blank_line{true};  // Defaults to true because an empty program is a blank line.
+  bool m_is_blank_line{
+      true}; // Defaults to true because an empty program is a blank line.
 };
 } // namespace chocopy

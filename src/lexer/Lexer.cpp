@@ -39,6 +39,7 @@ std::span<const Token> Lexer::lex() {
       break;
     case '/':
       if (expect('/')) {
+        advance();
         addToken(TokenType::DIV);
       } else {
         addToken(TokenType::INVALID);
@@ -57,6 +58,7 @@ std::span<const Token> Lexer::lex() {
       break;
     case '!':
       if (expect('=')) {
+        advance();
         addToken(TokenType::NEQUAL);
       } else {
         addToken(TokenType::INVALID);
@@ -157,7 +159,6 @@ std::optional<char> Lexer::advance() {
 
 bool Lexer::expect(const char ch) {
   if (match(ch)) {
-    advance();
     return true;
   }
 
