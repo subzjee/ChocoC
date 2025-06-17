@@ -1,6 +1,6 @@
 #pragma once
 
-#include "llvm/ADT/DenseMap.h"
+#include "llvm/ADT/StringMap.h"
 #include "llvm/ADT/StringRef.h"
 
 namespace chocopy {
@@ -88,7 +88,7 @@ constexpr std::string_view toString(TokenType type) {
   }
 }
 
-const llvm::DenseMap<llvm::StringRef, TokenType> keywords = {
+const llvm::StringMap<TokenType> keywords = {
     {"and", TokenType::AND},
     {"as", TokenType::AS},
     {"assert", TokenType::ASSERT},

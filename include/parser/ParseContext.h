@@ -23,6 +23,10 @@ public:
 
   [[nodiscard]] const Token& getBaseType() const { return m_base_type; };
   [[nodiscard]] unsigned int getDimension() const { return m_dimension; };
+  [[nodiscard]] std::string getText() const {
+    return std::string(m_dimension, '[') + m_base_type.getText().str() +
+           std::string(m_dimension, ']');
+  };
 
 private:
   const Token& m_base_type;
@@ -31,14 +35,14 @@ private:
 
 class TypedVarContext {
 public:
-  TypedVarContext(const Token name, std::unique_ptr<TypeContext>& type)
+  TypedVarContext(const Token& name, std::unique_ptr<TypeContext>& type)
       : m_name(std::move(name)), m_type(std::move(type)) {};
 
   [[nodiscard]] const Token& getName() const { return m_name; };
   [[nodiscard]] std::unique_ptr<TypeContext>& getType() { return m_type; };
 
 private:
-  const Token m_name;
+  const Token& m_name;
   std::unique_ptr<TypeContext> m_type;
 };
 
@@ -47,24 +51,29 @@ public:
   VarDefContext(std::unique_ptr<TypedVarContext>& typed_var,
                 std::unique_ptr<LiteralContext>& value)
       : m_name(typed_var->getName()), m_type(std::move(typed_var->getType())),
-        m_value(value->getValue()) {};
+        m_value(std::move(value)) {};
 
   [[nodiscard]] const Token& getName() const { return m_name; };
-  [[nodiscard]] const std::unique_ptr<TypeContext>& getType() const { return m_type; };
-  [[nodiscard]] const Token& getValue() const { return m_value; };
+  [[nodiscard]] const std::unique_ptr<TypeContext>& getType() const {
+    return m_type;
+  };
+  [[nodiscard]] const std::unique_ptr<LiteralContext>& getValue() const { return m_value; };
 
 private:
   const Token& m_name;
   const std::unique_ptr<TypeContext> m_type;
-  const Token& m_value;
+  const std::unique_ptr<LiteralContext> m_value;
 };
 
-using ProgramChildren = std::vector<std::variant<std::unique_ptr<VarDefContext>>>;
+using ProgramChildren =
+    std::vector<std::variant<std::unique_ptr<VarDefContext>>>;
 class ProgramContext {
 public:
   ProgramContext(ProgramChildren children) : m_children(std::move(children)) {};
 
-  [[nodiscard]] const ProgramChildren& getChildren() const { return m_children; };
+  [[nodiscard]] const ProgramChildren& getChildren() const {
+    return m_children;
+  };
 
 private:
   const ProgramChildren m_children;

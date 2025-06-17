@@ -8,14 +8,18 @@
 namespace chocopy {
 class Parser {
 public:
-  Parser(std::span<const Token> tokens, DiagnosticsManager& diagnostics_manager) : m_tokens(tokens), m_diag_manager(diagnostics_manager) {};
+  Parser(std::span<const Token> tokens, DiagnosticsManager& diagnostics_manager)
+      : m_tokens(tokens), m_diag_manager(diagnostics_manager) {};
 
-  [[nodiscard]] std::unique_ptr<ProgramContext> parse() { return parseProgram(); };
+  [[nodiscard]] std::unique_ptr<ProgramContext> parse() {
+    return parseProgram();
+  };
 
 private:
   friend class ParserTest;
 
-  [[nodiscard]] std::optional<std::reference_wrapper<const Token>> peek(const int n = 0) const;
+  [[nodiscard]] std::optional<std::reference_wrapper<const Token>>
+  peek(const int n = 0) const;
 
   std::optional<const Token> advance();
 
