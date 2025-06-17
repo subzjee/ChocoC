@@ -7,8 +7,6 @@
 
 using namespace llvm;
 
-#include <iostream>
-
 namespace chocopy {
 std::optional<std::reference_wrapper<const Token>> Parser::peek(const int n) const {
   const auto idx = m_current_idx + n;
@@ -17,7 +15,7 @@ std::optional<std::reference_wrapper<const Token>> Parser::peek(const int n) con
     return std::nullopt;
   }
 
-  return m_tokens[idx];
+  return std::cref(m_tokens[idx]);
 }
 
 std::optional<const Token> Parser::advance() {
