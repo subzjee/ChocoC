@@ -3,7 +3,6 @@
 #include "DiagnosticsManager.h"
 #include "lexer/Token.h"
 #include "parser/ParseContext.h"
-#include <initializer_list>
 
 namespace chocopy {
 class Parser {
