@@ -19,6 +19,10 @@ public:
     return m_diagnostics;
   }
 
+  void clear() {
+    m_diagnostics.clear();
+  }
+
 private:
   std::vector<llvm::SMDiagnostic> m_diagnostics;
   const llvm::SourceMgr& m_source_manager;
