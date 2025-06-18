@@ -2,7 +2,6 @@
 
 #include "lexer/TokenType.h"
 
-#include "llvm/ADT/StringRef.h"
 #include "llvm/Support/SMLoc.h"
 
 #include <variant>
@@ -17,16 +16,16 @@ public:
   /// @param type The token type of the token.
   /// @param text The value of the token.
   /// @param location The location of the token in the source file.
-  Token(const TokenType type, const llvm::StringRef text,
+  Token(const TokenType type, const TokenValue value,
         const llvm::SMRange location)
-      : m_text{text}, m_location{location}, m_type{type} {};
+      : m_value{value}, m_location{location}, m_type{type} {};
 
-  [[nodiscard]] const llvm::StringRef& getText() const { return m_text; };
+  [[nodiscard]] const TokenValue& getValue() const { return m_value; };
   [[nodiscard]] const llvm::SMRange& getLocation() const { return m_location; };
   [[nodiscard]] const TokenType& getType() const { return m_type; };
 
 private:
-  const llvm::StringRef m_text;
+  const TokenValue m_value;
   const llvm::SMRange m_location;
   const TokenType m_type;
 };

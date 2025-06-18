@@ -7,6 +7,7 @@
 
 #include <span>
 #include <stack>
+#include <variant>
 #include <vector>
 
 namespace chocopy {
@@ -66,7 +67,7 @@ private:
 
   /// Add a token to the found tokens.
   /// @param type The type of the token.
-  void addToken(TokenType type);
+  void addToken(TokenType type, TokenValue value = std::monostate{});
 
   /// Skip any characters within the comment.
   void skipComment();
