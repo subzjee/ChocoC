@@ -17,22 +17,20 @@ public:
   /// Get the type of a literal.
   /// @param ctx The literal context.
   /// @returns The type of a literal.
-  [[nodiscard]] const Type typeOf(const LiteralContext& ctx) {
+  [[nodiscard]] const Type& typeOf(const LiteralContext& ctx) {
     switch (ctx.getValue().getType()) {
     case TokenType::INTLIT:
-      return std::get<Type>(*m_symbol_table.getEntry("int"));
+      return *Type::getIntegerType();
     case TokenType::STRING:
       [[fallthrough]];
     case TokenType::IDSTRING:
-      return std::get<Type>(*m_symbol_table.getEntry("str"));
+      return *Type::getStringType();
     case TokenType::FALSE:
       [[fallthrough]];
     case TokenType::TRUE:
-      return std::get<Type>(*m_symbol_table.getEntry("bool"));
+      return *Type::getBooleanType();
     case TokenType::NONE:
-      return std::get<Type>(*m_symbol_table.getEntry("<None>"));
-    default:
-      llvm::report_fatal_error("Invalid token type of LiteralContext's value");
+      return *Type::getNoneType();
     }
   }
 
@@ -44,13 +42,16 @@ public:
     }
   }
 
+  [[nodiscard]] const Type typeOf(const Variable& variable) {
+    return variable.type;
+  }
+
   /// Check whether a type is a subclass of a second type.
   /// @param first The type to check.
   /// @param second The parent class.
   /// @returns Whether \p first is a subclass of \p second
   [[nodiscard]] bool isSubclass(const Type& first, const Type& second) const {
-    // TODO
-    return false;
+    return *first.super_class == second;
   }
 
   /// Check whether a type conforms to a second type within the type
@@ -59,7 +60,7 @@ public:
   /// @param second The type to check against.
   /// @returns Whether \p first conforms to \p second
   [[nodiscard]] bool conformsTo(const Type& first, const Type& second) const {
-    return (first == second);
+    return (first == second) || isSubclass(first, second);
   }
 
   /// Check whether a type is assignment-compatible with a second type within
@@ -69,7 +70,7 @@ public:
   /// @returns Whether \p first is assignment-compatible with to \p second
   [[nodiscard]] bool isAssignmentCompatible(const Type& first,
                                             const Type& second) const {
-    // 1. Ordinary subtyping
+    // 1. Ordinary subtyping.
     if (conformsTo(first, second)) {
       return true;
     }
@@ -85,10 +86,14 @@ public:
       return true;
     }
 
-    const auto none_type = std::get<Type>(*m_symbol_table.getEntry("<None>"));
+    // 4. Allow assigning [None] to variables of type [T] where T is
+    // assignment-compatible with <None>.
+    if ((first.dimension == 1 && first.isNone() && second.dimension == 1 &&
+         isAssignmentCompatible(*Type::getNoneType(), second))) {
+      return true;
+    }
 
-    return (first.dimension == 1 && first.isNone() && second.dimension == 1 &&
-            isAssignmentCompatible(none_type, second));
+    return false;
   }
 
 private:
