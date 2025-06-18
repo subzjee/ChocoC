@@ -10,11 +10,15 @@ using namespace chocopy;
 class LexerTest : public testing::Test {
 protected:
   SourceMgr source_manager;
+  DiagnosticsManager diagnostics_manager{source_manager};
+
+  void TearDown() override {
+    diagnostics_manager.clear();
+  }
 };
 
 TEST_F(LexerTest, KeywordRecognition) {
-  DiagnosticsManager diagnostics_manager{source_manager};
-  auto file = MemoryBuffer::getFile("tests/input/lexer/keywords.chocopy");
+  auto file = MemoryBuffer::getFile("tests/input/lexer/keywords.choco");
   unsigned int buffer_id =
       source_manager.AddNewSourceBuffer(std::move(file.get()), SMLoc());
   Lexer lexer{buffer_id, source_manager, diagnostics_manager};
@@ -46,8 +50,7 @@ TEST_F(LexerTest, KeywordRecognition) {
 }
 
 TEST_F(LexerTest, OperatorRecognition) {
-  DiagnosticsManager diagnostics_manager{source_manager};
-  auto file = MemoryBuffer::getFile("tests/input/lexer/operators.chocopy");
+  auto file = MemoryBuffer::getFile("tests/input/lexer/operators.choco");
   unsigned int buffer_id =
       source_manager.AddNewSourceBuffer(std::move(file.get()), SMLoc());
   Lexer lexer{buffer_id, source_manager, diagnostics_manager};
@@ -74,8 +77,7 @@ TEST_F(LexerTest, OperatorRecognition) {
 }
 
 TEST_F(LexerTest, IntegerLiterals) {
-  DiagnosticsManager diagnostics_manager{source_manager};
-  auto file = MemoryBuffer::getFile("tests/input/lexer/integer_literals.chocopy");
+  auto file = MemoryBuffer::getFile("tests/input/lexer/integer_literals.choco");
   unsigned int buffer_id =
       source_manager.AddNewSourceBuffer(std::move(file.get()), SMLoc());
   Lexer lexer{buffer_id, source_manager, diagnostics_manager};
@@ -98,8 +100,7 @@ TEST_F(LexerTest, IntegerLiterals) {
 }
 
 TEST_F(LexerTest, StringLiterals) {
-  DiagnosticsManager diagnostics_manager{source_manager};
-  auto file = MemoryBuffer::getFile("tests/input/lexer/string_literals.chocopy");
+  auto file = MemoryBuffer::getFile("tests/input/lexer/string_literals.choco");
   unsigned int buffer_id =
       source_manager.AddNewSourceBuffer(std::move(file.get()), SMLoc());
   Lexer lexer{buffer_id, source_manager, diagnostics_manager};
@@ -122,8 +123,7 @@ TEST_F(LexerTest, StringLiterals) {
 }
 
 TEST_F(LexerTest, Indentation) {
-  DiagnosticsManager diagnostics_manager{source_manager};
-  auto file = MemoryBuffer::getFile("tests/input/lexer/indentation.chocopy");
+  auto file = MemoryBuffer::getFile("tests/input/lexer/indentation.choco");
   unsigned int buffer_id =
       source_manager.AddNewSourceBuffer(std::move(file.get()), SMLoc());
   Lexer lexer{buffer_id, source_manager, diagnostics_manager};
@@ -148,9 +148,7 @@ TEST_F(LexerTest, Indentation) {
 }
 
 TEST_F(LexerTest, UnexpectedCharacters) {
-  DiagnosticsManager diagnostics_manager{source_manager};
-
-  auto file = MemoryBuffer::getFile("tests/input/lexer/unexpected_character.chocopy");
+  auto file = MemoryBuffer::getFile("tests/input/lexer/unexpected_character.choco");
   unsigned int buffer_id =
       source_manager.AddNewSourceBuffer(std::move(file.get()), SMLoc());
   Lexer lexer{buffer_id, source_manager, diagnostics_manager};
