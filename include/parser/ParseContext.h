@@ -24,7 +24,7 @@ public:
   [[nodiscard]] const Token& getBaseType() const { return m_base_type; };
   [[nodiscard]] unsigned int getDimension() const { return m_dimension; };
   [[nodiscard]] std::string getText() const {
-    return std::string(m_dimension, '[') + m_base_type.getText().str() +
+    return std::string(m_dimension, '[') + std::get<std::string>(m_base_type.getValue()) +
            std::string(m_dimension, ']');
   };
 

@@ -168,8 +168,8 @@ bool Lexer::expect(const char ch) {
   return false;
 }
 
-void Lexer::addToken(TokenType type) {
-  m_tokens.emplace_back(type, getCurrentLexeme(), getCurrentLexemeLocation());
+void Lexer::addToken(TokenType type, TokenValue value) {
+  m_tokens.emplace_back(type, value, getCurrentLexemeLocation());
 
   m_lexeme_start += m_lexeme_length;
   m_lexeme_length = 0;
@@ -209,7 +209,7 @@ void Lexer::scanNumber() {
     m_diag_manager.addError("an integer must be within the range [-2147483648, 2147483647]", getCurrentLexemeLocation());
   }
 
-  addToken(token_type);
+  addToken(token_type, value_as_int);
 }
 
 void Lexer::scanIdOrKeyword() {
@@ -218,8 +218,18 @@ void Lexer::scanIdOrKeyword() {
   }
 
   StringRef value = getCurrentLexeme();
+  TokenType token_type = keywords.contains(value) ? keywords.at(value) : TokenType::ID;
 
-  addToken(keywords.contains(value) ? keywords.at(value) : TokenType::ID);
+  switch (token_type) {
+    case TokenType::TRUE:
+      addToken(token_type, true);
+      break;
+    case TokenType::FALSE:
+      addToken(token_type, false);
+      break;
+    default:
+      addToken(token_type, value.str());
+  }
 }
 
 void Lexer::scanString() {
