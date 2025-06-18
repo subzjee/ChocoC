@@ -1,0 +1,91 @@
+#pragma once
+
+#include "ASTVisitor.h"
+#include "parser/ParseContext.h"
+#include "semantic/SymbolTable.h"
+
+#include "llvm/IR/BasicBlock.h"
+#include "llvm/IR/DerivedTypes.h"
+#include "llvm/IR/Function.h"
+#include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/LLVMContext.h"
+#include "llvm/IR/Module.h"
+#include "llvm/IR/Verifier.h"
+#include "llvm/Support/ErrorHandling.h"
+#include "llvm/Support/Signals.h"
+
+namespace chocopy {
+class CodeGenLLVM : ASTVisitor {
+public:
+  using ASTVisitor::visit;
+
+  CodeGenLLVM(const llvm::StringRef module_name,
+              const SymbolTable& symbol_table)
+      : m_ctx{std::make_unique<llvm::LLVMContext>()}, m_builder{*m_ctx},
+        m_module{
+            std::make_unique<llvm::Module>(std::move(module_name), *m_ctx)},
+        m_symbol_table(symbol_table) {};
+
+  void prologue() {
+    // Setup the main function.
+    llvm::FunctionType* func_type =
+        llvm::FunctionType::get(m_builder.getInt32Ty(), false);
+    llvm::Function* entry_func = llvm::Function::Create(
+        func_type, llvm::Function::ExternalLinkage, "entry", m_module.get());
+
+    // Setup the initial basic block.
+    llvm::BasicBlock* entry_bb =
+        llvm::BasicBlock::Create(*m_ctx, "entry", entry_func);
+    m_builder.SetInsertPoint(entry_bb);
+  }
+
+  void epilogue() {
+    // Create an int32 with 0 as the value to return from the main function to indicate success.
+    const auto ret_val = llvm::ConstantInt::get(llvm::Type::getInt32Ty(*m_ctx), 0);
+
+    m_builder.CreateRet(ret_val);
+    m_module->print(llvm::outs(), nullptr);
+  }
+
+  void addGlobalVariable(const VarDefContext& ctx) {
+    const auto name = std::get<std::string>(ctx.getName().getValue());
+    const auto entry = m_symbol_table.getEntry(name);
+    const auto type = std::get<Variable>(*entry).type;
+
+    llvm::Type* llvm_type = type.toLLVMType(*m_ctx);
+
+    llvm::Constant* init = nullptr;
+    if (type.isBoolean()) {
+      init = llvm::ConstantInt::get(llvm_type, std::get<bool>(ctx.getValue()->getValue().getValue()));
+    } else if (type.isInteger()) {
+      init = llvm::ConstantInt::get(llvm_type, std::get<std::int32_t>(ctx.getValue()->getValue().getValue()));
+    }
+
+    [[maybe_unused]] llvm::GlobalVariable* g = new llvm::GlobalVariable(
+    *m_module, llvm_type, false, llvm::GlobalValue::ExternalLinkage, init,
+    std::get<std::string>(ctx.getName().getValue()));
+  }
+
+  virtual void visit(const ProgramContext& ctx) override {
+    prologue();
+
+    ASTVisitor::visit(ctx);
+
+    epilogue();
+  }
+
+  virtual void visit(const VarDefContext& ctx) override {
+    if (scope == 0) {
+      addGlobalVariable(ctx);
+    }
+  }
+
+private:
+  std::unique_ptr<llvm::LLVMContext> m_ctx;
+  llvm::IRBuilder<> m_builder;
+  std::unique_ptr<llvm::Module> m_module;
+
+  const SymbolTable& m_symbol_table;
+  unsigned int scope = 0;
+};
+} // namespace chocopy
