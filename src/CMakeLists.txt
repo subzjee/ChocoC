@@ -1,5 +1,8 @@
 add_library(chocopc_lib
+    DiagnosticsManager.cpp
     lexer/Lexer.cpp
+    parser/Parser.cpp
+    semantic/SymbolTable.cpp
 )
 
 target_link_libraries(chocopc_lib PUBLIC c++abi ${llvm_libs})

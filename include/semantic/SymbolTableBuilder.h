@@ -4,6 +4,8 @@
 #include "DiagnosticsManager.h"
 #include "semantic/SymbolTable.h"
 
+#include "llvm/Support/FormatVariadic.h"
+
 namespace chocopy {
 class SymbolTableBuilder : ASTVisitor {
 public:
@@ -13,16 +15,24 @@ public:
       : m_diag_manager{diagnostics_manager} {};
 
   virtual void visit(const VarDefContext& ctx) override {
-    const auto type = m_symbol_table.getEntry(ctx.getType()->getText());
+    const auto name = std::get<std::string>(ctx.getName().getValue());
 
-    if (!type || !std::holds_alternative<Type>(*type)) {
+    // Check for redefinition within the same table.
+    if (m_symbol_table.getEntry(name)) {
+      m_diag_manager.addError(llvm::formatv("redefinition of `{0}`", name),
+                              ctx.getName().getLocation());
+      return;
+    }
+
+    const auto type_entry = m_symbol_table.getEntry(ctx.getType()->getText());
+
+    if (!type_entry || !std::holds_alternative<Type>(*type_entry)) {
       m_diag_manager.addError("undefined type",
                               ctx.getType()->getBaseType().getLocation());
       return;
     }
 
-    const auto name = ctx.getName().getText();
-    const auto entry = Variable(name, std::get<Type>(*type));
+    const auto entry = Variable(name, std::get<Type>(*type_entry));
     m_symbol_table.addEntry(name, entry);
   }
 
