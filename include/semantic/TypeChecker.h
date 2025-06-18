@@ -15,7 +15,7 @@ public:
       : m_diag_manager{diagnostics_manager}, local_env(symbol_table) {};
 
   virtual void visit(const VarDefContext& ctx) override {
-    const Type& lhs = local_env.typeOf(ctx.getName().getText());
+    const Type& lhs = local_env.typeOf(std::get<std::string>(ctx.getName().getValue()));
     const Type& rhs = local_env.typeOf(ctx.getValue()->getValue());
 
     if (!local_env.isAssignmentCompatible(rhs, lhs)) {
