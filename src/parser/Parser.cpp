@@ -199,7 +199,7 @@ std::unique_ptr<LiteralContext> Parser::parseLiteral() {
   std::vector<TargetContext> targets{};
 
   while (peek(1) == TokenType::ASSIGN) {     
-    targets.push_back(*parseTarget());
+    targets.push_back(std::move(*parseTarget()));
     advance();
   }
   
