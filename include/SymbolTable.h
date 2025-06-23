@@ -5,6 +5,7 @@
 #include "llvm/ADT/StringMap.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/IR/DerivedTypes.h"
+#include "llvm/IR/Instructions.h"
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Type.h"
 
@@ -81,6 +82,7 @@ struct Variable {
 
   const llvm::StringRef name;
   const Type type;
+  llvm::Value* allocation = nullptr;
 };
 
 using SymbolTableEntry = std::variant<Variable, Type>;
@@ -96,7 +98,8 @@ public:
   /// Get an entry from the symbol table.
   /// @param name The name of the symbol to get.
   /// @returns The symbol.
-  std::optional<SymbolTableEntry> getEntry(const llvm::StringRef name) const;
+  std::optional<std::reference_wrapper<SymbolTableEntry>>
+  getEntry(const llvm::StringRef name);
 
   /// Get all entries from the symbol table.
   /// @returns All entries.

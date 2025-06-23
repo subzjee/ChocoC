@@ -31,7 +31,12 @@ std::optional<const Token> Parser::advance() {
 std::unique_ptr<ProgramContext> Parser::parseProgram() {
   ProgramChildren children{};
 
-  while (true) {
+  // Check if it's an empty program. If so, return immediately.
+  if (!peek()) {
+    return std::make_unique<ProgramContext>(children);
+  }
+
+  while (peek()) {
     if (peek() == TokenType::ID && peek(1) == TokenType::COLON) {
       auto var_def_ctx = parseVarDef();
 
@@ -40,12 +45,23 @@ std::unique_ptr<ProgramContext> Parser::parseProgram() {
       }
 
       children.push_back(std::move(var_def_ctx));
-    } else {
-      break;
+      continue;
     }
+
+    break;
   }
 
-  return std::make_unique<ProgramContext>(std::move(children));
+  while (peek()) {
+    auto stmt_ctx = parseStmt();
+
+    if (!stmt_ctx) {
+      return nullptr;
+    }
+
+    children.push_back(std::move(stmt_ctx));
+  }
+
+  return std::make_unique<ProgramContext>(children);
 }
 
 std::unique_ptr<TypeContext> Parser::parseType() {
@@ -108,6 +124,12 @@ std::unique_ptr<VarDefContext> Parser::parseVarDef() {
     return nullptr;
   }
 
+  if (!match(TokenType::NEWLINE)) {
+    const auto location = peek()->get().getLocation();
+    m_diag_manager.addError(formatv("expected a new line"), {location.End, location.End});
+    return nullptr;
+  }
+
   return std::make_unique<VarDefContext>(typed_var_ctx, literal_ctx);
 }
 
@@ -118,5 +140,71 @@ std::unique_ptr<LiteralContext> Parser::parseLiteral() {
   }
 
   return std::make_unique<LiteralContext>(*peek(-1));
+}
+
+[[nodiscard]] std::unique_ptr<TargetContext> Parser::parseTarget() {
+  if (match(TokenType::ID)) {
+    return std::make_unique<TargetContext>(*peek(-1));
+  }
+
+  return nullptr;
+}
+
+[[nodiscard]] std::unique_ptr<ConstantExprContext> Parser::parseConstantExpr() {
+  if (peek()->get().isLiteral()) {
+    return std::make_unique<ConstantExprContext>(parseLiteral());
+  }
+
+  return nullptr;
+}
+
+[[nodiscard]] std::unique_ptr<ExprContext> Parser::parseExpr() {
+  if (peek()->get().isLiteral()) {
+    return std::make_unique<ExprContext>(parseConstantExpr());
+  }
+
+  return nullptr;
+}
+
+[[nodiscard]] std::unique_ptr<StmtContext> Parser::parseStmt() {
+  if (match(TokenType::IF)) {
+    return nullptr;
+  } else if (match(TokenType::WHILE)) {
+    return nullptr;
+  } else if (match(TokenType::FOR)) {
+    return nullptr;
+  } else if (auto simple_stmt = parseSimpleStmt()) {
+    if (!match(TokenType::NEWLINE)) {
+      const auto location = peek(-1)->get().getLocation();
+      m_diag_manager.addError(formatv("expected a new line"), {location.End, location.End});
+      return nullptr;
+    }
+
+    return std::make_unique<StmtContext>(std::move(simple_stmt));
+  }
+
+  m_diag_manager.addError(formatv("expected a statement"), peek()->get().getLocation());
+  return nullptr;
+}
+
+[[nodiscard]] std::unique_ptr<SimpleStmtContext> Parser::parseSimpleStmt() {
+  if (peek(1) == TokenType::ASSIGN) {
+    return std::make_unique<SimpleStmtContext>(parseAssignStmt());
+  }
+
+  return nullptr;
+}
+
+[[nodiscard]] std::unique_ptr<AssignmentStmtContext> Parser::parseAssignStmt() {
+  std::vector<TargetContext> targets{};
+
+  while (peek(1) == TokenType::ASSIGN) {     
+    targets.push_back(*parseTarget());
+    advance();
+  }
+  
+  auto expr_ctx = parseExpr();
+  
+  return std::make_unique<AssignmentStmtContext>(targets, expr_ctx);
 }
 } // namespace chocopy

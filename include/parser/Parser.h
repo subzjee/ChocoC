@@ -43,6 +43,12 @@ private:
   [[nodiscard]] std::unique_ptr<TypeContext> parseType();
   [[nodiscard]] std::unique_ptr<VarDefContext> parseVarDef();
   [[nodiscard]] std::unique_ptr<LiteralContext> parseLiteral();
+  [[nodiscard]] std::unique_ptr<TargetContext> parseTarget();
+  [[nodiscard]] std::unique_ptr<ExprContext> parseExpr();
+  [[nodiscard]] std::unique_ptr<ConstantExprContext> parseConstantExpr();
+  [[nodiscard]] std::unique_ptr<StmtContext> parseStmt();
+  [[nodiscard]] std::unique_ptr<SimpleStmtContext> parseSimpleStmt();
+  [[nodiscard]] std::unique_ptr<AssignmentStmtContext> parseAssignStmt();
 
   std::span<const Token> m_tokens;
   std::size_t m_current_idx{0};

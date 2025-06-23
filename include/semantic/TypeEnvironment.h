@@ -1,8 +1,8 @@
 #pragma once
 
+#include "SymbolTable.h"
 #include "lexer/TokenType.h"
 #include "parser/ParseContext.h"
-#include "semantic/SymbolTable.h"
 
 #include "llvm/Support/ErrorHandling.h"
 
@@ -11,8 +11,7 @@
 namespace chocopy {
 class TypeEnvironment {
 public:
-  TypeEnvironment(const SymbolTable& symbol_table)
-      : m_symbol_table(symbol_table) {};
+  TypeEnvironment(SymbolTable& symbol_table) : m_symbol_table(symbol_table) {};
 
   /// Get the type of a literal.
   /// @param ctx The literal context.
@@ -34,24 +33,48 @@ public:
     }
   }
 
+  /// Get the type of a variable by name.
+  /// @param name The name of the variable to get the type of.
+  /// @returns The type of the variable \p name
   [[nodiscard]] const Type typeOf(const llvm::StringRef name) {
     const auto entry = m_symbol_table.getEntry(name);
 
-    if (std::holds_alternative<Variable>(*entry)) {
-      return std::get<Variable>(*entry).type;
+    if (std::holds_alternative<Variable>(entry->get())) {
+      return std::get<Variable>(entry->get()).type;
     }
   }
 
+  /// Get the type of a variable.
+  /// @param variable The variable to get the type of.
+  /// @returns The type of \p variable.
   [[nodiscard]] const Type typeOf(const Variable& variable) {
     return variable.type;
   }
 
+  /// Get the type of a constant expression.
+  /// @param cexpr The constant expression to get the type of.
+  /// @returns The type of \p cexpr.
+  [[nodiscard]] const Type typeOf(const ConstantExprContext& cexpr) {
+    return cexpr.visit([&](const auto& cexpr) { return typeOf(*cexpr); });
+  }
+
+  /// Get the type of a expression.
+  /// @param cexpr The expression to get the type of.
+  /// @returns The type of \p expr.
+  [[nodiscard]] const Type typeOf(const ExprContext& expr) {
+    return expr.visit([&](const auto& expr) { return typeOf(*expr); });
+  }
+
   /// Check whether a type is a subclass of a second type.
-  /// @param first The type to check.
-  /// @param second The parent class.
+  /// @param child The type to check.
+  /// @param parent The parent class.
   /// @returns Whether \p first is a subclass of \p second
-  [[nodiscard]] bool isSubclass(const Type& first, const Type& second) const {
-    return *first.super_class == second;
+  [[nodiscard]] bool isSubclass(const Type& child, const Type& parent) const {
+    if (child == *Type::getObjectType()) {
+      return false;
+    }
+
+    return *child.super_class == parent;
   }
 
   /// Check whether a type conforms to a second type within the type
@@ -97,6 +120,6 @@ public:
   }
 
 private:
-  const SymbolTable& m_symbol_table;
+  SymbolTable& m_symbol_table;
 };
 } // namespace chocopy

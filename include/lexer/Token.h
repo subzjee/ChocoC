@@ -20,9 +20,21 @@ public:
         const llvm::SMRange location)
       : m_value{value}, m_location{location}, m_type{type} {};
 
+  constexpr bool operator==(const Token& other) const {
+    return m_value == other.getValue() && m_type == other.getType() &&
+           m_location.Start == other.getLocation().Start &&
+           m_location.End == other.getLocation().End;
+  }
+
   [[nodiscard]] const TokenValue& getValue() const { return m_value; };
   [[nodiscard]] const llvm::SMRange& getLocation() const { return m_location; };
   [[nodiscard]] const TokenType& getType() const { return m_type; };
+
+  [[nodiscard]] bool isLiteral() const {
+    return m_type == TokenType::NONE || m_type == TokenType::FALSE ||
+           m_type == TokenType::TRUE || m_type == TokenType::INTLIT ||
+           m_type == TokenType::IDSTRING || m_type == TokenType::STRING;
+  }
 
 private:
   const TokenValue m_value;

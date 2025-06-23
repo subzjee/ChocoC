@@ -7,6 +7,8 @@
 #include "llvm/Support/SMLoc.h"
 #include "llvm/Support/SourceMgr.h"
 
+#include <iostream>
+
 using namespace llvm;
 
 namespace chocopy {
