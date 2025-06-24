@@ -158,7 +158,7 @@ std::unique_ptr<ast::Literal> Parser::parseLiteral() {
 
 [[nodiscard]] std::unique_ptr<ast::ConstantExpression> Parser::parseConstantExpr() {
   if (peek()->get().isLiteral()) {
-    return std::make_unique<ast::ConstantExpression>(parseLiteral());
+    return parseLiteral();
   }
 
   return nullptr;
@@ -166,7 +166,7 @@ std::unique_ptr<ast::Literal> Parser::parseLiteral() {
 
 [[nodiscard]] std::unique_ptr<ast::Expression> Parser::parseExpr() {
   if (peek()->get().isLiteral()) {
-    return std::make_unique<ast::Expression>(parseConstantExpr());
+    return parseConstantExpr();
   }
 
   return nullptr;

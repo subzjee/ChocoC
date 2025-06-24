@@ -1,12 +1,10 @@
 #pragma once
 
-#include "ast/WithLocation.h"
+#include "ast/ConstantExpression.h"
 #include "lexer/Token.h"
 
-#include "llvm/Support/SourceMgr.h"
-
 namespace chocopy::ast {
-class Literal : public WithLocation {
+class Literal : public ConstantExpression {
 public:
   Literal(const Token& value) : m_value(value) {};
 

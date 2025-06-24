@@ -1,5 +1,7 @@
 #include "DiagnosticsManager.h"
 
+#include "llvm/Support/raw_ostream.h"
+
 using namespace llvm;
 
 void DiagnosticsManager::addError(const Twine& message, SMRange location, ArrayRef<SMRange> ranges, ArrayRef<SMFixIt> fixits) {

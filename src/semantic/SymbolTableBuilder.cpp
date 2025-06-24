@@ -1,6 +1,8 @@
 #include "ast/VariableDefinition.h"
 #include "semantic/SymbolTableBuilder.h"
 
+#include "llvm/Support/FormatVariadic.h"
+
 namespace chocopy {
 std::any SymbolTableBuilder::visit(const ast::VariableDefinition& ctx) {
   const auto name = std::get<std::string>(ctx.getName().getValue());

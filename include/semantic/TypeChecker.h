@@ -6,7 +6,6 @@
 #include "ast/VariableDefinition.h"
 #include "semantic/TypeEnvironment.h"
 
-#include "llvm/Support/FormatVariadic.h"
 
 namespace chocopy {
 class TypeChecker : ASTVisitor {

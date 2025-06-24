@@ -1,5 +1,6 @@
 #include "ASTVisitor.h"
 #include "ast/AssignmentStatement.h"
+#include "ast/BinaryOpExpression.h"
 #include "ast/ConstantExpression.h"
 #include "ast/Expression.h"
 #include "ast/Literal.h"
@@ -31,11 +32,17 @@ std::any ASTVisitor::visit(const ast::VariableDefinition& ctx) {
 }
 
 std::any ASTVisitor::visit(const ast::Expression& ctx) {
-  return ctx.visit([this](const auto& expr) { return visit(*expr); });
+  if (auto constant_expression = dynamic_cast<const ast::ConstantExpression*>(&ctx)) {
+    return visit(*constant_expression);
+  }
 }
 
 std::any ASTVisitor::visit(const ast::ConstantExpression& ctx) {
-  return ctx.visit([this](const auto& cexpr) { return visit(*cexpr); });
+  if (auto literal = dynamic_cast<const ast::Literal*>(&ctx)) {
+    return visit(*literal);
+  } else if (auto bin = dynamic_cast<const ast::BinaryOpExpression*>(&ctx)) {
+    return visit(*bin);
+  }
 }
 
 std::any ASTVisitor::visit(const ast::Statement& ctx) {
@@ -56,4 +63,6 @@ std::any ASTVisitor::visit(const ast::Type& ctx) { return {}; }
 std::any ASTVisitor::visit(const ast::Literal& ctx) {
   return {};
 }
+
+std::any ASTVisitor::visit(const ast::BinaryOpExpression& ctx) { return {}; }
 }

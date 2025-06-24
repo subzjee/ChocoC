@@ -1,35 +1,14 @@
 #pragma once
 
-#include "ast/Literal.h"
-#include "ast/WithLocation.h"
-
-#include "llvm/Support/SourceMgr.h"
-
-#include <memory>
+#include "ast/Expression.h"
 
 namespace chocopy::ast {
-
-class ConstantExpression : public WithLocation {
-  using CExpr = std::variant<std::unique_ptr<Literal>>;
-
-public:
-  ConstantExpression(CExpr&& cexpr) : m_cexpr(std::move(cexpr)) {};
-
-  /// Get the location.
-  /// @returns The location.
-  [[nodiscard]] llvm::SMRange getLocation() const override {
-    return std::visit(
-        [](const auto& cexpr) -> const llvm::SMRange {
-          return cexpr->getLocation();
-        },
-        m_cexpr);
-  };
+struct ConstantExpression : Expression {
+  virtual ~ConstantExpression() = default;
+  virtual llvm::SMRange getLocation() const = 0;
 
   template <typename Visitor> auto visit(Visitor&& visitor) const {
-    return std::visit(std::forward<Visitor>(visitor), m_cexpr);
+    return visitor(*this);
   }
-
-private:
-  const CExpr m_cexpr;
 };
 } // namespace chocopy::ast

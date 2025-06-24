@@ -1,4 +1,5 @@
 #include "semantic/TypeEnvironment.h"
+#include "ast/BinaryOpExpression.h"
 #include "ast/ConstantExpression.h"
 #include "ast/Expression.h"
 #include "ast/Literal.h"
@@ -34,11 +35,21 @@ namespace chocopy {
 }
 
 [[nodiscard]] const Type TypeEnvironment::typeOf(const ast::ConstantExpression& cexpr) {
-  return cexpr.visit([&](const auto& cexpr) { return typeOf(*cexpr); });
+  if (auto literal = dynamic_cast<const ast::Literal*>(&cexpr)) {
+    return typeOf(*literal);
+  } else if (auto bin = dynamic_cast<const ast::BinaryOpExpression*>(&cexpr)) {
+    return typeOf(*bin);
+  }
 }
 
 [[nodiscard]] const Type TypeEnvironment::typeOf(const ast::Expression& expr) {
-  return expr.visit([&](const auto& expr) { return typeOf(*expr); });
+  if (auto constant_expression = dynamic_cast<const ast::ConstantExpression*>(&expr)) {
+    return typeOf(*constant_expression);
+  }
+}
+
+[[nodiscard]] const Type TypeEnvironment::typeOf(const ast::BinaryOpExpression& expr) {
+  return *Type::getBooleanType();
 }
 
 [[nodiscard]] bool TypeEnvironment::isSubclass(const Type& child, const Type& parent) const {

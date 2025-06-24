@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ast/AssignmentStatement.h"
+#include "ast/BinaryOpExpression.h"
 #include "ast/ConstantExpression.h"
 #include "ast/Expression.h"
 #include "ast/Program.h"
@@ -9,7 +10,6 @@
 #include "ast/VariableDefinition.h"
 
 #include <any>
-#include <memory>
 
 namespace chocopy {
 struct ASTVisitor {
@@ -24,5 +24,6 @@ struct ASTVisitor {
   virtual std::any visit(const ast::AssignmentStatement& ctx);
   virtual std::any visit(const ast::Type& ctx);
   virtual std::any visit(const ast::Literal& ctx);
+  virtual std::any visit(const ast::BinaryOpExpression& ctx);
 };
 } // namespace chocopy

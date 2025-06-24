@@ -1,9 +1,7 @@
 #pragma once
 
 #include "llvm/Support/SourceMgr.h"
-#include "llvm/Support/raw_ostream.h"
 
-#include <llvm-21/llvm/ADT/STLExtras.h>
 #include <vector>
 
 class DiagnosticsManager {

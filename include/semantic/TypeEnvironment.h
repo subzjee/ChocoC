@@ -2,6 +2,8 @@
 
 #include "SymbolTable.h"
 
+#include "ast/Literal.h"
+#include "ast/BinaryOpExpression.h"
 #include "ast/Expression.h"
 #include "ast/ConstantExpression.h"
 
@@ -36,6 +38,8 @@ public:
   /// @param cexpr The expression to get the type of.
   /// @returns The type of \p expr.
   [[nodiscard]] const Type typeOf(const ast::Expression& expr);
+
+  [[nodiscard]] const Type typeOf(const ast::BinaryOpExpression& expr);
 
   /// Check whether a type is a subclass of a second type.
   /// @param child The type to check.
