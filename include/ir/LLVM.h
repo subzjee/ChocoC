@@ -59,14 +59,12 @@ public:
 
   virtual std::any visit(const ast::Literal& ctx) override {
     if (ctx.getType() == TokenType::INTLIT) {
-      return static_cast<llvm::Constant*>(
-          llvm::ConstantInt::get(Type::getIntegerType()->toLLVMType(*m_ctx),
-                                 std::get<std::int32_t>(ctx.getValue())));
+      return llvm::ConstantInt::get(Type::getIntegerType()->toLLVMType(*m_ctx),
+                                 std::get<std::int32_t>(ctx.getValue()));
     } else if (ctx.getType() == TokenType::TRUE ||
                ctx.getType() == TokenType::FALSE) {
-      return static_cast<llvm::Constant*>(
-          llvm::ConstantInt::get(Type::getBooleanType()->toLLVMType(*m_ctx),
-                                 std::get<bool>(ctx.getValue())));
+      return llvm::ConstantInt::get(Type::getBooleanType()->toLLVMType(*m_ctx),
+                                 std::get<bool>(ctx.getValue()));
     }
 
     return {};
