@@ -1,7 +1,8 @@
+#include "ast/VariableDefinition.h"
 #include "semantic/SymbolTableBuilder.h"
 
 namespace chocopy {
-std::any SymbolTableBuilder::visit(const VarDefContext& ctx) {
+std::any SymbolTableBuilder::visit(const ast::VariableDefinition& ctx) {
   const auto name = std::get<std::string>(ctx.getName().getValue());
 
   // Check for redefinition within the same table.

@@ -1,7 +1,10 @@
 #include "semantic/TypeEnvironment.h"
+#include "ast/ConstantExpression.h"
+#include "ast/Expression.h"
+#include "ast/Literal.h"
 
 namespace chocopy {
-[[nodiscard]] const Type& TypeEnvironment::typeOf(const LiteralContext& ctx) {
+[[nodiscard]] const Type& TypeEnvironment::typeOf(const ast::Literal& ctx) {
   switch (ctx.getType()) {
   case TokenType::INTLIT:
     return *Type::getIntegerType();
@@ -30,11 +33,11 @@ namespace chocopy {
   return variable.type;
 }
 
-[[nodiscard]] const Type TypeEnvironment::typeOf(const ConstantExprContext& cexpr) {
+[[nodiscard]] const Type TypeEnvironment::typeOf(const ast::ConstantExpression& cexpr) {
   return cexpr.visit([&](const auto& cexpr) { return typeOf(*cexpr); });
 }
 
-[[nodiscard]] const Type TypeEnvironment::typeOf(const ExprContext& expr) {
+[[nodiscard]] const Type TypeEnvironment::typeOf(const ast::Expression& expr) {
   return expr.visit([&](const auto& expr) { return typeOf(*expr); });
 }
 

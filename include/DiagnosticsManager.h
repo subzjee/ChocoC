@@ -27,11 +27,9 @@ public:
   void addError(const llvm::Twine& message, llvm::SMRange location,
                 llvm::ArrayRef<llvm::SMFixIt> fixits = {});
 
-  [[nodiscard]] bool hadError() const {
-    return llvm::any_of(m_diagnostics, [](const auto& diagnostic) {
-      return diagnostic.getKind() == llvm::SourceMgr::DK_Error;
-    });
-  }
+  /// Check if an error was found.
+  /// @returns Whether an error was found.
+  [[nodiscard]] bool hadError() const;
 
   /// Print all errors.
   void printErrors() const;

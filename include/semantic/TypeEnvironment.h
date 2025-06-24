@@ -1,7 +1,9 @@
 #pragma once
 
 #include "SymbolTable.h"
-#include "parser/ParseContext.h"
+
+#include "ast/Expression.h"
+#include "ast/ConstantExpression.h"
 
 #include "llvm/Support/ErrorHandling.h"
 
@@ -13,7 +15,7 @@ public:
   /// Get the type of a literal.
   /// @param ctx The literal context.
   /// @returns The type of a literal.
-  [[nodiscard]] const Type& typeOf(const LiteralContext& ctx);
+  [[nodiscard]] const Type& typeOf(const ast::Literal& ctx);
 
   /// Get the type of a variable by name.
   /// @param name The name of the variable to get the type of.
@@ -28,12 +30,12 @@ public:
   /// Get the type of a constant expression.
   /// @param cexpr The constant expression to get the type of.
   /// @returns The type of \p cexpr.
-  [[nodiscard]] const Type typeOf(const ConstantExprContext& cexpr);
+  [[nodiscard]] const Type typeOf(const ast::ConstantExpression& cexpr);
 
   /// Get the type of a expression.
   /// @param cexpr The expression to get the type of.
   /// @returns The type of \p expr.
-  [[nodiscard]] const Type typeOf(const ExprContext& expr);
+  [[nodiscard]] const Type typeOf(const ast::Expression& expr);
 
   /// Check whether a type is a subclass of a second type.
   /// @param child The type to check.

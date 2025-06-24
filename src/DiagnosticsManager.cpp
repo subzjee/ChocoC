@@ -13,6 +13,12 @@ void DiagnosticsManager::addError(const Twine& message, SMRange location, ArrayR
   addError(message, location, {location}, fixits);
 }
 
+[[nodiscard]] bool DiagnosticsManager::hadError() const {
+  return llvm::any_of(m_diagnostics, [](const auto& diagnostic) {
+    return diagnostic.getKind() == llvm::SourceMgr::DK_Error;
+  });
+}
+
 void DiagnosticsManager::printErrors() const {
   for (const auto& diagnostic : m_diagnostics) {
     diagnostic.print("", llvm::errs());

@@ -1,5 +1,11 @@
 #include "parser/Parser.h"
-#include "parser/ParseContext.h"
+
+#include "ast/AssignmentStatement.h"
+#include "ast/ConstantExpression.h"
+#include "ast/Expression.h"
+#include "ast/SimpleStatement.h"
+#include "ast/TypedVariable.h"
+#include "ast/VariableDefinition.h"
 #include "lexer/Token.h"
 #include "lexer/TokenType.h"
 
@@ -28,12 +34,12 @@ std::optional<std::reference_wrapper<const Token>> Parser::advance() {
   return current_token;
 }
 
-std::unique_ptr<ProgramContext> Parser::parseProgram() {
+std::unique_ptr<ast::Program> Parser::parseProgram() {
   ProgramChildren children{};
 
   // Check if it's an empty program. If so, return immediately.
   if (!peek()) {
-    return std::make_unique<ProgramContext>(children);
+    return std::make_unique<ast::Program>(children);
   }
 
   while (peek()) {
@@ -61,12 +67,12 @@ std::unique_ptr<ProgramContext> Parser::parseProgram() {
     children.push_back(std::move(stmt_ctx));
   }
 
-  return std::make_unique<ProgramContext>(children);
+  return std::make_unique<ast::Program>(children);
 }
 
-std::unique_ptr<TypeContext> Parser::parseType() {
+std::unique_ptr<ast::Type> Parser::parseType() {
   if (match(TokenType::ID, TokenType::IDSTRING)) {
-    return std::make_unique<TypeContext>(*peek(-1));
+    return std::make_unique<ast::Type>(*peek(-1));
   } else if (match(TokenType::OPENBRACK)) {
     auto type_ctx = parseType();
 
@@ -79,7 +85,7 @@ std::unique_ptr<TypeContext> Parser::parseType() {
       return nullptr;
     }
 
-    return std::make_unique<TypeContext>(type_ctx->getBaseType(), type_ctx->getDimension() + 1);
+    return std::make_unique<ast::Type>(type_ctx->getBaseType(), type_ctx->getDimension() + 1);
   }
 
   m_diag_manager.addError(formatv("expected a type"), peek()->get().getLocation());
@@ -87,7 +93,7 @@ std::unique_ptr<TypeContext> Parser::parseType() {
   return nullptr;
 }
 
-std::unique_ptr<TypedVarContext> Parser::parseTypedVar() {
+std::unique_ptr<ast::TypedVariable> Parser::parseTypedVar() {
   if (!match(TokenType::ID)) [[unlikely]] {
     m_diag_manager.addError(formatv("expected an identifier"), peek()->get().getLocation());
     return nullptr;
@@ -105,10 +111,10 @@ std::unique_ptr<TypedVarContext> Parser::parseTypedVar() {
     return nullptr;
   }
 
-  return std::make_unique<TypedVarContext>(*name, type_ctx);
+  return std::make_unique<ast::TypedVariable>(*name, type_ctx);
 }
 
-std::unique_ptr<VarDefContext> Parser::parseVarDef() {
+std::unique_ptr<ast::VariableDefinition> Parser::parseVarDef() {
   auto typed_var_ctx = parseTypedVar();
   if (!typed_var_ctx) {
     return nullptr;
@@ -130,43 +136,43 @@ std::unique_ptr<VarDefContext> Parser::parseVarDef() {
     return nullptr;
   }
 
-  return std::make_unique<VarDefContext>(typed_var_ctx, literal_ctx);
+  return std::make_unique<ast::VariableDefinition>(typed_var_ctx, literal_ctx);
 }
 
-std::unique_ptr<LiteralContext> Parser::parseLiteral() {
+std::unique_ptr<ast::Literal> Parser::parseLiteral() {
   if (!match(TokenType::NONE, TokenType::FALSE, TokenType::TRUE, TokenType::INTLIT, TokenType::IDSTRING, TokenType::STRING)) {
     m_diag_manager.addError(formatv("expected a literal value"), peek()->get().getLocation());
     return nullptr;
   }
 
-  return std::make_unique<LiteralContext>(*peek(-1));
+  return std::make_unique<ast::Literal>(*peek(-1));
 }
 
-[[nodiscard]] std::unique_ptr<TargetContext> Parser::parseTarget() {
+[[nodiscard]] std::unique_ptr<ast::Target> Parser::parseTarget() {
   if (match(TokenType::ID)) {
-    return std::make_unique<TargetContext>(*peek(-1));
+    return std::make_unique<ast::Target>(*peek(-1));
   }
 
   return nullptr;
 }
 
-[[nodiscard]] std::unique_ptr<ConstantExprContext> Parser::parseConstantExpr() {
+[[nodiscard]] std::unique_ptr<ast::ConstantExpression> Parser::parseConstantExpr() {
   if (peek()->get().isLiteral()) {
-    return std::make_unique<ConstantExprContext>(parseLiteral());
+    return std::make_unique<ast::ConstantExpression>(parseLiteral());
   }
 
   return nullptr;
 }
 
-[[nodiscard]] std::unique_ptr<ExprContext> Parser::parseExpr() {
+[[nodiscard]] std::unique_ptr<ast::Expression> Parser::parseExpr() {
   if (peek()->get().isLiteral()) {
-    return std::make_unique<ExprContext>(parseConstantExpr());
+    return std::make_unique<ast::Expression>(parseConstantExpr());
   }
 
   return nullptr;
 }
 
-[[nodiscard]] std::unique_ptr<StmtContext> Parser::parseStmt() {
+[[nodiscard]] std::unique_ptr<ast::Statement> Parser::parseStmt() {
   if (match(TokenType::IF)) {
     return nullptr;
   } else if (match(TokenType::WHILE)) {
@@ -180,23 +186,23 @@ std::unique_ptr<LiteralContext> Parser::parseLiteral() {
       return nullptr;
     }
 
-    return std::make_unique<StmtContext>(std::move(simple_stmt));
+    return std::make_unique<ast::Statement>(std::move(simple_stmt));
   }
 
   m_diag_manager.addError(formatv("expected a statement"), peek()->get().getLocation());
   return nullptr;
 }
 
-[[nodiscard]] std::unique_ptr<SimpleStmtContext> Parser::parseSimpleStmt() {
+[[nodiscard]] std::unique_ptr<ast::SimpleStatement> Parser::parseSimpleStmt() {
   if (peek(1) == TokenType::ASSIGN) {
-    return std::make_unique<SimpleStmtContext>(parseAssignStmt());
+    return std::make_unique<ast::SimpleStatement>(parseAssignStmt());
   }
 
   return nullptr;
 }
 
-[[nodiscard]] std::unique_ptr<AssignmentStmtContext> Parser::parseAssignStmt() {
-  std::vector<TargetContext> targets{};
+[[nodiscard]] std::unique_ptr<ast::AssignmentStatement> Parser::parseAssignStmt() {
+  std::vector<ast::Target> targets{};
 
   while (peek(1) == TokenType::ASSIGN) {     
     targets.push_back(std::move(*parseTarget()));
@@ -205,6 +211,6 @@ std::unique_ptr<LiteralContext> Parser::parseLiteral() {
   
   auto expr_ctx = parseExpr();
   
-  return std::make_unique<AssignmentStmtContext>(targets, expr_ctx);
+  return std::make_unique<ast::AssignmentStatement>(targets, expr_ctx);
 }
 } // namespace chocopy

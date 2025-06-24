@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ASTVisitor.h"
-#include "parser/ParseContext.h"
+#include "ast/AssignmentStatement.h"
 #include "semantic/SymbolTable.h"
 
 #include "llvm/IR/BasicBlock.h"
@@ -47,7 +47,7 @@ public:
     m_module->print(llvm::outs(), nullptr);
   }
 
-  virtual std::any visit(const ProgramContext& ctx) override {
+  virtual std::any visit(const ast::Program& ctx) override {
     prologue();
 
     ASTVisitor::visit(ctx);
@@ -57,7 +57,7 @@ public:
     return {};
   }
 
-  virtual std::any visit(const LiteralContext& ctx) override {
+  virtual std::any visit(const ast::Literal& ctx) override {
     if (ctx.getType() == TokenType::INTLIT) {
       return static_cast<llvm::Constant*>(llvm::ConstantInt::get(Type::getIntegerType()->toLLVMType(*m_ctx), std::get<std::int32_t>(ctx.getValue())));
     } else if (ctx.getType() == TokenType::TRUE || ctx.getType() == TokenType::FALSE) {
@@ -67,7 +67,7 @@ public:
     return {};
   }
 
-  virtual std::any visit(const VarDefContext& ctx) override {
+  virtual std::any visit(const ast::VariableDefinition& ctx) override {
     const auto name = std::get<std::string>(ctx.getName().getValue());
     auto& variable = std::get<Variable>(m_symbol_table.getEntry(name)->get());
 
@@ -84,7 +84,7 @@ public:
     return {};
   }
 
-  virtual std::any visit(const AssignmentStmtContext& ctx) override {
+  virtual std::any visit(const ast::AssignmentStatement& ctx) override {
     const auto expr = std::any_cast<llvm::Constant*>(visit(*ctx.getExpr()));
 
     for (const auto& target : ctx.getTargets()) {

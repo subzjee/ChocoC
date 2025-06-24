@@ -3,6 +3,7 @@
 #include "ASTVisitor.h"
 #include "DiagnosticsManager.h"
 #include "SymbolTable.h"
+#include "ast/VariableDefinition.h"
 
 #include "llvm/Support/FormatVariadic.h"
 
@@ -14,7 +15,7 @@ public:
   SymbolTableBuilder(DiagnosticsManager& diagnostics_manager)
       : m_diag_manager{diagnostics_manager} {};
 
-  virtual std::any visit(const VarDefContext& ctx) override;
+  virtual std::any visit(const ast::VariableDefinition& ctx) override;
 
   SymbolTable& getSymbolTable() { return m_symbol_table; };
 

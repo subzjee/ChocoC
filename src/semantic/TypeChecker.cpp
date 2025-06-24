@@ -1,7 +1,9 @@
 #include "semantic/TypeChecker.h"
+#include "ast/AssignmentStatement.h"
+#include "ast/VariableDefinition.h"
 
 namespace chocopy {
-std::any TypeChecker::visit(const VarDefContext& ctx) {
+std::any TypeChecker::visit(const ast::VariableDefinition& ctx) {
   const Type& lhs =
       local_env.typeOf(std::get<std::string>(ctx.getName().getValue()));
   const Type& rhs = local_env.typeOf(*ctx.getValue());
@@ -16,7 +18,7 @@ std::any TypeChecker::visit(const VarDefContext& ctx) {
   return {};
 }
 
-std::any TypeChecker::visit(const AssignmentStmtContext& ctx) {
+std::any TypeChecker::visit(const ast::AssignmentStatement& ctx) {
   const auto rhs = local_env.typeOf(*ctx.getExpr());
 
   for (const auto& target : ctx.getTargets()) {

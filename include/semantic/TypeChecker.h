@@ -2,7 +2,8 @@
 
 #include "ASTVisitor.h"
 #include "DiagnosticsManager.h"
-#include "parser/ParseContext.h"
+#include "ast/AssignmentStatement.h"
+#include "ast/VariableDefinition.h"
 #include "semantic/TypeEnvironment.h"
 
 #include "llvm/Support/FormatVariadic.h"
@@ -16,8 +17,8 @@ public:
               DiagnosticsManager& diagnostics_manager)
       : m_diag_manager{diagnostics_manager}, local_env(symbol_table) {};
 
-  virtual std::any visit(const VarDefContext& ctx) override;
-  virtual std::any visit(const AssignmentStmtContext& ctx) override;
+  virtual std::any visit(const ast::VariableDefinition& ctx) override;
+  virtual std::any visit(const ast::AssignmentStatement& ctx) override;
 
 private:
   DiagnosticsManager& m_diag_manager;

@@ -1,6 +1,12 @@
 #pragma once
 
-#include "parser/ParseContext.h"
+#include "ast/AssignmentStatement.h"
+#include "ast/ConstantExpression.h"
+#include "ast/Expression.h"
+#include "ast/Program.h"
+#include "ast/Statement.h"
+#include "ast/SimpleStatement.h"
+#include "ast/VariableDefinition.h"
 
 #include <any>
 #include <memory>
@@ -9,14 +15,14 @@ namespace chocopy {
 struct ASTVisitor {
   virtual ~ASTVisitor() = default;
 
-  virtual std::any visit(const ProgramContext& ctx);
-  virtual std::any visit(const VarDefContext& ctx);
-  virtual std::any visit(const ExprContext& ctx);
-  virtual std::any visit(const ConstantExprContext& ctx);
-  virtual std::any visit(const StmtContext& ctx);
-  virtual std::any visit(const SimpleStmtContext& ctx);
-  virtual std::any visit(const AssignmentStmtContext& ctx);
-  virtual std::any visit(const TypeContext& ctx);
-  virtual std::any visit(const LiteralContext& ctx);
+  virtual std::any visit(const ast::Program& ctx);
+  virtual std::any visit(const ast::VariableDefinition& ctx);
+  virtual std::any visit(const ast::Expression& ctx);
+  virtual std::any visit(const ast::ConstantExpression& ctx);
+  virtual std::any visit(const ast::Statement& ctx);
+  virtual std::any visit(const ast::SimpleStatement& ctx);
+  virtual std::any visit(const ast::AssignmentStatement& ctx);
+  virtual std::any visit(const ast::Type& ctx);
+  virtual std::any visit(const ast::Literal& ctx);
 };
 } // namespace chocopy

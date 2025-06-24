@@ -1,8 +1,17 @@
 #pragma once
 
 #include "DiagnosticsManager.h"
+#include "ast/AssignmentStatement.h"
+#include "ast/ConstantExpression.h"
+#include "ast/Expression.h"
+#include "ast/Literal.h"
+#include "ast/Program.h"
+#include "ast/SimpleStatement.h"
+#include "ast/Statement.h"
+#include "ast/Target.h"
+#include "ast/TypedVariable.h"
+#include "ast/VariableDefinition.h"
 #include "lexer/Token.h"
-#include "parser/ParseContext.h"
 
 namespace chocopy {
 class Parser {
@@ -10,7 +19,7 @@ public:
   Parser(std::span<const Token> tokens, DiagnosticsManager& diagnostics_manager)
       : m_tokens(tokens), m_diag_manager(diagnostics_manager) {};
 
-  [[nodiscard]] std::unique_ptr<ProgramContext> parse() {
+  [[nodiscard]] std::unique_ptr<ast::Program> parse() {
     return parseProgram();
   };
 
@@ -38,17 +47,17 @@ private:
     return false;
   }
 
-  [[nodiscard]] std::unique_ptr<ProgramContext> parseProgram();
-  [[nodiscard]] std::unique_ptr<TypedVarContext> parseTypedVar();
-  [[nodiscard]] std::unique_ptr<TypeContext> parseType();
-  [[nodiscard]] std::unique_ptr<VarDefContext> parseVarDef();
-  [[nodiscard]] std::unique_ptr<LiteralContext> parseLiteral();
-  [[nodiscard]] std::unique_ptr<TargetContext> parseTarget();
-  [[nodiscard]] std::unique_ptr<ExprContext> parseExpr();
-  [[nodiscard]] std::unique_ptr<ConstantExprContext> parseConstantExpr();
-  [[nodiscard]] std::unique_ptr<StmtContext> parseStmt();
-  [[nodiscard]] std::unique_ptr<SimpleStmtContext> parseSimpleStmt();
-  [[nodiscard]] std::unique_ptr<AssignmentStmtContext> parseAssignStmt();
+  [[nodiscard]] std::unique_ptr<ast::Program> parseProgram();
+  [[nodiscard]] std::unique_ptr<ast::TypedVariable> parseTypedVar();
+  [[nodiscard]] std::unique_ptr<ast::Type> parseType();
+  [[nodiscard]] std::unique_ptr<ast::VariableDefinition> parseVarDef();
+  [[nodiscard]] std::unique_ptr<ast::Literal> parseLiteral();
+  [[nodiscard]] std::unique_ptr<ast::Target> parseTarget();
+  [[nodiscard]] std::unique_ptr<ast::Expression> parseExpr();
+  [[nodiscard]] std::unique_ptr<ast::ConstantExpression> parseConstantExpr();
+  [[nodiscard]] std::unique_ptr<ast::Statement> parseStmt();
+  [[nodiscard]] std::unique_ptr<ast::SimpleStatement> parseSimpleStmt();
+  [[nodiscard]] std::unique_ptr<ast::AssignmentStatement> parseAssignStmt();
 
   std::span<const Token> m_tokens;
   std::size_t m_current_idx{0};

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "parser/ParseContext.h"
-
 #include "llvm/ADT/StringMap.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/IR/DerivedTypes.h"
