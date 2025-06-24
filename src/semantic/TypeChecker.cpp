@@ -2,6 +2,8 @@
 #include "ast/AssignmentStatement.h"
 #include "ast/VariableDefinition.h"
 
+#include "llvm/Support/FormatVariadic.h"
+
 namespace chocopy {
 std::any TypeChecker::visit(const ast::VariableDefinition& ctx) {
   const Type& lhs =
@@ -10,8 +12,8 @@ std::any TypeChecker::visit(const ast::VariableDefinition& ctx) {
 
   if (!local_env.isAssignmentCompatible(rhs, lhs)) {
     m_diag_manager.addError(
-        llvm::formatv("type mismatch: expected: {0}, got: {1}",
-                      lhs.toString(), rhs.toString()),
+        llvm::formatv("type mismatch: expected: {0}, got: {1}", lhs.toString(),
+                      rhs.toString()),
         ctx.getValue()->getLocation());
   }
 

@@ -3,11 +3,14 @@
 #include "llvm/ADT/StringMap.h"
 
 namespace chocopy {
-std::pair<llvm::StringMapIterator<SymbolTableEntry>, bool> SymbolTable::addEntry(const llvm::StringRef name, const SymbolTableEntry& entry) {
+std::pair<llvm::StringMapIterator<SymbolTableEntry>, bool>
+SymbolTable::addEntry(const llvm::StringRef name,
+                      const SymbolTableEntry& entry) {
   return m_entries.try_emplace(name, entry);
 }
 
-std::optional<std::reference_wrapper<SymbolTableEntry>> SymbolTable::getEntry(const llvm::StringRef name) {
+std::optional<std::reference_wrapper<SymbolTableEntry>>
+SymbolTable::getEntry(const llvm::StringRef name) {
   auto it = m_entries.find(name);
 
   if (it == m_entries.end()) {
@@ -17,11 +20,11 @@ std::optional<std::reference_wrapper<SymbolTableEntry>> SymbolTable::getEntry(co
   return it->second;
 }
 
-  llvm::Type* Type::toLLVMType(llvm::LLVMContext& ctx) const {
-    if (isInteger()) {
-      return llvm::Type::getInt32Ty(ctx);
-    } else if (isBoolean()) {
-      return llvm::Type::getInt1Ty(ctx);
-    }
+llvm::Type* Type::toLLVMType(llvm::LLVMContext& ctx) const {
+  if (isInteger()) {
+    return llvm::Type::getInt32Ty(ctx);
+  } else if (isBoolean()) {
+    return llvm::Type::getInt1Ty(ctx);
   }
+}
 } // namespace chocopy

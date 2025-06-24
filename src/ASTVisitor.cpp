@@ -32,7 +32,8 @@ std::any ASTVisitor::visit(const ast::VariableDefinition& ctx) {
 }
 
 std::any ASTVisitor::visit(const ast::Expression& ctx) {
-  if (auto constant_expression = dynamic_cast<const ast::ConstantExpression*>(&ctx)) {
+  if (auto constant_expression =
+          dynamic_cast<const ast::ConstantExpression*>(&ctx)) {
     return visit(*constant_expression);
   }
 }
@@ -54,15 +55,11 @@ std::any ASTVisitor::visit(const ast::SimpleStatement& ctx) {
       [this](const auto& simple_stmt) { return visit(*simple_stmt); });
 }
 
-std::any ASTVisitor::visit(const ast::AssignmentStatement& ctx) {
-  return {};
-}
+std::any ASTVisitor::visit(const ast::AssignmentStatement& ctx) { return {}; }
 
 std::any ASTVisitor::visit(const ast::Type& ctx) { return {}; }
 
-std::any ASTVisitor::visit(const ast::Literal& ctx) {
-  return {};
-}
+std::any ASTVisitor::visit(const ast::Literal& ctx) { return {}; }
 
 std::any ASTVisitor::visit(const ast::BinaryOpExpression& ctx) { return {}; }
-}
+} // namespace chocopy

@@ -13,8 +13,10 @@
 using namespace llvm;
 using namespace chocopy;
 
-static cl::list<std::string> input_file_names(cl::Positional, cl::desc("<input_files>"), cl::OneOrMore);
-static cl::opt<std::string> output_file_name("o", cl::desc("Output filename"), cl::value_desc("filename"));
+static cl::list<std::string>
+    input_file_names(cl::Positional, cl::desc("<input_files>"), cl::OneOrMore);
+static cl::opt<std::string> output_file_name("o", cl::desc("Output filename"),
+                                             cl::value_desc("filename"));
 
 int main(int argc, char* argv[]) {
   cl::ParseCommandLineOptions(argc, argv);
@@ -27,11 +29,14 @@ int main(int argc, char* argv[]) {
 
     if (!file) {
       errs() << std::system_error(errno, std::system_category(),
-                            "error: " + input_file_name).what() << '\n';
+                                  "error: " + input_file_name)
+                    .what()
+             << '\n';
       continue;
     }
 
-    unsigned int buffer_id = source_manager.AddNewSourceBuffer(std::move(file.get()), SMLoc());
+    unsigned int buffer_id =
+        source_manager.AddNewSourceBuffer(std::move(file.get()), SMLoc());
 
     /* Lexical analysis */
     Lexer lexer{buffer_id, source_manager, diag_manager};

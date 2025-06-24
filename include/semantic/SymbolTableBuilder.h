@@ -5,7 +5,6 @@
 #include "SymbolTable.h"
 #include "ast/VariableDefinition.h"
 
-
 namespace chocopy {
 class SymbolTableBuilder : ASTVisitor {
 public:

@@ -5,8 +5,8 @@
 #include "ast/ConstantExpression.h"
 #include "ast/Expression.h"
 #include "ast/Program.h"
-#include "ast/Statement.h"
 #include "ast/SimpleStatement.h"
+#include "ast/Statement.h"
 #include "ast/VariableDefinition.h"
 
 #include <any>

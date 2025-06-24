@@ -2,10 +2,10 @@
 
 #include "SymbolTable.h"
 
-#include "ast/Literal.h"
 #include "ast/BinaryOpExpression.h"
-#include "ast/Expression.h"
 #include "ast/ConstantExpression.h"
+#include "ast/Expression.h"
+#include "ast/Literal.h"
 
 #include "llvm/Support/ErrorHandling.h"
 

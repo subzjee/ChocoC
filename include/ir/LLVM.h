@@ -7,11 +7,11 @@
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/Function.h"
+#include "llvm/IR/GlobalVariable.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Verifier.h"
-#include "llvm/IR/GlobalVariable.h"
 #include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/Signals.h"
 
@@ -59,9 +59,14 @@ public:
 
   virtual std::any visit(const ast::Literal& ctx) override {
     if (ctx.getType() == TokenType::INTLIT) {
-      return static_cast<llvm::Constant*>(llvm::ConstantInt::get(Type::getIntegerType()->toLLVMType(*m_ctx), std::get<std::int32_t>(ctx.getValue())));
-    } else if (ctx.getType() == TokenType::TRUE || ctx.getType() == TokenType::FALSE) {
-      return static_cast<llvm::Constant*>(llvm::ConstantInt::get(Type::getBooleanType()->toLLVMType(*m_ctx), std::get<bool>(ctx.getValue())));
+      return static_cast<llvm::Constant*>(
+          llvm::ConstantInt::get(Type::getIntegerType()->toLLVMType(*m_ctx),
+                                 std::get<std::int32_t>(ctx.getValue())));
+    } else if (ctx.getType() == TokenType::TRUE ||
+               ctx.getType() == TokenType::FALSE) {
+      return static_cast<llvm::Constant*>(
+          llvm::ConstantInt::get(Type::getBooleanType()->toLLVMType(*m_ctx),
+                                 std::get<bool>(ctx.getValue())));
     }
 
     return {};
@@ -72,7 +77,8 @@ public:
     auto& variable = std::get<Variable>(m_symbol_table.getEntry(name)->get());
 
     llvm::Type* llvm_type = variable.type.toLLVMType(*m_ctx);
-    llvm::Constant* init = std::any_cast<llvm::Constant*>(visit(*ctx.getValue()));
+    llvm::Constant* init =
+        std::any_cast<llvm::Constant*>(visit(*ctx.getValue()));
 
     if (scope == 0) {
       llvm::GlobalVariable* g = new llvm::GlobalVariable(
