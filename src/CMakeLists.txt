@@ -1,6 +1,7 @@
 add_library(chocopc_lib
     ASTVisitor.cpp
     DiagnosticsManager.cpp
+    ir/LLVM.cpp
     lexer/Lexer.cpp
     parser/Parser.cpp
     semantic/SymbolTable.cpp
