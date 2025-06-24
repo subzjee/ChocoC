@@ -12,3 +12,9 @@ void DiagnosticsManager::addError(const Twine& message, SMRange location, ArrayR
 void DiagnosticsManager::addError(const Twine& message, SMRange location, ArrayRef<SMFixIt> fixits) {
   addError(message, location, {location}, fixits);
 }
+
+void DiagnosticsManager::printErrors() const {
+  for (const auto& diagnostic : m_diagnostics) {
+    diagnostic.print("", llvm::errs());
+  }
+}

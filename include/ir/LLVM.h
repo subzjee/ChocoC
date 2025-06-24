@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ASTVisitor.h"
-#include "SymbolTable.h"
 #include "parser/ParseContext.h"
+#include "semantic/SymbolTable.h"
 
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/DerivedTypes.h"
@@ -11,15 +11,16 @@
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Verifier.h"
+#include "llvm/IR/GlobalVariable.h"
 #include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/Signals.h"
 
 namespace chocopy {
-class CodeGenLLVM : ASTVisitor {
+class IRGen : ASTVisitor {
 public:
   using ASTVisitor::visit;
 
-  CodeGenLLVM(const llvm::StringRef module_name, SymbolTable& symbol_table)
+  IRGen(const llvm::StringRef module_name, SymbolTable& symbol_table)
       : m_ctx{std::make_unique<llvm::LLVMContext>()}, m_builder{*m_ctx},
         m_module{
             std::make_unique<llvm::Module>(std::move(module_name), *m_ctx)},
@@ -39,8 +40,6 @@ public:
   }
 
   void epilogue() {
-    // Create an int32 with 0 as the value to return from the main function to
-    // indicate success.
     const auto ret_val =
         llvm::ConstantInt::get(llvm::Type::getInt32Ty(*m_ctx), 0);
 
@@ -58,26 +57,27 @@ public:
     return {};
   }
 
+  virtual std::any visit(const LiteralContext& ctx) override {
+    if (ctx.getType() == TokenType::INTLIT) {
+      return static_cast<llvm::Constant*>(llvm::ConstantInt::get(Type::getIntegerType()->toLLVMType(*m_ctx), std::get<std::int32_t>(ctx.getValue())));
+    } else if (ctx.getType() == TokenType::TRUE || ctx.getType() == TokenType::FALSE) {
+      return static_cast<llvm::Constant*>(llvm::ConstantInt::get(Type::getBooleanType()->toLLVMType(*m_ctx), std::get<bool>(ctx.getValue())));
+    }
+
+    return {};
+  }
+
   virtual std::any visit(const VarDefContext& ctx) override {
     const auto name = std::get<std::string>(ctx.getName().getValue());
-    const auto& entry = m_symbol_table.getEntry(name);
-    auto& variable = std::get<Variable>(entry->get());
-    const auto type = variable.type;
+    auto& variable = std::get<Variable>(m_symbol_table.getEntry(name)->get());
 
-    llvm::Type* llvm_type = type.toLLVMType(*m_ctx);
-
-    llvm::Constant* init = nullptr;
-    const TokenValue value = ctx.getValue()->getValue().getValue();
-    if (type.isBoolean()) {
-      init = llvm::ConstantInt::get(llvm_type, std::get<bool>(value));
-    } else if (type.isInteger()) {
-      init = llvm::ConstantInt::get(llvm_type, std::get<std::int32_t>(value));
-    }
+    llvm::Type* llvm_type = variable.type.toLLVMType(*m_ctx);
+    llvm::Constant* init = std::any_cast<llvm::Constant*>(visit(*ctx.getValue()));
 
     if (scope == 0) {
       llvm::GlobalVariable* g = new llvm::GlobalVariable(
           *m_module, llvm_type, false, llvm::GlobalValue::ExternalLinkage, init,
-          std::get<std::string>(ctx.getName().getValue()));
+          name);
       variable.allocation = g;
     }
 
@@ -85,15 +85,14 @@ public:
   }
 
   virtual std::any visit(const AssignmentStmtContext& ctx) override {
-    const auto value =
-        llvm::ConstantInt::get(llvm::Type::getInt32Ty(*m_ctx), 5);
+    const auto expr = std::any_cast<llvm::Constant*>(visit(*ctx.getExpr()));
 
     for (const auto& target : ctx.getTargets()) {
       const auto& entry = m_symbol_table.getEntry(
           std::get<std::string>(target.getName().getValue()));
       const auto& variable = std::get<Variable>(entry->get());
 
-      m_builder.CreateStore(value, variable.allocation);
+      m_builder.CreateStore(expr, variable.allocation);
     }
 
     return {};

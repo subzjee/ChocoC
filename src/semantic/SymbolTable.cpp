@@ -1,4 +1,4 @@
-#include "SymbolTable.h"
+#include "semantic/SymbolTable.h"
 
 #include "llvm/ADT/StringMap.h"
 
@@ -16,4 +16,12 @@ std::optional<std::reference_wrapper<SymbolTableEntry>> SymbolTable::getEntry(co
 
   return it->second;
 }
+
+  llvm::Type* Type::toLLVMType(llvm::LLVMContext& ctx) const {
+    if (isInteger()) {
+      return llvm::Type::getInt32Ty(ctx);
+    } else if (isBoolean()) {
+      return llvm::Type::getInt1Ty(ctx);
+    }
+  }
 } // namespace chocopy

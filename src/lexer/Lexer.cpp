@@ -21,15 +21,13 @@ Lexer::Lexer(const unsigned buffer_id, const SourceMgr& source_manager, Diagnost
 std::span<const Token> Lexer::lex() {
   handleIndentation();
 
-  while (auto current_char = *advance()) {
+  while (const auto current_char = *advance()) {
     switch (current_char) {
     case '+':
       addToken(TokenType::PLUS);
       break;
     case '-':
-      if (isDigit(*peek())) {
-        scanNumber();
-      } else if (match('>')) {
+      if (match('>')) {
         advance();
         addToken(TokenType::RARROW);
       } else {
@@ -104,9 +102,11 @@ std::span<const Token> Lexer::lex() {
       addToken(TokenType::CLOSEPAREN);
       break;
     case '\r':
-      std::ignore = match('\n');
-      advance();
-      [[fallthrough]];
+      if (peek() == '\n') {
+          advance();
+      }
+      handleNewLine();
+      break;
     case '\n':
       handleNewLine();
       break;
@@ -200,7 +200,7 @@ void Lexer::scanNumber() {
 
   StringRef value = getCurrentLexeme();
 
-  if ((value.starts_with('0') && value.size() > 1) || (value.starts_with("-0") && value.size() > 2)) {
+  if ((value.starts_with('0') && value.size() > 1)) {
     token_type = TokenType::INVALID;
     m_diag_manager.addError("an integer may not have leading zeros", getCurrentLexemeLocation());
   }

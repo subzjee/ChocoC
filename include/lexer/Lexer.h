@@ -26,8 +26,6 @@ public:
   /// @returns The tokens.
   [[nodiscard]] std::span<const Token> lex();
 
-  [[nodiscard]] std::span<const llvm::SMDiagnostic> getDiagnostics() const;
-
 private:
   /// Get the current character.
   /// @returns The current character.

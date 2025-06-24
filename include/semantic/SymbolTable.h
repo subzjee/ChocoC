@@ -58,15 +58,9 @@ struct Type {
     return type;
   }
 
-  llvm::Type* toLLVMType(llvm::LLVMContext& ctx) const {
-    if (isInteger()) {
-      return llvm::Type::getInt32Ty(ctx);
-    } else if (isBoolean()) {
-      return llvm::Type::getInt1Ty(ctx);
-    }
-  }
+  llvm::Type* toLLVMType(llvm::LLVMContext& ctx) const;
 
-  [[nodiscard]] constexpr std::string toString() const {
+  [[nodiscard]] std::string toString() const {
     return std::string(dimension, '[') + base_type.str() +
            std::string(dimension, ']');
   };
@@ -81,7 +75,7 @@ struct Variable {
       : name(name), type(type) {};
 
   const llvm::StringRef name;
-  const Type type;
+  const Type& type;
   llvm::Value* allocation = nullptr;
 };
 

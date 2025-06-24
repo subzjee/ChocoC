@@ -1,7 +1,9 @@
 #pragma once
 
-#include <llvm/Support/SourceMgr.h>
+#include "llvm/Support/SourceMgr.h"
+#include "llvm/Support/raw_ostream.h"
 
+#include <llvm-21/llvm/ADT/STLExtras.h>
 #include <vector>
 
 class DiagnosticsManager {
@@ -15,7 +17,8 @@ public:
   /// @param ranges Ranges of columns that should be underlined.
   /// @param fixits Suggestions on how to fix the error within the line.
   void addError(const llvm::Twine& message, llvm::SMRange location,
-                llvm::ArrayRef<llvm::SMRange> ranges, llvm::ArrayRef<llvm::SMFixIt> fixits = {});
+                llvm::ArrayRef<llvm::SMRange> ranges,
+                llvm::ArrayRef<llvm::SMFixIt> fixits = {});
 
   /// Add an error diagnostic.
   /// @param message The message to print.
@@ -24,10 +27,22 @@ public:
   void addError(const llvm::Twine& message, llvm::SMRange location,
                 llvm::ArrayRef<llvm::SMFixIt> fixits = {});
 
-  std::span<const llvm::SMDiagnostic> getDiagnostics() const {
+  [[nodiscard]] bool hadError() const {
+    return llvm::any_of(m_diagnostics, [](const auto& diagnostic) {
+      return diagnostic.getKind() == llvm::SourceMgr::DK_Error;
+    });
+  }
+
+  /// Print all errors.
+  void printErrors() const;
+
+  /// Get all diagnostics.
+  /// @returns All diagonstics.
+  [[nodiscard]] std::span<const llvm::SMDiagnostic> getDiagnostics() const {
     return m_diagnostics;
   }
 
+  /// Clear all diagnostics.
   void clear() { m_diagnostics.clear(); }
 
 private:

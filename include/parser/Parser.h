@@ -20,7 +20,7 @@ private:
   [[nodiscard]] std::optional<std::reference_wrapper<const Token>>
   peek(const int n = 0) const;
 
-  std::optional<const Token> advance();
+  std::optional<std::reference_wrapper<const Token>> advance();
 
   template <typename... TokenTypes>
   [[nodiscard]] bool match(const TokenTypes&... token_types) {

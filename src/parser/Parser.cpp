@@ -18,7 +18,7 @@ std::optional<std::reference_wrapper<const Token>> Parser::peek(const int n) con
   return std::cref(m_tokens[idx]);
 }
 
-std::optional<const Token> Parser::advance() {
+std::optional<std::reference_wrapper<const Token>> Parser::advance() {
   const auto current_token = peek();
 
   if (current_token) {
