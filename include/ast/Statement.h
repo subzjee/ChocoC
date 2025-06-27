@@ -1,21 +1,11 @@
 #pragma once
 
-#include "ast/SimpleStatement.h"
-
-#include <memory>
+#include "ast/ASTNode.h"
+#include "ast/WithLocation.h"
 
 namespace chocopy::ast {
-class Statement {
-  using Stmt = std::variant<std::unique_ptr<SimpleStatement>>;
-
-public:
-  Statement(Stmt&& statement) : m_stmt(std::move(statement)) {};
-
-  template <typename Visitor> auto visit(Visitor&& visitor) const {
-    return std::visit(std::forward<Visitor>(visitor), m_stmt);
-  }
-
-private:
-  const Stmt m_stmt;
+struct Statement : ASTNode, WithLocation {
+  virtual ~Statement() = default;
+  virtual llvm::SMRange getLocation() const = 0;
 };
 } // namespace chocopy::ast

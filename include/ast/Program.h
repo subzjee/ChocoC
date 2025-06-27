@@ -1,17 +1,19 @@
 #pragma once
 
+#include "ast/ASTNode.h"
 #include "ast/Statement.h"
 #include "ast/VariableDefinition.h"
 
 #include <memory>
 #include <variant>
+#include <vector>
 
 namespace chocopy {
-using ProgramChildren =
+using ProgramChildren = 
     std::vector<std::variant<std::unique_ptr<ast::VariableDefinition>,
                              std::unique_ptr<ast::Statement>>>;
 namespace ast {
-class Program {
+class Program : public ASTNode {
 public:
   Program(ProgramChildren& children) : m_children(std::move(children)) {};
 
@@ -20,6 +22,8 @@ public:
   [[nodiscard]] const ProgramChildren& getChildren() const {
     return m_children;
   };
+
+  std::any accept(ASTVisitor& visitor) override;
 
 private:
   const ProgramChildren m_children;

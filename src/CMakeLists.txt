@@ -1,6 +1,14 @@
 add_library(chocopc_lib
     ASTVisitor.cpp
     DiagnosticsManager.cpp
+    ast/AssignmentStatement.cpp
+    ast/BinaryExpression.cpp
+    ast/Literal.cpp
+    ast/PrettyPrinter.cpp
+    ast/Program.cpp
+    ast/Target.cpp
+    ast/Type.cpp
+    ast/VariableDefinition.cpp
     ir/LLVM.cpp
     lexer/Lexer.cpp
     parser/Parser.cpp

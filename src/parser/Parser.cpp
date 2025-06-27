@@ -198,7 +198,7 @@ Parser::parseConstantExpr() {
       return nullptr;
     }
 
-    return std::make_unique<ast::Statement>(std::move(simple_stmt));
+    return simple_stmt;
   }
 
   m_diag_manager.addError(formatv("expected a statement"),
@@ -208,7 +208,7 @@ Parser::parseConstantExpr() {
 
 [[nodiscard]] std::unique_ptr<ast::SimpleStatement> Parser::parseSimpleStmt() {
   if (peek(1) == TokenType::ASSIGN) {
-    return std::make_unique<ast::SimpleStatement>(parseAssignStmt());
+    return parseAssignStmt();
   }
 
   return nullptr;

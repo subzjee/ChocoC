@@ -1,15 +1,11 @@
 #pragma once
 
+#include "ast/ASTNode.h"
 #include "ast/WithLocation.h"
 
 namespace chocopy::ast {
-
-struct Expression : WithLocation {
+struct Expression : ASTNode, WithLocation {
   virtual ~Expression() = default;
   virtual llvm::SMRange getLocation() const = 0;
-
-  template <typename Visitor> auto visit(Visitor&& visitor) const {
-    return visitor(*this);
-  }
 };
 } // namespace chocopy::ast

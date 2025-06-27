@@ -1,6 +1,6 @@
 #include "ASTVisitor.h"
 #include "ast/AssignmentStatement.h"
-#include "ast/BinaryOpExpression.h"
+#include "ast/BinaryExpression.h"
 #include "ast/ConstantExpression.h"
 #include "ast/Expression.h"
 #include "ast/Literal.h"
@@ -15,7 +15,7 @@ std::any ASTVisitor::visit(const ast::Program& ctx) {
     std::visit(
         [this](const auto& child) {
           if (child) {
-            visit(*child);
+            child->accept(*this);
           }
         },
         child);
@@ -25,34 +25,10 @@ std::any ASTVisitor::visit(const ast::Program& ctx) {
 }
 
 std::any ASTVisitor::visit(const ast::VariableDefinition& ctx) {
-  visit(*ctx.getType());
-  visit(*ctx.getValue());
+  ctx.getType()->accept(*this);
+  ctx.getValue()->accept(*this);
 
   return {};
-}
-
-std::any ASTVisitor::visit(const ast::Expression& ctx) {
-  if (auto constant_expression =
-          dynamic_cast<const ast::ConstantExpression*>(&ctx)) {
-    return visit(*constant_expression);
-  }
-}
-
-std::any ASTVisitor::visit(const ast::ConstantExpression& ctx) {
-  if (auto literal = dynamic_cast<const ast::Literal*>(&ctx)) {
-    return visit(*literal);
-  } else if (auto bin = dynamic_cast<const ast::BinaryOpExpression*>(&ctx)) {
-    return visit(*bin);
-  }
-}
-
-std::any ASTVisitor::visit(const ast::Statement& ctx) {
-  return ctx.visit([this](const auto& stmt) { return visit(*stmt); });
-}
-
-std::any ASTVisitor::visit(const ast::SimpleStatement& ctx) {
-  return ctx.visit(
-      [this](const auto& simple_stmt) { return visit(*simple_stmt); });
 }
 
 std::any ASTVisitor::visit(const ast::AssignmentStatement& ctx) { return {}; }
@@ -61,5 +37,7 @@ std::any ASTVisitor::visit(const ast::Type& ctx) { return {}; }
 
 std::any ASTVisitor::visit(const ast::Literal& ctx) { return {}; }
 
-std::any ASTVisitor::visit(const ast::BinaryOpExpression& ctx) { return {}; }
+std::any ASTVisitor::visit(const ast::BinaryExpression& ctx) { return {}; }
+
+std::any ASTVisitor::visit(const ast::Target& ctx) { return {}; }
 } // namespace chocopy

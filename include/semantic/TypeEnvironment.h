@@ -2,7 +2,7 @@
 
 #include "SymbolTable.h"
 
-#include "ast/BinaryOpExpression.h"
+#include "ast/BinaryExpression.h"
 #include "ast/ConstantExpression.h"
 #include "ast/Expression.h"
 #include "ast/Literal.h"
@@ -39,7 +39,7 @@ public:
   /// @returns The type of \p expr.
   [[nodiscard]] const Type typeOf(const ast::Expression& expr);
 
-  [[nodiscard]] const Type typeOf(const ast::BinaryOpExpression& expr);
+  [[nodiscard]] const Type typeOf(const ast::BinaryExpression& expr);
 
   /// Check whether a type is a subclass of a second type.
   /// @param child The type to check.

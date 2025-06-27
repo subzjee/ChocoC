@@ -1,10 +1,11 @@
 #pragma once
 
+#include "ast/ASTNode.h"
 #include "ast/WithLocation.h"
 #include "lexer/Token.h"
 
 namespace chocopy::ast {
-class Type : public WithLocation {
+class Type : public ASTNode, public WithLocation {
 public:
   Type(const Token& base_type, unsigned int dimension = 0)
       : m_base_type(base_type), m_dimension(dimension) {};
@@ -27,6 +28,8 @@ public:
   [[nodiscard]] llvm::SMRange getLocation() const override {
     return m_base_type.getLocation();
   };
+
+  std::any accept(ASTVisitor& visitor) override;
 
 private:
   const Token& m_base_type;

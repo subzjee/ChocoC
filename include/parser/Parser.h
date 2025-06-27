@@ -23,8 +23,19 @@ public:
     return parseProgram();
   };
 
+  [[nodiscard]] std::unique_ptr<ast::Program> parseProgram();
+  [[nodiscard]] std::unique_ptr<ast::TypedVariable> parseTypedVar();
+  [[nodiscard]] std::unique_ptr<ast::Type> parseType();
+  [[nodiscard]] std::unique_ptr<ast::VariableDefinition> parseVarDef();
+  [[nodiscard]] std::unique_ptr<ast::Literal> parseLiteral();
+  [[nodiscard]] std::unique_ptr<ast::Target> parseTarget();
+  [[nodiscard]] std::unique_ptr<ast::Expression> parseExpr();
+  [[nodiscard]] std::unique_ptr<ast::ConstantExpression> parseConstantExpr();
+  [[nodiscard]] std::unique_ptr<ast::Statement> parseStmt();
+  [[nodiscard]] std::unique_ptr<ast::SimpleStatement> parseSimpleStmt();
+  [[nodiscard]] std::unique_ptr<ast::AssignmentStatement> parseAssignStmt();
+
 private:
-  friend class ParserTest;
 
   [[nodiscard]] std::optional<std::reference_wrapper<const Token>>
   peek(const int n = 0) const;
@@ -46,18 +57,6 @@ private:
 
     return false;
   }
-
-  [[nodiscard]] std::unique_ptr<ast::Program> parseProgram();
-  [[nodiscard]] std::unique_ptr<ast::TypedVariable> parseTypedVar();
-  [[nodiscard]] std::unique_ptr<ast::Type> parseType();
-  [[nodiscard]] std::unique_ptr<ast::VariableDefinition> parseVarDef();
-  [[nodiscard]] std::unique_ptr<ast::Literal> parseLiteral();
-  [[nodiscard]] std::unique_ptr<ast::Target> parseTarget();
-  [[nodiscard]] std::unique_ptr<ast::Expression> parseExpr();
-  [[nodiscard]] std::unique_ptr<ast::ConstantExpression> parseConstantExpr();
-  [[nodiscard]] std::unique_ptr<ast::Statement> parseStmt();
-  [[nodiscard]] std::unique_ptr<ast::SimpleStatement> parseSimpleStmt();
-  [[nodiscard]] std::unique_ptr<ast::AssignmentStatement> parseAssignStmt();
 
   std::span<const Token> m_tokens;
   std::size_t m_current_idx{0};

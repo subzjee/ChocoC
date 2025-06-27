@@ -24,6 +24,8 @@ public:
     return m_value.getLocation();
   };
 
+  std::any accept(ASTVisitor& visitor) override;
+
 private:
   const Token& m_value;
 };

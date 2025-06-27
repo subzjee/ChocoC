@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ast/ASTNode.h"
 #include "ast/Literal.h"
 #include "ast/TypedVariable.h"
 #include "lexer/Token.h"
@@ -7,7 +8,7 @@
 #include <memory>
 
 namespace chocopy::ast {
-class VariableDefinition {
+class VariableDefinition : public ASTNode {
 public:
   VariableDefinition(std::unique_ptr<TypedVariable>& typed_var,
                      std::unique_ptr<Literal>& value)
@@ -27,6 +28,8 @@ public:
   [[nodiscard]] const std::unique_ptr<Literal>& getValue() const {
     return m_value;
   };
+
+  std::any accept(ASTVisitor& visitor) override;
 
 private:
   const Token& m_name;

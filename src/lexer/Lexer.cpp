@@ -223,7 +223,11 @@ void Lexer::scanNumber() {
         getCurrentLexemeLocation());
   }
 
-  addToken(token_type, value_as_int);
+  if (token_type == TokenType::INTLIT) {
+    addToken(token_type, value_as_int);
+  } else {
+    addToken(token_type);
+  }
 }
 
 void Lexer::scanIdOrKeyword() {
@@ -242,13 +246,17 @@ void Lexer::scanIdOrKeyword() {
   case TokenType::FALSE:
     addToken(token_type, false);
     break;
-  default:
+  case TokenType::ID:
     addToken(token_type, value.str());
+    break;
+  default:
+    addToken(token_type);
   }
 }
 
 void Lexer::scanString() {
   auto token_type = isDigit(*peek()) ? TokenType::STRING : TokenType::IDSTRING;
+  std::string value{};
 
   while (!match('"', '\0', '\r', '\n')) {
     if (token_type != TokenType::INVALID && !isAlnum(*peek()) &&
@@ -259,7 +267,9 @@ void Lexer::scanString() {
     if (match('\\')) {
       advance();
 
-      if (!match('\\', 'n', 't', '"')) {
+      if (match('\\', 'n', 't', '"')) {
+        value += peek().value();
+      } else {
         token_type = TokenType::INVALID;
         SMRange location = {getCurrentLexemeEndLocation(),
                             getCurrentLexemeEndLocation()};
@@ -267,6 +277,8 @@ void Lexer::scanString() {
                                 "\\n and \\t are allowed",
                                 location);
       }
+    } else {
+      value += peek().value();
     }
 
     advance();
@@ -281,7 +293,11 @@ void Lexer::scanString() {
 
   advance();
 
-  addToken(token_type);
+  if (token_type != TokenType::INVALID) {
+    addToken(token_type, value);
+  } else {
+    addToken(token_type);
+  }
 }
 
 void Lexer::handleNewLine() {

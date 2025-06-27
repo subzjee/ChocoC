@@ -6,9 +6,9 @@
 #include <memory>
 
 namespace chocopy::ast {
-class BinaryOpExpression : public ConstantExpression {
+class BinaryExpression : public ConstantExpression {
 public:
-  BinaryOpExpression(std::unique_ptr<ConstantExpression>& lhs, const Token& op,
+  BinaryExpression(std::unique_ptr<ConstantExpression>& lhs, const Token& op,
                      std::unique_ptr<ConstantExpression>& rhs)
       : m_lhs(std::move(lhs)), m_op(op), m_rhs(std::move(rhs)) {};
 
@@ -19,6 +19,8 @@ public:
   [[nodiscard]] llvm::SMRange getLocation() const override {
     return {m_lhs->getLocation().Start, m_rhs->getLocation().End};
   }
+
+  std::any accept(ASTVisitor& visitor) override;
 
 private:
   std::unique_ptr<ConstantExpression> m_lhs;

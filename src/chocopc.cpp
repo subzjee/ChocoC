@@ -58,11 +58,11 @@ int main(int argc, char* argv[]) {
 
     /* Semantic analysis */
     SymbolTableBuilder builder{diag_manager};
-    builder.visit(*root);
+    root->accept(builder);
     auto& symbol_table = builder.getSymbolTable();
 
     TypeChecker type_checker{symbol_table, diag_manager};
-    type_checker.visit(*root);
+    root->accept(type_checker);
 
     if (diag_manager.hadError()) {
       diag_manager.printErrors();

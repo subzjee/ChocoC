@@ -64,7 +64,7 @@ std::any IRGen::visit(const ast::VariableDefinition& ctx) {
 }
 
 std::any IRGen::visit(const ast::AssignmentStatement& ctx) {
-  const auto expr = std::any_cast<llvm::Constant*>(visit(*ctx.getExpr()));
+  const auto expr = std::any_cast<llvm::Constant*>(ctx.getExpr()->accept(*this));
 
   for (const auto& target : ctx.getTargets()) {
     const auto& entry = m_symbol_table.getEntry(

@@ -9,6 +9,7 @@ add_executable(
         chocopc_test
         test_token.cpp
         test_lexer.cpp
+        test_parser.cpp
 )
 
 target_link_libraries(chocopc_test
