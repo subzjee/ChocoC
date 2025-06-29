@@ -267,15 +267,18 @@ void Lexer::scanString() {
     if (match('\\')) {
       advance();
 
-      if (match('\\', 'n', 't', '"')) {
-        value += peek().value();
-      } else {
-        token_type = TokenType::INVALID;
-        SMRange location = {getCurrentLexemeEndLocation(),
-                            getCurrentLexemeEndLocation()};
-        m_diag_manager.addError("invalid escape character. Only \\\\, \\\", "
-                                "\\n and \\t are allowed",
-                                location);
+      switch (*peek()) {
+        case '\\': value += '\\'; break;
+        case 'n': value += '\n'; break;
+        case 't': value += '\t'; break;
+        case '"': value += '"'; break;
+        default:
+          token_type = TokenType::INVALID;
+          SMRange location = {getCurrentLexemeEndLocation(),
+                              getCurrentLexemeEndLocation()};
+          m_diag_manager.addError("invalid escape character. Only \\\\, \\\", "
+                                  "\\n and \\t are allowed",
+                                  location);
       }
     } else {
       value += peek().value();

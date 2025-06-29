@@ -33,11 +33,10 @@ std::any IRGen::visit(const ast::Program& ctx) {
 }
 
 std::any IRGen::visit(const ast::Literal& ctx) {
-  if (ctx.getType() == TokenType::INTLIT) {
+  if (ctx.getType() == "int") {
     return llvm::ConstantInt::get(Type::getIntegerType()->toLLVMType(*m_ctx),
                                 std::get<std::int32_t>(ctx.getValue()));
-  } else if (ctx.getType() == TokenType::TRUE ||
-              ctx.getType() == TokenType::FALSE) {
+  } else if (ctx.getType() == "bool") {
     return llvm::ConstantInt::get(Type::getBooleanType()->toLLVMType(*m_ctx),
                                 std::get<bool>(ctx.getValue()));
   }

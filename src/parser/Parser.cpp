@@ -138,7 +138,7 @@ std::unique_ptr<ast::VariableDefinition> Parser::parseVarDef() {
   }
 
   if (!match(TokenType::NEWLINE)) {
-    const auto location = peek()->get().getLocation();
+    const auto location = peek(-1)->get().getLocation();
     m_diag_manager.addError(formatv("expected a new line"),
                             {location.End, location.End});
     return nullptr;

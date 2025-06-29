@@ -1,4 +1,5 @@
 #include "DiagnosticsManager.h"
+#include "ast/PrettyPrinter.h"
 #include "ir/LLVM.h"
 #include "lexer/Lexer.h"
 #include "parser/Parser.h"
@@ -55,6 +56,11 @@ int main(int argc, char* argv[]) {
       diag_manager.printErrors();
       continue;
     }
+
+    ast::PrettyPrinter pretty_printer{};
+    const std::string pretty_print = std::any_cast<std::string>(root->accept(pretty_printer));
+
+    std::cout << pretty_print << '\n';
 
     /* Semantic analysis */
     SymbolTableBuilder builder{diag_manager};

@@ -22,24 +22,24 @@ public:
   /// Get the type of a variable by name.
   /// @param name The name of the variable to get the type of.
   /// @returns The type of the variable \p name
-  [[nodiscard]] const Type typeOf(const llvm::StringRef name);
+  [[nodiscard]] const Type& typeOf(const llvm::StringRef name);
 
   /// Get the type of a variable.
   /// @param variable The variable to get the type of.
   /// @returns The type of \p variable.
-  [[nodiscard]] const Type typeOf(const Variable& variable);
+  [[nodiscard]] const Type& typeOf(const Variable& variable);
 
   /// Get the type of a constant expression.
   /// @param cexpr The constant expression to get the type of.
   /// @returns The type of \p cexpr.
-  [[nodiscard]] const Type typeOf(const ast::ConstantExpression& cexpr);
+  [[nodiscard]] const Type& typeOf(const ast::ConstantExpression& cexpr);
 
   /// Get the type of a expression.
   /// @param cexpr The expression to get the type of.
   /// @returns The type of \p expr.
-  [[nodiscard]] const Type typeOf(const ast::Expression& expr);
+  [[nodiscard]] const Type& typeOf(const ast::Expression& expr);
 
-  [[nodiscard]] const Type typeOf(const ast::BinaryExpression& expr);
+  [[nodiscard]] const Type& typeOf(const ast::BinaryExpression& expr);
 
   /// Check whether a type is a subclass of a second type.
   /// @param child The type to check.

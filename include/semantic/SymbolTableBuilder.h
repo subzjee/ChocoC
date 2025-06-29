@@ -3,6 +3,7 @@
 #include "ASTVisitor.h"
 #include "DiagnosticsManager.h"
 #include "SymbolTable.h"
+#include "ast/AssignmentStatement.h"
 #include "ast/VariableDefinition.h"
 
 namespace chocopy {
@@ -14,6 +15,7 @@ public:
       : m_diag_manager{diagnostics_manager} {};
 
   std::any visit(const ast::VariableDefinition& ctx) override;
+  std::any visit(const ast::AssignmentStatement& ctx) override;
 
   SymbolTable& getSymbolTable() { return m_symbol_table; };
 

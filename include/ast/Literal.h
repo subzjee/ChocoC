@@ -2,6 +2,7 @@
 
 #include "ast/ConstantExpression.h"
 #include "lexer/Token.h"
+#include <utility>
 
 namespace chocopy::ast {
 class Literal : public ConstantExpression {
@@ -16,7 +17,17 @@ public:
 
   /// Get the type of the literal.
   /// @return The type.
-  [[nodiscard]] const TokenType& getType() const { return m_value.getType(); };
+  [[nodiscard]] const llvm::StringRef getType() const {
+    switch (m_value.getType()) {
+      case TokenType::TRUE: [[fallthrough]];
+      case TokenType::FALSE: return "bool";
+      case TokenType::IDSTRING: [[fallthrough]];
+      case TokenType::STRING: return "str";
+      case TokenType::INTLIT: return "int";
+      case TokenType::NONE: return "<None>";
+      default: std::unreachable();
+    }
+  };
 
   /// Get the location of the literal.
   /// @returns The location.

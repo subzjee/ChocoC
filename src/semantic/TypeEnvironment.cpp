@@ -6,23 +6,20 @@
 
 namespace chocopy {
 [[nodiscard]] const Type& TypeEnvironment::typeOf(const ast::Literal& ctx) {
-  switch (ctx.getType()) {
-  case TokenType::INTLIT:
-    return *Type::getIntegerType();
-  case TokenType::STRING:
-    [[fallthrough]];
-  case TokenType::IDSTRING:
-    return *Type::getStringType();
-  case TokenType::FALSE:
-    [[fallthrough]];
-  case TokenType::TRUE:
+  const auto type = ctx.getType();
+
+  if (type == "bool") {
     return *Type::getBooleanType();
-  case TokenType::NONE:
+  } else if (type == "str") {
+    return *Type::getStringType();
+  } else if (type == "int") {
+    return *Type::getIntegerType();
+  } else {
     return *Type::getNoneType();
   }
 }
 
-[[nodiscard]] const Type TypeEnvironment::typeOf(const llvm::StringRef name) {
+[[nodiscard]] const Type& TypeEnvironment::typeOf(const llvm::StringRef name) {
   const auto entry = m_symbol_table.getEntry(name);
 
   if (std::holds_alternative<Variable>(entry->get())) {
@@ -30,12 +27,12 @@ namespace chocopy {
   }
 }
 
-[[nodiscard]] inline const Type
+[[nodiscard]] inline const Type&
 TypeEnvironment::typeOf(const Variable& variable) {
   return variable.type;
 }
 
-[[nodiscard]] const Type
+[[nodiscard]] const Type&
 TypeEnvironment::typeOf(const ast::ConstantExpression& cexpr) {
   if (auto literal = dynamic_cast<const ast::Literal*>(&cexpr)) {
     return typeOf(*literal);
@@ -44,14 +41,14 @@ TypeEnvironment::typeOf(const ast::ConstantExpression& cexpr) {
   }
 }
 
-[[nodiscard]] const Type TypeEnvironment::typeOf(const ast::Expression& expr) {
+[[nodiscard]] const Type& TypeEnvironment::typeOf(const ast::Expression& expr) {
   if (auto constant_expression =
           dynamic_cast<const ast::ConstantExpression*>(&expr)) {
     return typeOf(*constant_expression);
   }
 }
 
-[[nodiscard]] const Type
+[[nodiscard]] const Type&
 TypeEnvironment::typeOf(const ast::BinaryExpression& expr) {
   return *Type::getBooleanType();
 }
