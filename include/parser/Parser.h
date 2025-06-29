@@ -1,5 +1,6 @@
 #pragma once
 
+#include "TokenStream.h"
 #include "DiagnosticsManager.h"
 #include "ast/AssignmentStatement.h"
 #include "ast/ConstantExpression.h"
@@ -11,13 +12,12 @@
 #include "ast/Target.h"
 #include "ast/TypedVariable.h"
 #include "ast/VariableDefinition.h"
-#include "lexer/Token.h"
 
 namespace chocopy {
 class Parser {
 public:
-  Parser(std::span<const Token> tokens, DiagnosticsManager& diagnostics_manager)
-      : m_tokens(tokens), m_diag_manager(diagnostics_manager) {};
+  Parser(TokenStream& token_stream, DiagnosticsManager& diagnostics_manager)
+      : m_token_stream(token_stream), m_diag_manager(diagnostics_manager) {};
 
   [[nodiscard]] std::unique_ptr<ast::Program> parse() {
     return parseProgram();
@@ -36,30 +36,7 @@ public:
   [[nodiscard]] std::unique_ptr<ast::AssignmentStatement> parseAssignStmt();
 
 private:
-
-  [[nodiscard]] std::optional<std::reference_wrapper<const Token>>
-  peek(const int n = 0) const;
-
-  std::optional<std::reference_wrapper<const Token>> advance();
-
-  template <typename... TokenTypes>
-  [[nodiscard]] bool match(const TokenTypes&... token_types) {
-    const auto current_token = peek();
-
-    if (!current_token) {
-      return false;
-    }
-
-    if (((current_token->get().getType() == token_types) || ...)) {
-      advance();
-      return true;
-    }
-
-    return false;
-  }
-
-  std::span<const Token> m_tokens;
-  std::size_t m_current_idx{0};
+  TokenStream& m_token_stream;
   DiagnosticsManager& m_diag_manager;
 };
 } // namespace chocopy
