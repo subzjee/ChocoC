@@ -71,7 +71,7 @@ TEST(TokenTest, TokenTypeToString) {
       std::make_pair(TokenType::DEDENT, "DEDENT"),
       std::make_pair(TokenType::ID, "ID")};
 
-  for (const auto& [token_type, expected_string] : mapping) {
+  for (const auto &[token_type, expected_string] : mapping) {
     EXPECT_EQ(toString(token_type), expected_string);
   }
 }

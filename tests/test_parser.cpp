@@ -1,23 +1,48 @@
-#include "gtest/gtest.h"
-
+#include "DiagnosticsManager.h"
+#include "ast/PrettyPrinter.h"
+#include "lexer/Lexer.h"
 #include "parser/Parser.h"
+
+#include "gtest/gtest.h"
+#include "llvm/Support/SourceMgr.h"
+#include "llvm/Support/MemoryBuffer.h"
 
 using namespace chocopy;
 
-class ParserTest : public testing::Test {};
+class ParserTest : public testing::Test, public testing::WithParamInterface<std::string> {
+protected:
+  llvm::SourceMgr source_manager;
+  DiagnosticsManager diagnostics_manager{source_manager};
+  ast::PrettyPrinter pretty_printer{};
 
-TEST_F(ParserTest, TypedVar) {
+  void TearDown() override { diagnostics_manager.clear(); }
+};
+
+TEST_P(ParserTest, Parser) {
+  auto input_file = llvm::MemoryBuffer::getFile("tests/input/" + GetParam() + ".choco");
+  auto golden_file = llvm::MemoryBuffer::getFile("tests/input/" + GetParam() + ".golden");
+
+  unsigned int buffer_id =
+      source_manager.AddNewSourceBuffer(std::move(input_file.get()), llvm::SMLoc());
+  Lexer lexer{buffer_id, source_manager, diagnostics_manager};
+  const auto tokens = lexer.lex();
+
+  Parser parser{tokens, diagnostics_manager};
+
+  const auto root = parser.parse();
+  ASSERT_NE(root, nullptr);
+
+  const std::string pretty_print = std::any_cast<std::string>(root->accept(pretty_printer));
   
+  EXPECT_EQ(pretty_print, (std::string{golden_file->get()->getBufferStart(), golden_file->get()->getBufferEnd()}));
 }
 
-TEST_F(ParserTest, Type) {
+static const std::vector<std::string> test_names = {
+  "vardefs"
+};
 
-}
-
-TEST_F(ParserTest, VarDef) {
-
-}
-
-TEST_F(ParserTest, Literal) {
-  
-}
+INSTANTIATE_TEST_SUITE_P(
+  ParserFileTests,
+  ParserTest,
+  testing::ValuesIn(test_names)
+);

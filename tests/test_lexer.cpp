@@ -12,9 +12,7 @@ protected:
   SourceMgr source_manager;
   DiagnosticsManager diagnostics_manager{source_manager};
 
-  void TearDown() override {
-    diagnostics_manager.clear();
-  }
+  void TearDown() override { diagnostics_manager.clear(); }
 };
 
 TEST_F(LexerTest, KeywordRecognition) {
@@ -37,13 +35,14 @@ TEST_F(LexerTest, KeywordRecognition) {
       TokenType::TRUE,     TokenType::TRY,      TokenType::WHILE,
       TokenType::WITH,     TokenType::YIELD};
 
-  // Filter out NEWLINE tokens because they are only there for readability in the test file.
+  // Filter out NEWLINE tokens because they are only there for readability in
+  // the test file.
   const auto filtered_tokens =
-      make_filter_range(lexer.lex(), [](const Token& token) {
+      make_filter_range(lexer.lex(), [](const Token &token) {
         return token.getType() != TokenType::NEWLINE;
       });
 
-  for (const auto& [token, expected_type] :
+  for (const auto &[token, expected_type] :
        zip_equal(filtered_tokens, expected_token_types)) {
     EXPECT_EQ(token.getType(), expected_type);
   }
@@ -64,13 +63,14 @@ TEST_F(LexerTest, OperatorRecognition) {
       TokenType::CLOSEBRACK, TokenType::COMMA,      TokenType::COLON,
       TokenType::DOT,        TokenType::RARROW};
 
-  // Filter out NEWLINE tokens because they are only there for readability in the test file.
+  // Filter out NEWLINE tokens because they are only there for readability in
+  // the test file.
   const auto filtered_tokens =
-      make_filter_range(lexer.lex(), [](const Token& token) {
+      make_filter_range(lexer.lex(), [](const Token &token) {
         return token.getType() != TokenType::NEWLINE;
       });
 
-  for (const auto& [token, expected_type] :
+  for (const auto &[token, expected_type] :
        zip_equal(filtered_tokens, expected_token_types)) {
     EXPECT_EQ(token.getType(), expected_type);
   }
@@ -83,16 +83,17 @@ TEST_F(LexerTest, IntegerLiterals) {
   Lexer lexer{buffer_id, source_manager, diagnostics_manager};
 
   constexpr std::array<TokenType, 5> expected_token_types = {
-      TokenType::INTLIT,  TokenType::INTLIT,
-      TokenType::INVALID, TokenType::INVALID, TokenType::INVALID};
+      TokenType::INTLIT, TokenType::INTLIT, TokenType::INVALID,
+      TokenType::INVALID, TokenType::INVALID};
 
-  // Filter out NEWLINE tokens because they are only there for readability in the test file.
+  // Filter out NEWLINE tokens because they are only there for readability in
+  // the test file.
   const auto filtered_tokens =
-      make_filter_range(lexer.lex(), [](const Token& token) {
+      make_filter_range(lexer.lex(), [](const Token &token) {
         return token.getType() != TokenType::NEWLINE;
       });
 
-  for (const auto& [token, expected_type] :
+  for (const auto &[token, expected_type] :
        zip_equal(filtered_tokens, expected_token_types)) {
     EXPECT_EQ(token.getType(), expected_type);
   }
@@ -109,13 +110,14 @@ TEST_F(LexerTest, StringLiterals) {
       TokenType::STRING,   TokenType::STRING, TokenType::STRING,
       TokenType::INVALID,  TokenType::INVALID};
 
-  // Filter out NEWLINE tokens because they are only there for readability in the test file.
+  // Filter out NEWLINE tokens because they are only there for readability in
+  // the test file.
   const auto filtered_tokens =
-      make_filter_range(lexer.lex(), [](const Token& token) {
+      make_filter_range(lexer.lex(), [](const Token &token) {
         return token.getType() != TokenType::NEWLINE;
       });
 
-  for (const auto& [token, expected_type] :
+  for (const auto &[token, expected_type] :
        zip_equal(filtered_tokens, expected_token_types)) {
     EXPECT_EQ(token.getType(), expected_type);
   }
@@ -140,14 +142,15 @@ TEST_F(LexerTest, Indentation) {
 
   const auto tokens = lexer.lex();
 
-  for (const auto& [token, expected_type] :
+  for (const auto &[token, expected_type] :
        zip_equal(tokens, expected_token_types)) {
     EXPECT_EQ(token.getType(), expected_type);
   }
 }
 
 TEST_F(LexerTest, UnexpectedCharacters) {
-  auto file = MemoryBuffer::getFile("tests/input/lexer/unexpected_character.choco");
+  auto file =
+      MemoryBuffer::getFile("tests/input/lexer/unexpected_character.choco");
   unsigned int buffer_id =
       source_manager.AddNewSourceBuffer(std::move(file.get()), SMLoc());
   Lexer lexer{buffer_id, source_manager, diagnostics_manager};
@@ -158,13 +161,14 @@ TEST_F(LexerTest, UnexpectedCharacters) {
       TokenType::INVALID, TokenType::INVALID, TokenType::INVALID,
       TokenType::INVALID, TokenType::INVALID, TokenType::INVALID};
 
-  // Filter out NEWLINE tokens because they are only there for readability in the test file.
+  // Filter out NEWLINE tokens because they are only there for readability in
+  // the test file.
   const auto filtered_tokens =
-  make_filter_range(lexer.lex(), [](const Token& token) {
-    return token.getType() != TokenType::NEWLINE;
-  });
+      make_filter_range(lexer.lex(), [](const Token &token) {
+        return token.getType() != TokenType::NEWLINE;
+      });
 
-  for (const auto& [token, expected_type] :
+  for (const auto &[token, expected_type] :
        zip_equal(filtered_tokens, expected_token_types)) {
     EXPECT_EQ(token.getType(), expected_type);
   }
