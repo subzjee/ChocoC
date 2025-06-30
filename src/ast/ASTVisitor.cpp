@@ -1,12 +1,9 @@
-#include "ASTVisitor.h"
+#include "ast/ASTVisitor.h"
 #include "ast/AssignmentStatement.h"
 #include "ast/BinaryExpression.h"
-#include "ast/ConstantExpression.h"
-#include "ast/Expression.h"
+#include "ast/Identifier.h"
 #include "ast/Literal.h"
 #include "ast/Program.h"
-#include "ast/SimpleStatement.h"
-#include "ast/Statement.h"
 #include "ast/VariableDefinition.h"
 
 namespace chocopy {
@@ -40,4 +37,6 @@ std::any ASTVisitor::visit(const ast::Literal& ctx) { return {}; }
 std::any ASTVisitor::visit(const ast::BinaryExpression& ctx) { return {}; }
 
 std::any ASTVisitor::visit(const ast::Target& ctx) { return {}; }
+
+std::any ASTVisitor::visit(const ast::Identifier& ctx) { return {}; }
 } // namespace chocopy

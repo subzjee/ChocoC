@@ -7,7 +7,9 @@
 namespace chocopy::ast {
 class Literal : public ConstantExpression {
 public:
-  Literal(const Token& value) : m_value(value) {};
+  Literal(const Token& value) : m_value(value) {
+    assert(value.isLiteral());
+  };
 
   /// Get the value of the literal.
   /// @returns The value.

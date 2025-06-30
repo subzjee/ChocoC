@@ -1,8 +1,10 @@
 add_library(chocopc_lib
-    ASTVisitor.cpp
     DiagnosticsManager.cpp
+    TokenStream.cpp
     ast/AssignmentStatement.cpp
+    ast/ASTVisitor.cpp
     ast/BinaryExpression.cpp
+    ast/Identifier.cpp
     ast/Literal.cpp
     ast/PrettyPrinter.cpp
     ast/Program.cpp
@@ -11,6 +13,7 @@ add_library(chocopc_lib
     ast/VariableDefinition.cpp
     ir/LLVM.cpp
     lexer/Lexer.cpp
+    parser/ExpressionParser.cpp
     parser/Parser.cpp
     semantic/SymbolTable.cpp
     semantic/SymbolTableBuilder.cpp

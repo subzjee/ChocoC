@@ -14,7 +14,7 @@ namespace chocopy::ast {
 class AssignmentStatement : public SimpleStatement {
 public:
   AssignmentStatement(const std::vector<Target>& targets,
-                      std::unique_ptr<Expression>& expr)
+                      std::unique_ptr<Expression> expr)
       : m_targets(targets), m_expr(std::move(expr)) {};
 
   /// Get all targets to be assigned to.

@@ -1,6 +1,8 @@
 #pragma once
 
+#include "DiagnosticsManager.h"
 #include "TokenStream.h"
+#include "ast/BinaryExpression.h"
 #include "ast/Expression.h"
 #include "lexer/TokenType.h"
 #include "parser/ExpressionKind.h"
@@ -14,32 +16,30 @@ using BindingPower = std::optional<std::pair<unsigned int, unsigned int>>;
 
 class ExpressionParser {
 public:
-  ExpressionParser(TokenStream& token_stream) : m_token_stream(token_stream) {}
+  explicit ExpressionParser(TokenStream& token_stream, DiagnosticsManager& diagnostics_manager) : m_token_stream(token_stream), m_diag_manager(diagnostics_manager) {}
 
   /// Parse an expression,
   /// @param min_power The minimum binding power,
   /// @param expression_kind The kind of expression to parse.
   /// @returns The expression.
-  [[nodiscard]] std::unique_ptr<ast::Expression> parseExpression(int min_power = 0, ExpressionKind expression_kind = ExpressionKind::Normal);
+  [[nodiscard]] std::unique_ptr<ast::Expression> parseExpression(unsigned int min_power = 0);
 
 private:
   /// Parse a prefix.
-  /// @param expression_kind The kind of expression.
   /// @returns The prefix expression.
-  [[nodiscard]] std::unique_ptr<ast::Expression> parsePrefix(ExpressionKind expression_kind);
+  [[nodiscard]] std::unique_ptr<ast::Expression> parsePrefix();
 
-  /// Get the prefix binding power of an operator within a specified kind of expression.
+  /// Get the prefix binding power of an operator.
   /// @param op The operator.
-  /// @param expression_kind The kind of expression.
   /// @returns The left and right binding power as a pair. For prefix powers, the left and right are equal.
-  [[nodiscard]] BindingPower getPrefixPower(TokenType op, ExpressionKind expression_kind);
+  [[nodiscard]] BindingPower getPrefixPower(TokenType op);
 
-  /// Get the infix binding power of an operator within a specified kind of expression.
+  /// Get the infix binding power of an operator.
   /// @param op The operator.
-  /// @param expression_kind The kind of expression.
   /// @returns The left and right binding power as a pair.
-  [[nodiscard]] BindingPower getInfixPower(TokenType op, ExpressionKind expression_kind);
+  [[nodiscard]] BindingPower getInfixPower(TokenType op);
 
   TokenStream& m_token_stream;
+  DiagnosticsManager& m_diag_manager;
 };
 }

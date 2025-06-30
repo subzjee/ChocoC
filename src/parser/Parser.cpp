@@ -23,8 +23,9 @@ std::unique_ptr<ast::Program> Parser::parseProgram() {
   }
 
   while (m_token_stream.peek()) {
-    if (m_token_stream.peek() == TokenType::ID && m_token_stream.peek(1) == TokenType::COLON) {
-      auto var_def_ctx = parseVarDef();
+    if (m_token_stream.match(TokenType::ID) &&
+        m_token_stream.peek(1) == TokenType::COLON) {
+      auto var_def_ctx = parseVariableDefinition();
 
       if (!var_def_ctx) {
         return nullptr;
@@ -38,7 +39,7 @@ std::unique_ptr<ast::Program> Parser::parseProgram() {
   }
 
   while (m_token_stream.peek()) {
-    auto stmt_ctx = parseStmt();
+    auto stmt_ctx = parseStatement();
 
     if (!stmt_ctx) {
       return nullptr;
@@ -52,8 +53,10 @@ std::unique_ptr<ast::Program> Parser::parseProgram() {
 
 std::unique_ptr<ast::Type> Parser::parseType() {
   if (m_token_stream.match(TokenType::ID, TokenType::IDSTRING)) {
+    m_token_stream.advance();
     return std::make_unique<ast::Type>(*m_token_stream.peek(-1));
   } else if (m_token_stream.match(TokenType::OPENBRACK)) {
+    m_token_stream.advance();
     auto type_ctx = parseType();
 
     if (!type_ctx) {
@@ -65,6 +68,7 @@ std::unique_ptr<ast::Type> Parser::parseType() {
                               m_token_stream.peek()->get().getLocation());
       return nullptr;
     }
+    m_token_stream.advance();
 
     return std::make_unique<ast::Type>(type_ctx->getBaseType(),
                                        type_ctx->getDimension() + 1);
@@ -76,31 +80,33 @@ std::unique_ptr<ast::Type> Parser::parseType() {
   return nullptr;
 }
 
-std::unique_ptr<ast::TypedVariable> Parser::parseTypedVar() {
+std::unique_ptr<ast::TypedVariable> Parser::parseTypedVariable() {
   if (!m_token_stream.match(TokenType::ID)) [[unlikely]] {
     m_diag_manager.addError(formatv("expected an identifier"),
                             m_token_stream.peek()->get().getLocation());
     return nullptr;
   }
+  m_token_stream.advance();
 
-  const auto& name = m_token_stream.peek(-1);
+  const auto &name = m_token_stream.peek(-1);
 
   if (!m_token_stream.match(TokenType::COLON)) [[unlikely]] {
     m_diag_manager.addError(formatv("expected `:`"),
                             m_token_stream.peek()->get().getLocation());
     return nullptr;
   }
+  m_token_stream.advance();
 
   auto type_ctx = parseType();
   if (!type_ctx) {
     return nullptr;
   }
 
-  return std::make_unique<ast::TypedVariable>(*name, type_ctx);
+  return std::make_unique<ast::TypedVariable>(*name, std::move(type_ctx));
 }
 
-std::unique_ptr<ast::VariableDefinition> Parser::parseVarDef() {
-  auto typed_var_ctx = parseTypedVar();
+std::unique_ptr<ast::VariableDefinition> Parser::parseVariableDefinition() {
+  auto typed_var_ctx = parseTypedVariable();
   if (!typed_var_ctx) {
     return nullptr;
   }
@@ -110,6 +116,7 @@ std::unique_ptr<ast::VariableDefinition> Parser::parseVarDef() {
                             m_token_stream.peek()->get().getLocation());
     return nullptr;
   }
+  m_token_stream.advance();
 
   auto literal_ctx = parseLiteral();
   if (!literal_ctx) {
@@ -122,79 +129,73 @@ std::unique_ptr<ast::VariableDefinition> Parser::parseVarDef() {
                             {location.End, location.End});
     return nullptr;
   }
+  m_token_stream.advance();
 
-  return std::make_unique<ast::VariableDefinition>(typed_var_ctx, literal_ctx);
+  return std::make_unique<ast::VariableDefinition>(std::move(typed_var_ctx), std::move(literal_ctx));
 }
 
 std::unique_ptr<ast::Literal> Parser::parseLiteral() {
   if (!m_token_stream.match(TokenType::NONE, TokenType::FALSE, TokenType::TRUE,
-             TokenType::INTLIT, TokenType::IDSTRING, TokenType::STRING)) {
+                            TokenType::INTLIT, TokenType::IDSTRING,
+                            TokenType::STRING)) {
     m_diag_manager.addError(formatv("expected a literal value"),
                             m_token_stream.peek()->get().getLocation());
     return nullptr;
   }
+  m_token_stream.advance();
 
   return std::make_unique<ast::Literal>(*m_token_stream.peek(-1));
 }
 
 [[nodiscard]] std::unique_ptr<ast::Target> Parser::parseTarget() {
   if (m_token_stream.match(TokenType::ID)) {
+    m_token_stream.advance();
     return std::make_unique<ast::Target>(*m_token_stream.peek(-1));
   }
 
   return nullptr;
 }
 
-[[nodiscard]] std::unique_ptr<ast::ConstantExpression>
-Parser::parseConstantExpr() {
-  if (m_token_stream.peek()->get().isLiteral()) {
-    return parseLiteral();
-  }
-
-  return nullptr;
+[[nodiscard]] std::unique_ptr<ast::Expression> Parser::parseExpression() {
+  return m_expression_parser.parseExpression();
 }
 
-[[nodiscard]] std::unique_ptr<ast::Expression> Parser::parseExpr() {
-  if (m_token_stream.peek()->get().isLiteral()) {
-    return parseConstantExpr();
-  }
-
-  return nullptr;
-}
-
-[[nodiscard]] std::unique_ptr<ast::Statement> Parser::parseStmt() {
+[[nodiscard]] std::unique_ptr<ast::Statement> Parser::parseStatement() {
   if (m_token_stream.match(TokenType::IF)) {
+    m_token_stream.advance();
     return nullptr;
   } else if (m_token_stream.match(TokenType::WHILE)) {
+    m_token_stream.advance();
     return nullptr;
   } else if (m_token_stream.match(TokenType::FOR)) {
+    m_token_stream.advance();
     return nullptr;
-  } else if (auto simple_stmt = parseSimpleStmt()) {
+  } else if (auto simple_stmt = parseSimpleStatement()) {
     if (!m_token_stream.match(TokenType::NEWLINE)) {
       const auto location = m_token_stream.peek(-1)->get().getLocation();
       m_diag_manager.addError(formatv("expected a new line"),
                               {location.End, location.End});
       return nullptr;
     }
+    m_token_stream.advance();
 
     return simple_stmt;
   }
 
-  m_diag_manager.addError(formatv("expected a statement"),
-                          m_token_stream.peek()->get().getLocation());
   return nullptr;
 }
 
-[[nodiscard]] std::unique_ptr<ast::SimpleStatement> Parser::parseSimpleStmt() {
+[[nodiscard]] std::unique_ptr<ast::SimpleStatement>
+Parser::parseSimpleStatement() {
   if (m_token_stream.peek(1) == TokenType::ASSIGN) {
-    return parseAssignStmt();
+    return parseAssignmentStatement();
   }
 
   return nullptr;
 }
 
 [[nodiscard]] std::unique_ptr<ast::AssignmentStatement>
-Parser::parseAssignStmt() {
+Parser::parseAssignmentStatement() {
   std::vector<ast::Target> targets{};
 
   while (m_token_stream.peek(1) == TokenType::ASSIGN) {
@@ -202,8 +203,12 @@ Parser::parseAssignStmt() {
     m_token_stream.advance();
   }
 
-  auto expr_ctx = parseExpr();
+  auto expr_ctx = parseExpression();
 
-  return std::make_unique<ast::AssignmentStatement>(targets, expr_ctx);
+  if (!expr_ctx) {
+    return nullptr;
+  }
+
+  return std::make_unique<ast::AssignmentStatement>(targets, std::move(expr_ctx));
 }
 } // namespace chocopy

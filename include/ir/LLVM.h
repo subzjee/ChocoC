@@ -1,7 +1,8 @@
 #pragma once
 
-#include "ASTVisitor.h"
+#include "ast/ASTVisitor.h"
 #include "ast/AssignmentStatement.h"
+#include "ast/BinaryExpression.h"
 #include "semantic/SymbolTable.h"
 
 #include "llvm/IR/BasicBlock.h"
@@ -33,6 +34,7 @@ public:
   virtual std::any visit(const ast::Literal& ctx) override;
   virtual std::any visit(const ast::VariableDefinition& ctx) override;
   virtual std::any visit(const ast::AssignmentStatement& ctx) override;
+  virtual std::any visit(const ast::BinaryExpression& ctx) override;
 
 private:
   std::unique_ptr<llvm::LLVMContext> m_ctx;

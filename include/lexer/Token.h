@@ -67,6 +67,10 @@ public:
            m_type == TokenType::GREAT || m_type == TokenType::IS;
   }
 
+  [[nodiscard]] bool isIdentifier() const {
+    return m_type == TokenType::ID;
+  }
+
 private:
   const TokenValue m_value;
   const llvm::SMRange m_location;

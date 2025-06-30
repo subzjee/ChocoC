@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ASTVisitor.h"
+#include "ast/ASTVisitor.h"
 #include "DiagnosticsManager.h"
 #include "ast/AssignmentStatement.h"
 #include "ast/VariableDefinition.h"

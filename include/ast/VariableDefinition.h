@@ -10,8 +10,8 @@
 namespace chocopy::ast {
 class VariableDefinition : public ASTNode {
 public:
-  VariableDefinition(std::unique_ptr<TypedVariable>& typed_var,
-                     std::unique_ptr<Literal>& value)
+  VariableDefinition(std::unique_ptr<TypedVariable> typed_var,
+                     std::unique_ptr<Literal> value)
       : m_name(typed_var->getName()), m_type(std::move(typed_var->getType())),
         m_value(std::move(value)) {};
 

@@ -22,7 +22,6 @@ public:
     }
 
     if (((current_token->get().getType() == token_types) || ...)) {
-      advance();
       return true;
     }
 

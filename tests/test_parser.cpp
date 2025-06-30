@@ -26,8 +26,9 @@ TEST_P(ParserTest, Parser) {
       source_manager.AddNewSourceBuffer(std::move(input_file.get()), llvm::SMLoc());
   Lexer lexer{buffer_id, source_manager, diagnostics_manager};
   const auto tokens = lexer.lex();
+  TokenStream token_stream{tokens};
 
-  Parser parser{tokens, diagnostics_manager};
+  Parser parser{token_stream, diagnostics_manager};
 
   const auto root = parser.parse();
   ASSERT_NE(root, nullptr);

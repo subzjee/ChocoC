@@ -8,7 +8,7 @@
 namespace chocopy::ast {
 class TypedVariable {
 public:
-  TypedVariable(const Token& name, std::unique_ptr<Type>& type)
+  TypedVariable(const Token& name, std::unique_ptr<Type> type)
       : m_name(name), m_type(std::move(type)) {};
 
   /// Get the name.
