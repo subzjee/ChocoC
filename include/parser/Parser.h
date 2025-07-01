@@ -1,7 +1,7 @@
 #pragma once
 
-#include "TokenStream.h"
 #include "DiagnosticsManager.h"
+#include "TokenStream.h"
 #include "ast/AssignmentStatement.h"
 #include "ast/ConstantExpression.h"
 #include "ast/Expression.h"
@@ -18,7 +18,8 @@ namespace chocopy {
 class Parser {
 public:
   Parser(TokenStream& token_stream, DiagnosticsManager& diagnostics_manager)
-      : m_expression_parser{token_stream, diagnostics_manager}, m_token_stream(token_stream), m_diag_manager(diagnostics_manager) {};
+      : m_expression_parser{token_stream, diagnostics_manager},
+        m_token_stream(token_stream), m_diag_manager(diagnostics_manager) {};
 
   [[nodiscard]] std::unique_ptr<ast::Program> parse() {
     return parseProgram();
@@ -27,13 +28,15 @@ public:
   [[nodiscard]] std::unique_ptr<ast::Program> parseProgram();
   [[nodiscard]] std::unique_ptr<ast::TypedVariable> parseTypedVariable();
   [[nodiscard]] std::unique_ptr<ast::Type> parseType();
-  [[nodiscard]] std::unique_ptr<ast::VariableDefinition> parseVariableDefinition();
+  [[nodiscard]] std::unique_ptr<ast::VariableDefinition>
+  parseVariableDefinition();
   [[nodiscard]] std::unique_ptr<ast::Literal> parseLiteral();
   [[nodiscard]] std::unique_ptr<ast::Target> parseTarget();
   [[nodiscard]] std::unique_ptr<ast::Expression> parseExpression();
   [[nodiscard]] std::unique_ptr<ast::Statement> parseStatement();
   [[nodiscard]] std::unique_ptr<ast::SimpleStatement> parseSimpleStatement();
-  [[nodiscard]] std::unique_ptr<ast::AssignmentStatement> parseAssignmentStatement();
+  [[nodiscard]] std::unique_ptr<ast::AssignmentStatement>
+  parseAssignmentStatement();
 
 private:
   ExpressionParser m_expression_parser;

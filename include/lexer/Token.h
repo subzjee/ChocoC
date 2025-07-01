@@ -44,13 +44,13 @@ public:
 #endif
   };
 
-  constexpr bool operator==(const Token &other) const {
+  constexpr bool operator==(const Token& other) const {
     return m_value == other.getValue() && m_type == other.getType();
   }
 
-  [[nodiscard]] const TokenValue &getValue() const { return m_value; };
-  [[nodiscard]] const llvm::SMRange &getLocation() const { return m_location; };
-  [[nodiscard]] const TokenType &getType() const { return m_type; };
+  [[nodiscard]] const TokenValue& getValue() const { return m_value; };
+  [[nodiscard]] const llvm::SMRange& getLocation() const { return m_location; };
+  [[nodiscard]] const TokenType& getType() const { return m_type; };
 
   [[nodiscard]] bool isLiteral() const {
     return m_type == TokenType::NONE || m_type == TokenType::FALSE ||

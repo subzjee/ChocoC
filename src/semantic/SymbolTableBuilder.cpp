@@ -32,9 +32,10 @@ std::any SymbolTableBuilder::visit(const ast::VariableDefinition& ctx) {
 std::any SymbolTableBuilder::visit(const ast::AssignmentStatement& ctx) {
   for (const auto& target : ctx.getTargets()) {
     const auto name = std::get<std::string>(target.getName().getValue());
-    
+
     if (!m_symbol_table.getEntry(name)) {
-      m_diag_manager.addError(llvm::formatv("undefined variable `{0}`", name), target.getLocation());
+      m_diag_manager.addError(llvm::formatv("undefined variable `{0}`", name),
+                              target.getLocation());
     }
   }
 

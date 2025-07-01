@@ -1,8 +1,8 @@
 #pragma once
 
-#include "ast/ASTVisitor.h"
 #include "DiagnosticsManager.h"
 #include "SymbolTable.h"
+#include "ast/ASTVisitor.h"
 #include "ast/AssignmentStatement.h"
 #include "ast/VariableDefinition.h"
 

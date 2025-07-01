@@ -2,5 +2,7 @@
 #include "ast/ASTVisitor.h"
 
 namespace chocopy::ast {
-  std::any Target::accept(ASTVisitor& visitor) const { return visitor.visit(*this); }
+std::any Target::accept(ASTVisitor& visitor) const {
+  return visitor.visit(*this);
 }
+} // namespace chocopy::ast

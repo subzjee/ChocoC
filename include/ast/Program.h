@@ -15,15 +15,15 @@ using ProgramChildren =
 namespace ast {
 class Program : public ASTNode {
 public:
-  Program(ProgramChildren &children) : m_children(std::move(children)) {};
+  Program(ProgramChildren& children) : m_children(std::move(children)) {};
 
   /// Get all children nodes.
   /// @returns The children nodes.
-  [[nodiscard]] const ProgramChildren &getChildren() const {
+  [[nodiscard]] const ProgramChildren& getChildren() const {
     return m_children;
   };
 
-  std::any accept(ASTVisitor &visitor) const override;
+  std::any accept(ASTVisitor& visitor) const override;
 
 private:
   const ProgramChildren m_children;

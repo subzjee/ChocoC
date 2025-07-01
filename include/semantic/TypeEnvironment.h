@@ -39,8 +39,10 @@ public:
   /// @returns The type of \p expr.
   [[nodiscard]] const Type& typeOf(const ast::Expression& expr);
 
-  [[nodiscard]] const Type& typeOf(const ast::BinaryExpression<ast::Expression>& expr);
-  [[nodiscard]] const Type& typeOf(const ast::BinaryExpression<ast::ConstantExpression>& expr);
+  [[nodiscard]] const Type&
+  typeOf(const ast::BinaryExpression<ast::Expression>& expr);
+  [[nodiscard]] const Type&
+  typeOf(const ast::BinaryExpression<ast::ConstantExpression>& expr);
 
   /// Check whether a type is a subclass of a second type.
   /// @param child The type to check.

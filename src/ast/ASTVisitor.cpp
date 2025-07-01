@@ -31,10 +31,10 @@ std::any ASTVisitor::visit(const ast::VariableDefinition& ctx) {
 }
 
 std::any ASTVisitor::visit(const ast::AssignmentStatement& ctx) {
-  for(auto& target : ctx.getTargets()) {
+  for (auto& target : ctx.getTargets()) {
     target.accept(*this);
   }
-  
+
   ctx.getExpr()->accept(*this);
 
   return {};
@@ -51,7 +51,8 @@ std::any ASTVisitor::visit(const ast::BinaryExpression<ast::Expression>& ctx) {
   return {};
 }
 
-std::any ASTVisitor::visit(const ast::BinaryExpression<ast::ConstantExpression>& ctx) {
+std::any
+ASTVisitor::visit(const ast::BinaryExpression<ast::ConstantExpression>& ctx) {
   ctx.getLHS()->accept(*this);
   ctx.getRHS()->accept(*this);
 

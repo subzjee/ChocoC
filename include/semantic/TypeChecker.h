@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ast/ASTVisitor.h"
 #include "DiagnosticsManager.h"
+#include "ast/ASTVisitor.h"
 #include "ast/AssignmentStatement.h"
 #include "ast/VariableDefinition.h"
 #include "semantic/TypeEnvironment.h"

@@ -21,4 +21,4 @@ std::optional<std::reference_wrapper<const Token>> TokenStream::advance() {
 
   return current_token;
 }
-}
+} // namespace chocopy

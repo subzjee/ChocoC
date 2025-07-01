@@ -33,7 +33,8 @@ ExpressionParser::parseExpression(unsigned int min_power) {
         return nullptr;
       }
 
-      lhs = std::make_unique<ast::BinaryExpression<ast::Expression>>(std::move(lhs), token->get(), std::move(rhs));
+      lhs = std::make_unique<ast::BinaryExpression<ast::Expression>>(
+          std::move(lhs), token->get(), std::move(rhs));
 
     } else if (token->get().isBinOp()) {
       m_token_stream.advance();
@@ -46,13 +47,13 @@ ExpressionParser::parseExpression(unsigned int min_power) {
         return nullptr;
       }
 
-      if (!dynamic_cast<ast::ConstantExpression *>(lhs.get())) {
+      if (!dynamic_cast<ast::ConstantExpression*>(lhs.get())) {
         m_diag_manager.addError("expected a constant expression",
                                 lhs->getLocation());
         return nullptr;
       }
 
-      if (!dynamic_cast<ast::ConstantExpression *>(rhs.get())) {
+      if (!dynamic_cast<ast::ConstantExpression*>(rhs.get())) {
         m_diag_manager.addError("expected a constant expression",
                                 rhs->getLocation());
         return nullptr;
@@ -60,10 +61,10 @@ ExpressionParser::parseExpression(unsigned int min_power) {
 
       lhs = std::make_unique<ast::BinaryExpression<ast::ConstantExpression>>(
           std::unique_ptr<ast::ConstantExpression>(
-              static_cast<ast::ConstantExpression *>(lhs.release())),
+              static_cast<ast::ConstantExpression*>(lhs.release())),
           token->get(),
           std::unique_ptr<ast::ConstantExpression>(
-              static_cast<ast::ConstantExpression *>(rhs.release())));
+              static_cast<ast::ConstantExpression*>(rhs.release())));
     }
   }
 

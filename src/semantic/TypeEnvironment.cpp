@@ -36,7 +36,9 @@ TypeEnvironment::typeOf(const Variable& variable) {
 TypeEnvironment::typeOf(const ast::ConstantExpression& cexpr) {
   if (auto literal = dynamic_cast<const ast::Literal*>(&cexpr)) {
     return typeOf(*literal);
-  } else if (auto bin = dynamic_cast<const ast::BinaryExpression<ast::ConstantExpression>*>(&cexpr)) {
+  } else if (auto bin = dynamic_cast<
+                 const ast::BinaryExpression<ast::ConstantExpression>*>(
+                 &cexpr)) {
     return typeOf(*bin);
   }
 }
@@ -53,8 +55,8 @@ TypeEnvironment::typeOf(const ast::BinaryExpression<ast::Expression>& expr) {
   return *Type::getBooleanType();
 }
 
-[[nodiscard]] const Type&
-TypeEnvironment::typeOf(const ast::BinaryExpression<ast::ConstantExpression>& expr) {
+[[nodiscard]] const Type& TypeEnvironment::typeOf(
+    const ast::BinaryExpression<ast::ConstantExpression>& expr) {
   return *Type::getBooleanType();
 }
 

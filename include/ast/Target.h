@@ -7,11 +7,13 @@
 namespace chocopy::ast {
 class Target : public ASTNode, public WithLocation {
 public:
-  Target(const Token &name) : m_name(name) {};
+  Target(const Token& name) : m_name(name) {
+    assert(name.getType() == TokenType::ID);
+  };
 
   /// Get the name.
   /// @returns The name.
-  [[nodiscard]] const Token &getName() const { return m_name; }
+  [[nodiscard]] const Token& getName() const { return m_name; }
 
   /// Get the location.
   /// @returns The location.
@@ -19,9 +21,9 @@ public:
     return m_name.getLocation();
   };
 
-  std::any accept(ASTVisitor &visitor) const override;
+  std::any accept(ASTVisitor& visitor) const override;
 
 private:
-  const Token &m_name;
+  const Token& m_name;
 };
 } // namespace chocopy::ast

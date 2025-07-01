@@ -13,14 +13,14 @@ class PrettyPrinter : public ASTVisitor {
   using ASTVisitor::visit;
 
 public:
-  std::any visit(const Program &ctx) override;
-  std::any visit(const Literal &ctx) override;
-  std::any visit(const VariableDefinition &ctx) override;
-  std::any visit(const AssignmentStatement &ctx) override;
-  std::any visit(const Identifier &ctx) override;
-  std::any visit(const ast::BinaryExpression<ast::Expression> &ctx) override;
+  std::any visit(const Program& ctx) override;
+  std::any visit(const Literal& ctx) override;
+  std::any visit(const VariableDefinition& ctx) override;
+  std::any visit(const AssignmentStatement& ctx) override;
+  std::any visit(const Identifier& ctx) override;
+  std::any visit(const ast::BinaryExpression<ast::Expression>& ctx) override;
   std::any
-  visit(const ast::BinaryExpression<ast::ConstantExpression> &ctx) override;
+  visit(const ast::BinaryExpression<ast::ConstantExpression>& ctx) override;
 
 private:
   std::ostringstream out;

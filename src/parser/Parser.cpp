@@ -88,7 +88,7 @@ std::unique_ptr<ast::TypedVariable> Parser::parseTypedVariable() {
   }
   m_token_stream.advance();
 
-  const auto &name = m_token_stream.peek(-1);
+  const auto& name = m_token_stream.peek(-1);
 
   if (!m_token_stream.match(TokenType::COLON)) [[unlikely]] {
     m_diag_manager.addError(formatv("expected `:`"),
@@ -131,7 +131,8 @@ std::unique_ptr<ast::VariableDefinition> Parser::parseVariableDefinition() {
   }
   m_token_stream.advance();
 
-  return std::make_unique<ast::VariableDefinition>(std::move(typed_var_ctx), std::move(literal_ctx));
+  return std::make_unique<ast::VariableDefinition>(std::move(typed_var_ctx),
+                                                   std::move(literal_ctx));
 }
 
 std::unique_ptr<ast::Literal> Parser::parseLiteral() {
@@ -209,6 +210,7 @@ Parser::parseAssignmentStatement() {
     return nullptr;
   }
 
-  return std::make_unique<ast::AssignmentStatement>(targets, std::move(expr_ctx));
+  return std::make_unique<ast::AssignmentStatement>(targets,
+                                                    std::move(expr_ctx));
 }
 } // namespace chocopy

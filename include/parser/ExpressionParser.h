@@ -16,13 +16,16 @@ using BindingPower = std::optional<std::pair<unsigned int, unsigned int>>;
 
 class ExpressionParser {
 public:
-  explicit ExpressionParser(TokenStream& token_stream, DiagnosticsManager& diagnostics_manager) : m_token_stream(token_stream), m_diag_manager(diagnostics_manager) {}
+  explicit ExpressionParser(TokenStream& token_stream,
+                            DiagnosticsManager& diagnostics_manager)
+      : m_token_stream(token_stream), m_diag_manager(diagnostics_manager) {}
 
   /// Parse an expression,
   /// @param min_power The minimum binding power,
   /// @param expression_kind The kind of expression to parse.
   /// @returns The expression.
-  [[nodiscard]] std::unique_ptr<ast::Expression> parseExpression(unsigned int min_power = 0);
+  [[nodiscard]] std::unique_ptr<ast::Expression>
+  parseExpression(unsigned int min_power = 0);
 
 private:
   /// Parse a prefix.
@@ -31,7 +34,8 @@ private:
 
   /// Get the prefix binding power of an operator.
   /// @param op The operator.
-  /// @returns The left and right binding power as a pair. For prefix powers, the left and right are equal.
+  /// @returns The left and right binding power as a pair. For prefix powers,
+  /// the left and right are equal.
   [[nodiscard]] BindingPower getPrefixPower(TokenType op);
 
   /// Get the infix binding power of an operator.
@@ -42,4 +46,4 @@ private:
   TokenStream& m_token_stream;
   DiagnosticsManager& m_diag_manager;
 };
-}
+} // namespace chocopy
