@@ -3,6 +3,7 @@
 #include "ast/ASTVisitor.h"
 #include "ast/AssignmentStatement.h"
 #include "ast/BinaryExpression.h"
+#include "ast/ConstantExpression.h"
 #include "semantic/SymbolTable.h"
 
 #include "llvm/IR/BasicBlock.h"
@@ -34,7 +35,8 @@ public:
   virtual std::any visit(const ast::Literal& ctx) override;
   virtual std::any visit(const ast::VariableDefinition& ctx) override;
   virtual std::any visit(const ast::AssignmentStatement& ctx) override;
-  virtual std::any visit(const ast::BinaryExpression& ctx) override;
+  virtual std::any visit(const ast::BinaryExpression<ast::Expression>& ctx) override;
+  virtual std::any visit(const ast::BinaryExpression<ast::ConstantExpression>& ctx) override;
 
 private:
   std::unique_ptr<llvm::LLVMContext> m_ctx;

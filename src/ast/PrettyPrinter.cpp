@@ -4,6 +4,7 @@
 #include "ast/BinaryExpression.h"
 #include "ast/Identifier.h"
 #include "ast/VariableDefinition.h"
+#include <utility>
 
 namespace chocopy::ast {
   std::any PrettyPrinter::visit(const Program& ctx) {
@@ -62,7 +63,23 @@ namespace chocopy::ast {
     return {};
   }
 
-  std::any PrettyPrinter::visit(const BinaryExpression& ctx) {
+  std::any PrettyPrinter::visit(const BinaryExpression<ast::Expression>& ctx) {
+    out << '(';
+    ctx.getLHS()->accept(*this);
+
+    switch (ctx.getOperator().getType()) {
+      case TokenType::AND: out << " and "; break;
+      case TokenType::OR: out << " or "; break;
+      default: std::unreachable();
+    }
+
+    ctx.getRHS()->accept(*this);
+    out << ')';
+
+    return {};
+  }
+
+  std::any PrettyPrinter::visit(const BinaryExpression<ast::ConstantExpression>& ctx) {
     out << '(';
     ctx.getLHS()->accept(*this);
 
@@ -72,6 +89,15 @@ namespace chocopy::ast {
       case TokenType::MULT: out << " * "; break;
       case TokenType::DIV: out << " // "; break;
       case TokenType::MOD: out << " % "; break;
+      case TokenType::AND: out << " and "; break;
+      case TokenType::OR: out << " or "; break;
+      case TokenType::EQUAL: out << " == "; break;
+      case TokenType::NEQUAL: out << " != "; break;
+      case TokenType::LESS: out << " < "; break;
+      case TokenType::GREAT: out << " > "; break;
+      case TokenType::LESSEQ: out << " <= "; break;
+      case TokenType::GREATEQ: out << " >= "; break;
+      default: std::unreachable();
     }
 
     ctx.getRHS()->accept(*this);

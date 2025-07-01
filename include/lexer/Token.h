@@ -44,13 +44,13 @@ public:
 #endif
   };
 
-  constexpr bool operator==(const Token& other) const {
+  constexpr bool operator==(const Token &other) const {
     return m_value == other.getValue() && m_type == other.getType();
   }
 
-  [[nodiscard]] const TokenValue& getValue() const { return m_value; };
-  [[nodiscard]] const llvm::SMRange& getLocation() const { return m_location; };
-  [[nodiscard]] const TokenType& getType() const { return m_type; };
+  [[nodiscard]] const TokenValue &getValue() const { return m_value; };
+  [[nodiscard]] const llvm::SMRange &getLocation() const { return m_location; };
+  [[nodiscard]] const TokenType &getType() const { return m_type; };
 
   [[nodiscard]] bool isLiteral() const {
     return m_type == TokenType::NONE || m_type == TokenType::FALSE ||
@@ -64,16 +64,15 @@ public:
            m_type == TokenType::MOD || m_type == TokenType::EQUAL ||
            m_type == TokenType::NEQUAL || m_type == TokenType::LESSEQ ||
            m_type == TokenType::GREATEQ || m_type == TokenType::LESS ||
-           m_type == TokenType::GREAT || m_type == TokenType::IS;
+           m_type == TokenType::GREAT || m_type == TokenType::IS ||
+           m_type == TokenType::AND || m_type == TokenType::OR;
   }
 
   [[nodiscard]] bool isUnaryOp() const {
     return m_type == TokenType::MINUS || m_type == TokenType::NOT;
   }
 
-  [[nodiscard]] bool isIdentifier() const {
-    return m_type == TokenType::ID;
-  }
+  [[nodiscard]] bool isIdentifier() const { return m_type == TokenType::ID; }
 
 private:
   const TokenValue m_value;

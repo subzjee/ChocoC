@@ -1,6 +1,9 @@
-#include "ast/BinaryExpression.h"
 #include "ast/ASTVisitor.h"
+#include "ast/BinaryExpression.h"
+#include "ast/ConstantExpression.h"
+#include "ast/Expression.h"
 
 namespace chocopy::ast {
-  std::any BinaryExpression::accept(ASTVisitor& visitor) const { return visitor.visit(*this); }
+  template<> std::any BinaryExpression<ast::ConstantExpression>::accept(ASTVisitor& visitor) const { return visitor.visit(*this); }
+  template<> std::any BinaryExpression<ast::Expression>::accept(ASTVisitor& visitor) const { return visitor.visit(*this); }
 }

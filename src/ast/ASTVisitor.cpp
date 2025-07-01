@@ -1,6 +1,8 @@
 #include "ast/ASTVisitor.h"
 #include "ast/AssignmentStatement.h"
 #include "ast/BinaryExpression.h"
+#include "ast/ConstantExpression.h"
+#include "ast/Expression.h"
 #include "ast/Identifier.h"
 #include "ast/Literal.h"
 #include "ast/Program.h"
@@ -42,7 +44,14 @@ std::any ASTVisitor::visit(const ast::Type& ctx) { return {}; }
 
 std::any ASTVisitor::visit(const ast::Literal& ctx) { return {}; }
 
-std::any ASTVisitor::visit(const ast::BinaryExpression& ctx) {
+std::any ASTVisitor::visit(const ast::BinaryExpression<ast::Expression>& ctx) {
+  ctx.getLHS()->accept(*this);
+  ctx.getRHS()->accept(*this);
+
+  return {};
+}
+
+std::any ASTVisitor::visit(const ast::BinaryExpression<ast::ConstantExpression>& ctx) {
   ctx.getLHS()->accept(*this);
   ctx.getRHS()->accept(*this);
 

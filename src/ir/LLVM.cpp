@@ -1,5 +1,6 @@
 #include "ir/LLVM.h"
 #include "ast/BinaryExpression.h"
+#include "ast/ConstantExpression.h"
 #include "ast/Identifier.h"
 #include <any>
 #include <utility>
@@ -84,7 +85,20 @@ std::any IRGen::visit(const ast::AssignmentStatement& ctx) {
   return {};
 }
 
-std::any IRGen::visit(const ast::BinaryExpression& ctx) {
+std::any IRGen::visit(const ast::BinaryExpression<ast::Expression>& ctx) {
+  llvm::Value* lhs = std::any_cast<llvm::Value*>(ctx.getLHS()->accept(*this));
+  llvm::Value* rhs = std::any_cast<llvm::Value*>(ctx.getRHS()->accept(*this));
+
+  switch (ctx.getOperator().getType()) {
+    case TokenType::AND: return m_builder.CreateAnd(lhs, rhs);
+    case TokenType::OR: return m_builder.CreateOr(lhs, rhs);
+    default: std::unreachable();
+  }
+
+  return {};
+}
+
+std::any IRGen::visit(const ast::BinaryExpression<ast::ConstantExpression>& ctx) {
   llvm::Value* lhs = std::any_cast<llvm::Value*>(ctx.getLHS()->accept(*this));
   llvm::Value* rhs = std::any_cast<llvm::Value*>(ctx.getRHS()->accept(*this));
 
@@ -94,8 +108,6 @@ std::any IRGen::visit(const ast::BinaryExpression& ctx) {
     case TokenType::MULT: return m_builder.CreateMul(lhs, rhs);
     case TokenType::DIV: return m_builder.CreateSDiv(lhs, rhs);
     case TokenType::MOD: return m_builder.CreateSRem(lhs, rhs);
-    case TokenType::AND: return m_builder.CreateAnd(lhs, rhs);
-    case TokenType::OR: return m_builder.CreateOr(lhs, rhs);
     case TokenType::EQUAL: return m_builder.CreateICmpEQ(lhs, rhs);
     case TokenType::NEQUAL: return m_builder.CreateICmpNE(lhs, rhs);
     case TokenType::LESS: return m_builder.CreateICmpSLT(lhs, rhs);

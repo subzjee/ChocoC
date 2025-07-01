@@ -21,12 +21,24 @@ ExpressionParser::parseExpression(unsigned int min_power) {
     if (!binding_power || binding_power->first < min_power) {
       break;
     }
-    
-    if (token->get().isBinOp()) {
+
+    if (m_token_stream.match(TokenType::AND, TokenType::OR)) {
       m_token_stream.advance();
 
-      auto rhs =
-          parseExpression(binding_power->second);
+      auto rhs = parseExpression(binding_power->second);
+
+      if (!rhs) {
+        m_diag_manager.addError("expected an expression",
+                                m_token_stream.peek()->get().getLocation());
+        return nullptr;
+      }
+
+      lhs = std::make_unique<ast::BinaryExpression<ast::Expression>>(std::move(lhs), token->get(), std::move(rhs));
+
+    } else if (token->get().isBinOp()) {
+      m_token_stream.advance();
+
+      auto rhs = parseExpression(binding_power->second);
 
       if (!rhs) {
         m_diag_manager.addError("expected a constant expression",
@@ -46,12 +58,12 @@ ExpressionParser::parseExpression(unsigned int min_power) {
         return nullptr;
       }
 
-      lhs = std::make_unique<ast::BinaryExpression>(
+      lhs = std::make_unique<ast::BinaryExpression<ast::ConstantExpression>>(
           std::unique_ptr<ast::ConstantExpression>(
-              static_cast<ast::ConstantExpression*>(lhs.release())),
+              static_cast<ast::ConstantExpression *>(lhs.release())),
           token->get(),
           std::unique_ptr<ast::ConstantExpression>(
-              static_cast<ast::ConstantExpression*>(rhs.release())));
+              static_cast<ast::ConstantExpression *>(rhs.release())));
     }
   }
 
@@ -79,7 +91,7 @@ ExpressionParser::parseExpression(unsigned int min_power) {
 
     if (!m_token_stream.match(TokenType::CLOSEPAREN)) {
       m_diag_manager.addError("expected `)`",
-                                m_token_stream.peek()->get().getLocation());
+                              m_token_stream.peek()->get().getLocation());
       return nullptr;
     }
     m_token_stream.advance();
@@ -90,8 +102,7 @@ ExpressionParser::parseExpression(unsigned int min_power) {
   return nullptr;
 }
 
-[[nodiscard]] BindingPower
-ExpressionParser::getPrefixPower(TokenType op) {
+[[nodiscard]] BindingPower ExpressionParser::getPrefixPower(TokenType op) {
   switch (op) {
   case TokenType::NOT:
     return {{40, 40}};
@@ -102,8 +113,7 @@ ExpressionParser::getPrefixPower(TokenType op) {
   }
 }
 
-[[nodiscard]] BindingPower
-ExpressionParser::getInfixPower(TokenType op) {
+[[nodiscard]] BindingPower ExpressionParser::getInfixPower(TokenType op) {
   switch (op) {
   case TokenType::OR:
     return {{20, 21}};
