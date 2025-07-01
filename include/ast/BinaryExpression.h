@@ -20,7 +20,7 @@ public:
     return {m_lhs->getLocation().Start, m_rhs->getLocation().End};
   }
 
-  std::any accept(ASTVisitor& visitor) override;
+  std::any accept(ASTVisitor& visitor) const override;
 
 private:
   std::unique_ptr<ConstantExpression> m_lhs;

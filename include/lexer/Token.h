@@ -67,6 +67,10 @@ public:
            m_type == TokenType::GREAT || m_type == TokenType::IS;
   }
 
+  [[nodiscard]] bool isUnaryOp() const {
+    return m_type == TokenType::MINUS || m_type == TokenType::NOT;
+  }
+
   [[nodiscard]] bool isIdentifier() const {
     return m_type == TokenType::ID;
   }

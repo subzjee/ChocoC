@@ -23,7 +23,7 @@ public:
     return m_children;
   };
 
-  std::any accept(ASTVisitor& visitor) override;
+  std::any accept(ASTVisitor& visitor) const override;
 
 private:
   const ProgramChildren m_children;

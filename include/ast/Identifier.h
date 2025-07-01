@@ -22,7 +22,7 @@ public:
     return m_identifier.getLocation();
   };
 
-  std::any accept(ASTVisitor& visitor) override;
+  std::any accept(ASTVisitor& visitor) const override;
 
 private:
   const Token& m_identifier;

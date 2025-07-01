@@ -2,5 +2,5 @@
 #include "ast/ASTVisitor.h"
 
 namespace chocopy::ast {
-  std::any BinaryExpression::accept(ASTVisitor& visitor) { return visitor.visit(*this); }
+  std::any BinaryExpression::accept(ASTVisitor& visitor) const { return visitor.visit(*this); }
 }

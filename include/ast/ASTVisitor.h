@@ -2,6 +2,7 @@
 
 #include "ast/AssignmentStatement.h"
 #include "ast/BinaryExpression.h"
+#include "ast/ConstantExpression.h"
 #include "ast/Identifier.h"
 #include "ast/Program.h"
 #include "ast/VariableDefinition.h"

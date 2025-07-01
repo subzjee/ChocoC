@@ -2,6 +2,7 @@
 #include "ast/BinaryExpression.h"
 #include "ast/Identifier.h"
 #include <any>
+#include <utility>
 
 namespace chocopy {
 void IRGen::prologue() {
@@ -76,6 +77,7 @@ std::any IRGen::visit(const ast::AssignmentStatement& ctx) {
         std::get<std::string>(target.getName().getValue()));
     const auto& variable = std::get<Variable>(entry->get());
 
+    assert(variable.allocation && "Variable allocation is nullptr");
     m_builder.CreateStore(expr, variable.allocation);
   }
 
@@ -92,6 +94,15 @@ std::any IRGen::visit(const ast::BinaryExpression& ctx) {
     case TokenType::MULT: return m_builder.CreateMul(lhs, rhs);
     case TokenType::DIV: return m_builder.CreateSDiv(lhs, rhs);
     case TokenType::MOD: return m_builder.CreateSRem(lhs, rhs);
+    case TokenType::AND: return m_builder.CreateAnd(lhs, rhs);
+    case TokenType::OR: return m_builder.CreateOr(lhs, rhs);
+    case TokenType::EQUAL: return m_builder.CreateICmpEQ(lhs, rhs);
+    case TokenType::NEQUAL: return m_builder.CreateICmpNE(lhs, rhs);
+    case TokenType::LESS: return m_builder.CreateICmpSLT(lhs, rhs);
+    case TokenType::GREAT: return m_builder.CreateICmpSGT(lhs, rhs);
+    case TokenType::LESSEQ: return m_builder.CreateICmpSLE(lhs, rhs);
+    case TokenType::GREATEQ: return m_builder.CreateICmpSGE(lhs, rhs);
+    default: std::unreachable();
   }
 
   return {};

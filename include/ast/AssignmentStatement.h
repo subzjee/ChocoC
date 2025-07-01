@@ -19,7 +19,7 @@ public:
 
   /// Get all targets to be assigned to.
   /// @returns The targets.
-  [[nodiscard]] const llvm::ArrayRef<Target> getTargets() const {
+  [[nodiscard]] llvm::ArrayRef<Target> getTargets() const {
     return m_targets;
   }
 
@@ -33,7 +33,7 @@ public:
     return {m_targets.front().getLocation().Start, m_expr->getLocation().End};
   }
 
-  std::any accept(ASTVisitor& visitor) override;
+  std::any accept(ASTVisitor& visitor) const override;
 
 private:
   const std::vector<Target> m_targets;

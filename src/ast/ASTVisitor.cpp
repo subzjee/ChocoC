@@ -28,13 +28,26 @@ std::any ASTVisitor::visit(const ast::VariableDefinition& ctx) {
   return {};
 }
 
-std::any ASTVisitor::visit(const ast::AssignmentStatement& ctx) { return {}; }
+std::any ASTVisitor::visit(const ast::AssignmentStatement& ctx) {
+  for(auto& target : ctx.getTargets()) {
+    target.accept(*this);
+  }
+  
+  ctx.getExpr()->accept(*this);
+
+  return {};
+}
 
 std::any ASTVisitor::visit(const ast::Type& ctx) { return {}; }
 
 std::any ASTVisitor::visit(const ast::Literal& ctx) { return {}; }
 
-std::any ASTVisitor::visit(const ast::BinaryExpression& ctx) { return {}; }
+std::any ASTVisitor::visit(const ast::BinaryExpression& ctx) {
+  ctx.getLHS()->accept(*this);
+  ctx.getRHS()->accept(*this);
+
+  return {};
+}
 
 std::any ASTVisitor::visit(const ast::Target& ctx) { return {}; }
 

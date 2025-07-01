@@ -70,11 +70,11 @@ struct Type {
 
 struct Variable {
   Variable(const llvm::StringRef name, const Type& type)
-      : name(name), type(type) {};
+      : name(name), type(type), allocation(nullptr) {};
 
   const llvm::StringRef name;
   const Type& type;
-  llvm::Value* allocation = nullptr;
+  llvm::Value* allocation;
 };
 
 using SymbolTableEntry = std::variant<Variable, Type>;
