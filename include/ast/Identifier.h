@@ -6,7 +6,7 @@
 namespace chocopy::ast {
 class Identifier : public ConstantExpression {
 public:
-  Identifier(const Token& identifier) : m_identifier(identifier) {
+  Identifier(const Token &identifier) : m_identifier(identifier) {
     assert(identifier.getType() == TokenType::ID);
   };
 
@@ -22,9 +22,9 @@ public:
     return m_identifier.getLocation();
   };
 
-  std::any accept(ASTVisitor& visitor) const override;
+  std::any accept(ASTVisitor &visitor) const override;
 
 private:
-  const Token& m_identifier;
+  const Token &m_identifier;
 };
 } // namespace chocopy::ast

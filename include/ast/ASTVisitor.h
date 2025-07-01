@@ -14,14 +14,15 @@ namespace chocopy {
 struct ASTVisitor {
   virtual ~ASTVisitor() = default;
 
-  virtual std::any visit(const ast::Program& ctx);
-  virtual std::any visit(const ast::VariableDefinition& ctx);
-  virtual std::any visit(const ast::AssignmentStatement& ctx);
-  virtual std::any visit(const ast::Type& ctx);
-  virtual std::any visit(const ast::Literal& ctx);
-  virtual std::any visit(const ast::BinaryExpression<ast::Expression>& ctx);
-  virtual std::any visit(const ast::BinaryExpression<ast::ConstantExpression>& ctx);
-  virtual std::any visit(const ast::Target& ctx);
-  virtual std::any visit(const ast::Identifier& ctx);
+  virtual std::any visit(const ast::Program &ctx);
+  virtual std::any visit(const ast::VariableDefinition &ctx);
+  virtual std::any visit(const ast::AssignmentStatement &ctx);
+  virtual std::any visit(const ast::Type &ctx);
+  virtual std::any visit(const ast::Literal &ctx);
+  virtual std::any visit(const ast::BinaryExpression<ast::Expression> &ctx);
+  virtual std::any
+  visit(const ast::BinaryExpression<ast::ConstantExpression> &ctx);
+  virtual std::any visit(const ast::Target &ctx);
+  virtual std::any visit(const ast::Identifier &ctx);
 };
 } // namespace chocopy

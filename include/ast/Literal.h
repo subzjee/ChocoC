@@ -7,13 +7,11 @@
 namespace chocopy::ast {
 class Literal : public ConstantExpression {
 public:
-  Literal(const Token& value) : m_value(value) {
-    assert(value.isLiteral());
-  };
+  Literal(const Token &value) : m_value(value) { assert(value.isLiteral()); };
 
   /// Get the value of the literal.
   /// @returns The value.
-  [[nodiscard]] const TokenValue& getValue() const {
+  [[nodiscard]] const TokenValue &getValue() const {
     return m_value.getValue();
   };
 
@@ -21,13 +19,20 @@ public:
   /// @return The type.
   [[nodiscard]] const llvm::StringRef getType() const {
     switch (m_value.getType()) {
-      case TokenType::TRUE: [[fallthrough]];
-      case TokenType::FALSE: return "bool";
-      case TokenType::IDSTRING: [[fallthrough]];
-      case TokenType::STRING: return "str";
-      case TokenType::INTLIT: return "int";
-      case TokenType::NONE: return "<None>";
-      default: std::unreachable();
+    case TokenType::TRUE:
+      [[fallthrough]];
+    case TokenType::FALSE:
+      return "bool";
+    case TokenType::IDSTRING:
+      [[fallthrough]];
+    case TokenType::STRING:
+      return "str";
+    case TokenType::INTLIT:
+      return "int";
+    case TokenType::NONE:
+      return "<None>";
+    default:
+      std::unreachable();
     }
   };
 
@@ -37,9 +42,9 @@ public:
     return m_value.getLocation();
   };
 
-  std::any accept(ASTVisitor& visitor) const override;
+  std::any accept(ASTVisitor &visitor) const override;
 
 private:
-  const Token& m_value;
+  const Token &m_value;
 };
 } // namespace chocopy::ast

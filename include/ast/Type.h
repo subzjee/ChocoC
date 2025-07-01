@@ -7,12 +7,12 @@
 namespace chocopy::ast {
 class Type : public ASTNode, public WithLocation {
 public:
-  Type(const Token& base_type, unsigned int dimension = 0)
+  Type(const Token &base_type, unsigned int dimension = 0)
       : m_base_type(base_type), m_dimension(dimension) {};
 
   /// Get the base type.
   /// @returns The base type.
-  [[nodiscard]] const Token& getBaseType() const { return m_base_type; };
+  [[nodiscard]] const Token &getBaseType() const { return m_base_type; };
 
   /// Get the dimension of the type.
   /// @returns The dimension.
@@ -29,10 +29,10 @@ public:
     return m_base_type.getLocation();
   };
 
-  std::any accept(ASTVisitor& visitor) const override;
+  std::any accept(ASTVisitor &visitor) const override;
 
 private:
-  const Token& m_base_type;
+  const Token &m_base_type;
   const unsigned int m_dimension;
 };
 } // namespace chocopy::ast

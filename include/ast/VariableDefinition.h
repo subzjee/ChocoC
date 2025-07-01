@@ -17,22 +17,22 @@ public:
 
   /// Get the name of the variable.
   /// @returns The name.
-  [[nodiscard]] const Token& getName() const { return m_name; };
+  [[nodiscard]] const Token &getName() const { return m_name; };
 
   /// Get the type of the variable.
   /// @returns The type.
-  [[nodiscard]] const std::unique_ptr<Type>& getType() const { return m_type; };
+  [[nodiscard]] const std::unique_ptr<Type> &getType() const { return m_type; };
 
   /// Get the value of the variable.
   /// @returns The value.
-  [[nodiscard]] const std::unique_ptr<Literal>& getValue() const {
+  [[nodiscard]] const std::unique_ptr<Literal> &getValue() const {
     return m_value;
   };
 
-  std::any accept(ASTVisitor& visitor) const override;
+  std::any accept(ASTVisitor &visitor) const override;
 
 private:
-  const Token& m_name;
+  const Token &m_name;
   std::unique_ptr<Type> m_type;
   std::unique_ptr<Literal> m_value;
 };
