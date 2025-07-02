@@ -3,11 +3,37 @@
 #include "ast/ConstantExpression.h"
 #include "lexer/Token.h"
 #include <utility>
+#include <variant>
 
 namespace chocopy::ast {
 class Literal : public ConstantExpression {
 public:
-  Literal(const Token& value) : m_value(value) { assert(value.isLiteral()); };
+  Literal(const Token& value) : m_value(value) {
+    assert(value.isLiteral());
+
+#ifndef NDEBUG
+    switch (value.getType()) {
+    case TokenType::STRING:
+      [[fallthrough]];
+    case TokenType::IDSTRING:
+      assert(std::holds_alternative<std::string>(value.getValue()));
+      break;
+    case TokenType::TRUE:
+      [[fallthrough]];
+    case TokenType::FALSE:
+      assert(std::holds_alternative<bool>(value.getValue()));
+      break;
+    case TokenType::INTLIT:
+      assert(std::holds_alternative<std::int32_t>(value.getValue()));
+      break;
+    case TokenType::NONE:
+      assert(std::holds_alternative<std::monostate>(value.getValue()));
+      break;
+    default:
+      std::unreachable();
+    }
+#endif
+  };
 
   /// Get the value of the literal.
   /// @returns The value.

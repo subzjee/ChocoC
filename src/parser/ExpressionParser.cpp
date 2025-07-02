@@ -1,10 +1,13 @@
 #include "parser/ExpressionParser.h"
 #include "ast/BinaryExpression.h"
 #include "ast/ConstantExpression.h"
+#include "ast/GroupingExpression.h"
 #include "ast/Identifier.h"
 #include "ast/Literal.h"
+#include "ast/UnaryExpression.h"
 #include "parser/ExpressionKind.h"
 #include <llvm-21/llvm/Support/raw_ostream.h>
+#include <memory>
 
 namespace chocopy {
 [[nodiscard]] std::unique_ptr<ast::Expression>
@@ -87,7 +90,7 @@ ExpressionParser::parseExpression(unsigned int min_power) {
     m_token_stream.advance();
     return std::make_unique<ast::Identifier>(*token);
   } else if (m_token_stream.match(TokenType::OPENPAREN)) {
-    m_token_stream.advance();
+    auto left_paren = m_token_stream.advance();
     auto expr = parseExpression(0);
 
     if (!m_token_stream.match(TokenType::CLOSEPAREN)) {
@@ -95,9 +98,29 @@ ExpressionParser::parseExpression(unsigned int min_power) {
                               m_token_stream.peek()->get().getLocation());
       return nullptr;
     }
-    m_token_stream.advance();
+    auto right_paren = m_token_stream.advance();
 
-    return expr;
+    return std::make_unique<ast::GroupingExpression>(left_paren->get(), std::move(expr), right_paren->get());
+  } else if (m_token_stream.match(TokenType::MINUS)) {
+    const auto& op = m_token_stream.advance();
+    auto rhs = parseExpression(getPrefixPower(op->get().getType())->second);
+
+    if (!dynamic_cast<ast::ConstantExpression*>(rhs.get())) {
+      m_diag_manager.addError("expected a constant expression",
+                              rhs->getLocation());
+      return nullptr;
+    }
+
+    return std::make_unique<ast::UnaryExpression<ast::ConstantExpression>>(
+        op->get(),
+        std::unique_ptr<ast::ConstantExpression>(
+            static_cast<ast::ConstantExpression*>(rhs.release())));
+  } else if (m_token_stream.match(TokenType::NOT)) {
+    const auto& op = m_token_stream.advance();
+    auto rhs = parseExpression(getPrefixPower(op->get().getType())->second);
+
+    return std::make_unique<ast::UnaryExpression<ast::Expression>>(
+        op->get(), std::move(rhs));
   }
 
   return nullptr;

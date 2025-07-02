@@ -3,13 +3,16 @@ add_library(chocopc_lib
     TokenStream.cpp
     ast/AssignmentStatement.cpp
     ast/ASTVisitor.cpp
+    ast/Block.cpp
     ast/BinaryExpression.cpp
+    ast/GroupingExpression.cpp
     ast/Identifier.cpp
     ast/Literal.cpp
     ast/PrettyPrinter.cpp
     ast/Program.cpp
     ast/Target.cpp
     ast/Type.cpp
+    ast/UnaryExpression.cpp
     ast/VariableDefinition.cpp
     ir/LLVM.cpp
     lexer/Lexer.cpp

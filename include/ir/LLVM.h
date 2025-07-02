@@ -4,6 +4,9 @@
 #include "ast/AssignmentStatement.h"
 #include "ast/BinaryExpression.h"
 #include "ast/ConstantExpression.h"
+#include "ast/GroupingExpression.h"
+#include "ast/Identifier.h"
+#include "ast/UnaryExpression.h"
 #include "semantic/SymbolTable.h"
 
 #include "llvm/IR/BasicBlock.h"
@@ -39,6 +42,12 @@ public:
   visit(const ast::BinaryExpression<ast::Expression>& ctx) override;
   virtual std::any
   visit(const ast::BinaryExpression<ast::ConstantExpression>& ctx) override;
+  virtual std::any
+  visit(const ast::UnaryExpression<ast::Expression>& ctx) override;
+  virtual std::any
+  visit(const ast::UnaryExpression<ast::ConstantExpression>& ctx) override;
+  virtual std::any visit(const ast::GroupingExpression& ctx) override;
+  virtual std::any visit(const ast::Identifier& ctx) override;
 
 private:
   std::unique_ptr<llvm::LLVMContext> m_ctx;
@@ -47,5 +56,7 @@ private:
 
   SymbolTable& m_symbol_table;
   unsigned int scope = 0;
+
+  llvm::StringMap<llvm::GlobalValue*> m_string_allocations{};
 };
 } // namespace chocopy

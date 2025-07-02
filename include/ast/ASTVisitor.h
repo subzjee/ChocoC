@@ -2,10 +2,13 @@
 
 #include "ast/AssignmentStatement.h"
 #include "ast/BinaryExpression.h"
+#include "ast/Block.h"
 #include "ast/ConstantExpression.h"
 #include "ast/Expression.h"
+#include "ast/GroupingExpression.h"
 #include "ast/Identifier.h"
 #include "ast/Program.h"
+#include "ast/UnaryExpression.h"
 #include "ast/VariableDefinition.h"
 
 #include <any>
@@ -22,7 +25,12 @@ struct ASTVisitor {
   virtual std::any visit(const ast::BinaryExpression<ast::Expression>& ctx);
   virtual std::any
   visit(const ast::BinaryExpression<ast::ConstantExpression>& ctx);
+  virtual std::any visit(const ast::UnaryExpression<ast::Expression>& ctx);
+  virtual std::any
+  visit(const ast::UnaryExpression<ast::ConstantExpression>& ctx);
   virtual std::any visit(const ast::Target& ctx);
   virtual std::any visit(const ast::Identifier& ctx);
+  virtual std::any visit(const ast::Block& ctx);
+  virtual std::any visit(const ast::GroupingExpression& ctx);
 };
 } // namespace chocopy

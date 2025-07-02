@@ -1,9 +1,12 @@
 #include "ir/LLVM.h"
 #include "ast/BinaryExpression.h"
 #include "ast/ConstantExpression.h"
+#include "ast/GroupingExpression.h"
 #include "ast/Identifier.h"
+#include "semantic/SymbolTable.h"
 #include <any>
 #include <utility>
+#include <variant>
 
 namespace chocopy {
 void IRGen::prologue() {
@@ -40,12 +43,20 @@ std::any IRGen::visit(const ast::Program& ctx) {
 std::any IRGen::visit(const ast::Literal& ctx) {
   if (ctx.getType() == "int") {
     return static_cast<llvm::Value*>(
-        llvm::ConstantInt::get(Type::getIntegerType()->toLLVMType(*m_ctx),
+        llvm::ConstantInt::get(llvm::Type::getInt32Ty(*m_ctx),
                                std::get<std::int32_t>(ctx.getValue())));
   } else if (ctx.getType() == "bool") {
     return static_cast<llvm::Value*>(
-        llvm::ConstantInt::get(Type::getBooleanType()->toLLVMType(*m_ctx),
+        llvm::ConstantInt::get(llvm::Type::getInt1Ty(*m_ctx),
                                std::get<bool>(ctx.getValue())));
+  } else if (ctx.getType() == "str") {
+    const std::string text = std::get<std::string>(ctx.getValue());
+
+    if (!m_string_allocations.contains(text)) {
+      m_string_allocations[text] = m_builder.CreateGlobalString(std::get<std::string>(ctx.getValue()), "", 0, m_module.get());
+    }
+
+    return static_cast<llvm::Value*>(m_string_allocations[text]);
   }
 
   return {};
@@ -55,8 +66,6 @@ std::any IRGen::visit(const ast::VariableDefinition& ctx) {
   const auto name = std::get<std::string>(ctx.getName().getValue());
   auto& variable = std::get<Variable>(m_symbol_table.getEntry(name)->get());
 
-  llvm::Type* llvm_type = variable.type.toLLVMType(*m_ctx);
-
   // A variable definition's value can only be a literal, which we know is a
   // Constant* so we static_cast it back to a Constant*.
   llvm::Constant* init = static_cast<llvm::Constant*>(
@@ -64,7 +73,7 @@ std::any IRGen::visit(const ast::VariableDefinition& ctx) {
 
   if (scope == 0) {
     llvm::GlobalVariable* g = new llvm::GlobalVariable(
-        *m_module, llvm_type, false, llvm::GlobalValue::ExternalLinkage, init,
+        *m_module, init->getType(), false, llvm::GlobalValue::ExternalLinkage, init,
         name);
     variable.allocation = g;
   }
@@ -136,5 +145,46 @@ IRGen::visit(const ast::BinaryExpression<ast::ConstantExpression>& ctx) {
   }
 
   return {};
+}
+
+std::any IRGen::visit(const ast::UnaryExpression<ast::Expression>& ctx) {
+  llvm::Value* rhs = std::any_cast<llvm::Value*>(ctx.getRHS()->accept(*this));
+
+  switch (ctx.getOperator().getType()) {
+  case TokenType::NOT:
+    return m_builder.CreateNot(rhs);
+  default:
+    std::unreachable();
+  }
+
+  return {};
+}
+
+std::any
+IRGen::visit(const ast::UnaryExpression<ast::ConstantExpression>& ctx) {
+  llvm::Value* rhs = std::any_cast<llvm::Value*>(ctx.getRHS()->accept(*this));
+
+  switch (ctx.getOperator().getType()) {
+  case TokenType::MINUS:
+    return m_builder.CreateNeg(rhs);
+  default:
+    std::unreachable();
+  }
+
+  return {};
+}
+
+std::any IRGen::visit(const ast::GroupingExpression& ctx) {
+  return ctx.getExpression()->accept(*this);
+}
+
+std::any IRGen::visit(const ast::Identifier& ctx) {
+  const auto entry = m_symbol_table.getEntry(ctx.getName());
+  assert(entry && "Identifier not stored in symbol table");
+  assert(std::holds_alternative<Variable>(entry->get()) && "Entry is not a variable");
+
+  auto variable = std::get<Variable>(entry->get());
+
+  return static_cast<llvm::Value*>(m_builder.CreateLoad(variable.allocation->getType(), variable.allocation));
 }
 } // namespace chocopy

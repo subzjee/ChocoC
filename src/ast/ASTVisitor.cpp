@@ -59,7 +59,34 @@ ASTVisitor::visit(const ast::BinaryExpression<ast::ConstantExpression>& ctx) {
   return {};
 }
 
+std::any ASTVisitor::visit(const ast::UnaryExpression<ast::Expression>& ctx) {
+  ctx.getRHS()->accept(*this);
+
+  return {};
+}
+
+std::any
+ASTVisitor::visit(const ast::UnaryExpression<ast::ConstantExpression>& ctx) {
+  ctx.getRHS()->accept(*this);
+
+  return {};
+}
+
 std::any ASTVisitor::visit(const ast::Target& ctx) { return {}; }
 
 std::any ASTVisitor::visit(const ast::Identifier& ctx) { return {}; }
+
+std::any ASTVisitor::visit(const ast::Block& ctx) {
+  for (const auto& statement : ctx.getStatements()) {
+    statement->accept(*this);
+  }
+
+  return {};
+}
+
+std::any ASTVisitor::visit(const ast::GroupingExpression& ctx) {
+  ctx.getExpression()->accept(*this);
+
+  return {};
+}
 } // namespace chocopy

@@ -3,7 +3,6 @@
 #include "DiagnosticsManager.h"
 #include "TokenStream.h"
 #include "ast/AssignmentStatement.h"
-#include "ast/ConstantExpression.h"
 #include "ast/Expression.h"
 #include "ast/Literal.h"
 #include "ast/Program.h"

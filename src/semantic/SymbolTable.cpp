@@ -20,12 +20,4 @@ SymbolTable::getEntry(const llvm::StringRef name) {
 
   return it->second;
 }
-
-llvm::Type* Type::toLLVMType(llvm::LLVMContext& ctx) const {
-  if (isInteger()) {
-    return llvm::Type::getInt32Ty(ctx);
-  } else if (isBoolean()) {
-    return llvm::Type::getInt1Ty(ctx);
-  }
-}
 } // namespace chocopy

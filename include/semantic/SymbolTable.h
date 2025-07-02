@@ -56,8 +56,6 @@ struct Type {
     return type;
   }
 
-  llvm::Type* toLLVMType(llvm::LLVMContext& ctx) const;
-
   [[nodiscard]] std::string toString() const {
     return std::string(dimension, '[') + base_type.str() +
            std::string(dimension, ']');

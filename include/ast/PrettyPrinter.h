@@ -21,6 +21,9 @@ public:
   std::any visit(const ast::BinaryExpression<ast::Expression>& ctx) override;
   std::any
   visit(const ast::BinaryExpression<ast::ConstantExpression>& ctx) override;
+  std::any visit(const ast::UnaryExpression<ast::Expression>& ctx) override;
+  std::any
+  visit(const ast::UnaryExpression<ast::ConstantExpression>& ctx) override;
 
 private:
   std::ostringstream out;
