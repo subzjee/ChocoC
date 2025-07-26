@@ -5,6 +5,8 @@
 #include "ast/Identifier.h"
 #include "semantic/SymbolTable.h"
 #include <any>
+#include <llvm-21/llvm/IR/GlobalVariable.h>
+#include <llvm-21/llvm/Support/Casting.h>
 #include <utility>
 #include <variant>
 
@@ -42,11 +44,11 @@ std::any IRGen::visit(const ast::Program& ctx) {
 
 std::any IRGen::visit(const ast::Literal& ctx) {
   if (ctx.getType() == "int") {
-    return static_cast<llvm::Value*>(
+    return cast<llvm::Value>(
         llvm::ConstantInt::get(llvm::Type::getInt32Ty(*m_ctx),
                                std::get<std::int32_t>(ctx.getValue())));
   } else if (ctx.getType() == "bool") {
-    return static_cast<llvm::Value*>(
+    return cast<llvm::Value>(
         llvm::ConstantInt::get(llvm::Type::getInt1Ty(*m_ctx),
                                std::get<bool>(ctx.getValue())));
   } else if (ctx.getType() == "str") {
@@ -56,7 +58,7 @@ std::any IRGen::visit(const ast::Literal& ctx) {
       m_string_allocations[text] = m_builder.CreateGlobalString(std::get<std::string>(ctx.getValue()), "", 0, m_module.get());
     }
 
-    return static_cast<llvm::Value*>(m_string_allocations[text]);
+    return cast<llvm::Value>(m_string_allocations[text]);
   }
 
   return {};
@@ -86,7 +88,7 @@ std::any IRGen::visit(const ast::AssignmentStatement& ctx) {
 
   for (const auto& target : ctx.getTargets()) {
     const auto& entry = m_symbol_table.getEntry(
-        std::get<std::string>(target.getName().getValue()));
+        std::get<std::string>(target->getName().getValue()));
     const auto& variable = std::get<Variable>(entry->get());
 
     assert(variable.allocation && "Variable allocation is nullptr");
@@ -185,6 +187,10 @@ std::any IRGen::visit(const ast::Identifier& ctx) {
 
   auto variable = std::get<Variable>(entry->get());
 
-  return static_cast<llvm::Value*>(m_builder.CreateLoad(variable.allocation->getType(), variable.allocation));
+  if (auto global = llvm::dyn_cast<llvm::GlobalVariable>(variable.allocation)) {
+    return cast<llvm::Value>(m_builder.CreateLoad(global->getValueType(), variable.allocation));
+  }
+
+  return cast<llvm::Value>(m_builder.CreateLoad(variable.allocation->getType(), variable.allocation));
 }
 } // namespace chocopy
