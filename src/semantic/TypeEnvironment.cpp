@@ -3,6 +3,7 @@
 #include "ast/ConstantExpression.h"
 #include "ast/Expression.h"
 #include "ast/Literal.h"
+#include <utility>
 
 namespace chocopy {
 [[nodiscard]] const Type& TypeEnvironment::typeOf(const ast::Literal& ctx) {
@@ -47,6 +48,10 @@ TypeEnvironment::typeOf(const ast::ConstantExpression& cexpr) {
   if (auto constant_expression =
           dynamic_cast<const ast::ConstantExpression*>(&expr)) {
     return typeOf(*constant_expression);
+  } else if (auto bin = dynamic_cast<
+                 const ast::BinaryExpression<ast::Expression>*>(
+                 &expr)) {
+    return typeOf(*bin);
   }
 }
 
@@ -57,7 +62,7 @@ TypeEnvironment::typeOf(const ast::BinaryExpression<ast::Expression>& expr) {
 
 [[nodiscard]] const Type& TypeEnvironment::typeOf(
     const ast::BinaryExpression<ast::ConstantExpression>& expr) {
-  return *Type::getBooleanType();
+  return *Type::getIntegerType();
 }
 
 [[nodiscard]] bool TypeEnvironment::isSubclass(const Type& child,

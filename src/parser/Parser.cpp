@@ -10,6 +10,7 @@
 #include "lexer/TokenType.h"
 
 #include "llvm/Support/FormatVariadic.h"
+#include <utility>
 
 using namespace llvm;
 
@@ -23,10 +24,9 @@ std::unique_ptr<ast::Program> Parser::parseProgram() {
   }
 
   while (m_token_stream.peek()) {
-    if (m_token_stream.match(TokenType::ID) &&
+    if (match(TokenType::ID) &&
         m_token_stream.peek(1) == TokenType::COLON) {
       auto var_def_ctx = parseVariableDefinition();
-
       if (!var_def_ctx) {
         return nullptr;
       }
@@ -40,7 +40,6 @@ std::unique_ptr<ast::Program> Parser::parseProgram() {
 
   while (m_token_stream.peek()) {
     auto stmt_ctx = parseStatement();
-
     if (!stmt_ctx) {
       return nullptr;
     }
@@ -52,50 +51,45 @@ std::unique_ptr<ast::Program> Parser::parseProgram() {
 }
 
 std::unique_ptr<ast::Type> Parser::parseType() {
-  if (m_token_stream.match(TokenType::ID, TokenType::IDSTRING)) {
-    m_token_stream.advance();
+  if (expect(TokenType::ID, TokenType::IDSTRING)) {
     return std::make_unique<ast::Type>(*m_token_stream.peek(-1));
-  } else if (m_token_stream.match(TokenType::OPENBRACK)) {
-    m_token_stream.advance();
+  } else if (expect(TokenType::OPENBRACK)) {
     auto type_ctx = parseType();
 
     if (!type_ctx) {
       return nullptr;
     }
 
-    if (!m_token_stream.match(TokenType::CLOSEBRACK)) {
+    if (!expect(TokenType::CLOSEBRACK)) {
       m_diag_manager.addError(formatv("expected `]`"),
-                              m_token_stream.peek()->get().getLocation());
+                      m_token_stream.peek()->get().getLocation());
       return nullptr;
     }
-    m_token_stream.advance();
 
     return std::make_unique<ast::Type>(type_ctx->getBaseType(),
                                        type_ctx->getDimension() + 1);
   }
 
   m_diag_manager.addError(formatv("expected a type"),
-                          m_token_stream.peek()->get().getLocation());
+                      m_token_stream.peek()->get().getLocation());
 
   return nullptr;
 }
 
 std::unique_ptr<ast::TypedVariable> Parser::parseTypedVariable() {
-  if (!m_token_stream.match(TokenType::ID)) [[unlikely]] {
+  if (!expect(TokenType::ID)) [[unlikely]] {
     m_diag_manager.addError(formatv("expected an identifier"),
-                            m_token_stream.peek()->get().getLocation());
+                      m_token_stream.peek()->get().getLocation());
     return nullptr;
   }
-  m_token_stream.advance();
 
   const auto& name = m_token_stream.peek(-1);
 
-  if (!m_token_stream.match(TokenType::COLON)) [[unlikely]] {
+  if (!expect(TokenType::COLON)) [[unlikely]] {
     m_diag_manager.addError(formatv("expected `:`"),
-                            m_token_stream.peek()->get().getLocation());
+                      m_token_stream.peek()->get().getLocation());
     return nullptr;
   }
-  m_token_stream.advance();
 
   auto type_ctx = parseType();
   if (!type_ctx) {
@@ -111,50 +105,47 @@ std::unique_ptr<ast::VariableDefinition> Parser::parseVariableDefinition() {
     return nullptr;
   }
 
-  if (!m_token_stream.match(TokenType::ASSIGN)) {
+  if (!expect(TokenType::ASSIGN)) {
     m_diag_manager.addError(formatv("expected `=`"),
-                            m_token_stream.peek()->get().getLocation());
+                      m_token_stream.peek()->get().getLocation());
     return nullptr;
   }
-  m_token_stream.advance();
 
   auto literal_ctx = parseLiteral();
   if (!literal_ctx) {
     return nullptr;
   }
 
-  if (!m_token_stream.match(TokenType::NEWLINE)) {
-    const auto location = m_token_stream.peek(-1)->get().getLocation();
-    m_diag_manager.addError(formatv("expected a new line"),
-                            {location.End, location.End});
+  if (!expect(TokenType::NEWLINE)) {
+    m_diag_manager.addError(formatv("expected a new line after"),
+                      m_token_stream.peek(-1)->get().getLocation());
     return nullptr;
   }
-  m_token_stream.advance();
 
   return std::make_unique<ast::VariableDefinition>(std::move(typed_var_ctx),
                                                    std::move(literal_ctx));
 }
 
 std::unique_ptr<ast::Literal> Parser::parseLiteral() {
-  if (!m_token_stream.match(TokenType::NONE, TokenType::FALSE, TokenType::TRUE,
+  if (!expect(TokenType::NONE, TokenType::FALSE, TokenType::TRUE,
                             TokenType::INTLIT, TokenType::IDSTRING,
                             TokenType::STRING)) {
     m_diag_manager.addError(formatv("expected a literal value"),
-                            m_token_stream.peek()->get().getLocation());
+                  m_token_stream.peek()->get().getLocation());                          
     return nullptr;
   }
-  m_token_stream.advance();
 
   return std::make_unique<ast::Literal>(*m_token_stream.peek(-1));
 }
 
 [[nodiscard]] std::unique_ptr<ast::Target> Parser::parseTarget() {
-  if (m_token_stream.match(TokenType::ID)) {
-    m_token_stream.advance();
-    return std::make_unique<ast::Target>(*m_token_stream.peek(-1));
+  if (!expect(TokenType::ID)) {
+    m_diag_manager.addError(formatv("expected an identifier"),
+                  m_token_stream.peek(-1)->get().getLocation());
+    return nullptr;
   }
 
-  return nullptr;
+  return std::make_unique<ast::Target>(*m_token_stream.peek(-1));
 }
 
 [[nodiscard]] std::unique_ptr<ast::Expression> Parser::parseExpression() {
@@ -162,26 +153,30 @@ std::unique_ptr<ast::Literal> Parser::parseLiteral() {
 }
 
 [[nodiscard]] std::unique_ptr<ast::Statement> Parser::parseStatement() {
-  if (m_token_stream.match(TokenType::IF)) {
-    m_token_stream.advance();
+  if (match(TokenType::IF)) {   // TODO: If-elif-else statements
     return nullptr;
-  } else if (m_token_stream.match(TokenType::WHILE)) {
-    m_token_stream.advance();
+  } else if (match(TokenType::WHILE)) {   // TODO: While statements
     return nullptr;
-  } else if (m_token_stream.match(TokenType::FOR)) {
-    m_token_stream.advance();
+  } else if (match(TokenType::FOR)) {   // TODO: For statements
     return nullptr;
-  } else if (auto simple_stmt = parseSimpleStatement()) {
-    if (!m_token_stream.match(TokenType::NEWLINE)) {
-      const auto location = m_token_stream.peek(-1)->get().getLocation();
-      m_diag_manager.addError(formatv("expected a new line"),
-                              {location.End, location.End});
+  } else if (match(TokenType::PASS, TokenType::RETURN, TokenType::ID, TokenType::NOT, TokenType::TRUE, TokenType::FALSE, TokenType::NONE,
+  TokenType::INTLIT, TokenType::IDSTRING, TokenType::STRING, TokenType::OPENBRACK, TokenType::OPENPAREN, TokenType::MINUS)) {
+    auto simple_stmt = parseSimpleStatement();
+    if (!simple_stmt) {
       return nullptr;
     }
-    m_token_stream.advance();
+
+    if (!expect(TokenType::NEWLINE)) {
+      m_diag_manager.addError(formatv("expected a new line after"),
+                      m_token_stream.peek(-1)->get().getLocation());
+      return nullptr;
+    }
 
     return simple_stmt;
   }
+
+  m_diag_manager.addError(formatv("expected a statement"),
+                        m_token_stream.peek()->get().getLocation());
 
   return nullptr;
 }
@@ -197,20 +192,29 @@ Parser::parseSimpleStatement() {
 
 [[nodiscard]] std::unique_ptr<ast::AssignmentStatement>
 Parser::parseAssignmentStatement() {
-  std::vector<ast::Target> targets{};
+  std::vector<std::unique_ptr<ast::Target>> targets{};
 
-  while (m_token_stream.peek(1) == TokenType::ASSIGN) {
-    targets.push_back(std::move(*parseTarget()));
-    m_token_stream.advance();
+  while (match(TokenType::ID) && m_token_stream.peek(1) == TokenType::ASSIGN) {
+    auto target = parseTarget();
+    if (!target) {
+      return nullptr;
+    }
+
+    targets.push_back(std::move(target));
+
+    if (!expect(TokenType::ASSIGN)) {
+      m_diag_manager.addError(formatv("expected `=`"),
+                      m_token_stream.peek()->get().getLocation());
+      return nullptr;
+    }
   }
 
   auto expr_ctx = parseExpression();
-
   if (!expr_ctx) {
     return nullptr;
   }
 
-  return std::make_unique<ast::AssignmentStatement>(targets,
+  return std::make_unique<ast::AssignmentStatement>(std::move(targets),
                                                     std::move(expr_ctx));
 }
 } // namespace chocopy

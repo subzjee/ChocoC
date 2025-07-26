@@ -13,21 +13,6 @@ public:
 
   [[nodiscard]] std::optional<std::reference_wrapper<const Token>>
   peek(const int n = 0) const;
-  template <typename... TokenTypes>
-
-  [[nodiscard]] bool match(const TokenTypes&... token_types) {
-    const auto current_token = peek();
-
-    if (!current_token) {
-      return false;
-    }
-
-    if (((current_token->get().getType() == token_types) || ...)) {
-      return true;
-    }
-
-    return false;
-  }
 
   std::optional<std::reference_wrapper<const Token>> advance();
 

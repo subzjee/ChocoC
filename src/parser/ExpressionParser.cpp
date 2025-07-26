@@ -6,7 +6,9 @@
 #include "ast/Literal.h"
 #include "ast/UnaryExpression.h"
 #include "parser/ExpressionKind.h"
-#include <llvm-21/llvm/Support/raw_ostream.h>
+
+#include "llvm/Support/raw_ostream.h"
+
 #include <memory>
 
 namespace chocopy {
@@ -25,14 +27,10 @@ ExpressionParser::parseExpression(unsigned int min_power) {
       break;
     }
 
-    if (m_token_stream.match(TokenType::AND, TokenType::OR)) {
-      m_token_stream.advance();
-
+    if (expect(TokenType::AND, TokenType::OR)) {
       auto rhs = parseExpression(binding_power->second);
 
       if (!rhs) {
-        m_diag_manager.addError("expected an expression",
-                                m_token_stream.peek()->get().getLocation());
         return nullptr;
       }
 
@@ -45,20 +43,14 @@ ExpressionParser::parseExpression(unsigned int min_power) {
       auto rhs = parseExpression(binding_power->second);
 
       if (!rhs) {
-        m_diag_manager.addError("expected a constant expression",
-                                m_token_stream.peek()->get().getLocation());
         return nullptr;
       }
 
       if (!dynamic_cast<ast::ConstantExpression*>(lhs.get())) {
-        m_diag_manager.addError("expected a constant expression",
-                                lhs->getLocation());
         return nullptr;
       }
 
       if (!dynamic_cast<ast::ConstantExpression*>(rhs.get())) {
-        m_diag_manager.addError("expected a constant expression",
-                                rhs->getLocation());
         return nullptr;
       }
 
@@ -81,33 +73,27 @@ ExpressionParser::parseExpression(unsigned int min_power) {
     return nullptr;
   }
 
-  if (m_token_stream.match(TokenType::STRING, TokenType::IDSTRING,
+  if (expect(TokenType::STRING, TokenType::IDSTRING,
                            TokenType::FALSE, TokenType::TRUE, TokenType::INTLIT,
                            TokenType::NONE)) {
-    m_token_stream.advance();
     return std::make_unique<ast::Literal>(*token);
-  } else if (m_token_stream.match(TokenType::ID)) {
-    m_token_stream.advance();
+  } else if (expect(TokenType::ID)) {
     return std::make_unique<ast::Identifier>(*token);
-  } else if (m_token_stream.match(TokenType::OPENPAREN)) {
-    auto left_paren = m_token_stream.advance();
+  } else if (expect(TokenType::OPENPAREN)) {
+    auto left_paren = m_token_stream.peek(-1);
     auto expr = parseExpression(0);
 
-    if (!m_token_stream.match(TokenType::CLOSEPAREN)) {
-      m_diag_manager.addError("expected `)`",
-                              m_token_stream.peek()->get().getLocation());
+    if (!expect(TokenType::CLOSEPAREN)) {
       return nullptr;
     }
-    auto right_paren = m_token_stream.advance();
+    auto right_paren = m_token_stream.peek(-1);
 
     return std::make_unique<ast::GroupingExpression>(left_paren->get(), std::move(expr), right_paren->get());
-  } else if (m_token_stream.match(TokenType::MINUS)) {
-    const auto& op = m_token_stream.advance();
+  } else if (expect(TokenType::MINUS)) {
+    const auto& op = m_token_stream.peek(-1);
     auto rhs = parseExpression(getPrefixPower(op->get().getType())->second);
 
     if (!dynamic_cast<ast::ConstantExpression*>(rhs.get())) {
-      m_diag_manager.addError("expected a constant expression",
-                              rhs->getLocation());
       return nullptr;
     }
 
@@ -115,8 +101,8 @@ ExpressionParser::parseExpression(unsigned int min_power) {
         op->get(),
         std::unique_ptr<ast::ConstantExpression>(
             static_cast<ast::ConstantExpression*>(rhs.release())));
-  } else if (m_token_stream.match(TokenType::NOT)) {
-    const auto& op = m_token_stream.advance();
+  } else if (expect(TokenType::NOT)) {
+    const auto& op = m_token_stream.peek(-1);
     auto rhs = parseExpression(getPrefixPower(op->get().getType())->second);
 
     return std::make_unique<ast::UnaryExpression<ast::Expression>>(

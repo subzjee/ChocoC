@@ -38,6 +38,32 @@ public:
   parseAssignmentStatement();
 
 private:
+  template <typename... TokenTypes>
+  [[nodiscard]] bool match(const TokenTypes&... token_types) {
+    const auto current_token = m_token_stream.peek();
+
+    if (!current_token) {
+      return false;
+    }
+
+    if (((current_token->get().getType() == token_types) || ...)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  template <typename... TokenTypes>
+  [[nodiscard]] bool expect(const TokenTypes&... token_types) {
+    if (!match(token_types...)) {
+      return false;
+    }
+
+    m_token_stream.advance();
+    
+    return true;
+  }
+
   ExpressionParser m_expression_parser;
   TokenStream& m_token_stream;
   DiagnosticsManager& m_diag_manager;

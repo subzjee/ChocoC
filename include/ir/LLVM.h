@@ -21,7 +21,7 @@
 #include "llvm/Support/Signals.h"
 
 namespace chocopy {
-class IRGen : ASTVisitor {
+class IRGen : public ASTVisitor {
 public:
   using ASTVisitor::visit;
 

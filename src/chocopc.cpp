@@ -48,18 +48,19 @@ int main(int argc, char* argv[]) {
       continue;
     }
 
+    TokenStream token_stream{tokens};
+
     /* Syntax analysis */
-    Parser parser{tokens, diag_manager};
+    Parser parser{token_stream, diag_manager};
     const auto root = parser.parse();
 
-    if (diag_manager.hadError()) {
+    if (!root || diag_manager.hadError()) {
       diag_manager.printErrors();
       continue;
     }
 
     ast::PrettyPrinter pretty_printer{};
     const std::string pretty_print = std::any_cast<std::string>(root->accept(pretty_printer));
-
     std::cout << pretty_print << '\n';
 
     /* Semantic analysis */
@@ -67,8 +68,8 @@ int main(int argc, char* argv[]) {
     root->accept(builder);
     auto& symbol_table = builder.getSymbolTable();
 
-    TypeChecker type_checker{symbol_table, diag_manager};
-    root->accept(type_checker);
+    // TypeChecker type_checker{symbol_table, diag_manager};
+    // root->accept(type_checker);
 
     if (diag_manager.hadError()) {
       diag_manager.printErrors();
@@ -77,7 +78,7 @@ int main(int argc, char* argv[]) {
 
     /* IR Generation */
     IRGen code_gen{input_file_name, symbol_table};
-    code_gen.visit(*root);
+    root->accept(code_gen);
   }
 
   return 0;

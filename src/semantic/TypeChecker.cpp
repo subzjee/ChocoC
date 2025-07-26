@@ -24,7 +24,7 @@ std::any TypeChecker::visit(const ast::AssignmentStatement& ctx) {
   const auto type_rhs = local_env.typeOf(*ctx.getExpr());
 
   for (const auto& target : ctx.getTargets()) {
-    const auto name = std::get<std::string>(target.getName().getValue());
+    const auto name = std::get<std::string>(target->getName().getValue());
     const Type& type_lhs = local_env.typeOf(name);
 
     if (!local_env.isAssignmentCompatible(type_rhs, type_lhs)) {
@@ -32,7 +32,7 @@ std::any TypeChecker::visit(const ast::AssignmentStatement& ctx) {
           llvm::formatv("type mismatch: expected: {0}, got: {1}",
                         type_lhs.toString(), type_rhs.toString()),
           ctx.getExpr()->getLocation(),
-          {target.getLocation(), ctx.getExpr()->getLocation()});
+          {target->getLocation(), ctx.getExpr()->getLocation()});
     }
   }
 

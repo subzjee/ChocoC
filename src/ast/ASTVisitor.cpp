@@ -32,7 +32,7 @@ std::any ASTVisitor::visit(const ast::VariableDefinition& ctx) {
 
 std::any ASTVisitor::visit(const ast::AssignmentStatement& ctx) {
   for (auto& target : ctx.getTargets()) {
-    target.accept(*this);
+    target->accept(*this);
   }
 
   ctx.getExpr()->accept(*this);

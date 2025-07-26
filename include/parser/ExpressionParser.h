@@ -28,6 +28,32 @@ public:
   parseExpression(unsigned int min_power = 0);
 
 private:
+  template <typename... TokenTypes>
+  [[nodiscard]] bool match(const TokenTypes&... token_types) {
+    const auto current_token = m_token_stream.peek();
+
+    if (!current_token) {
+      return false;
+    }
+
+    if (((current_token->get().getType() == token_types) || ...)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  template <typename... TokenTypes>
+  [[nodiscard]] bool expect(const TokenTypes&... token_types) {
+    if (!match(token_types...)) {
+      return false;
+    }
+
+    m_token_stream.advance();
+    
+    return true;
+  }
+
   /// Parse a prefix.
   /// @returns The prefix expression.
   [[nodiscard]] std::unique_ptr<ast::Expression> parsePrefix();

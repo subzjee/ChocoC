@@ -61,7 +61,7 @@ std::any PrettyPrinter::visit(const VariableDefinition& ctx) {
 
 std::any PrettyPrinter::visit(const AssignmentStatement& ctx) {
   for (const auto& target : ctx.getTargets()) {
-    out << std::get<std::string>(target.getName().getValue()) << " = ";
+    out << std::get<std::string>(target->getName().getValue()) << " = ";
   }
 
   ctx.getExpr()->accept(*this);
