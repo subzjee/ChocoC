@@ -16,11 +16,11 @@ void IRGen::prologue() {
   llvm::FunctionType* func_type =
       llvm::FunctionType::get(m_builder.getInt32Ty(), false);
   llvm::Function* entry_func = llvm::Function::Create(
-      func_type, llvm::Function::ExternalLinkage, "entry", m_module.get());
+      func_type, llvm::Function::ExternalLinkage, "main", m_module.get());
 
   // Setup the initial basic block.
   llvm::BasicBlock* entry_bb =
-      llvm::BasicBlock::Create(*m_ctx, "entry", entry_func);
+      llvm::BasicBlock::Create(*m_ctx, "main", entry_func);
   m_builder.SetInsertPoint(entry_bb);
 }
 
@@ -55,7 +55,7 @@ std::any IRGen::visit(const ast::Literal& ctx) {
     const std::string text = std::get<std::string>(ctx.getValue());
 
     if (!m_string_allocations.contains(text)) {
-      m_string_allocations[text] = m_builder.CreateGlobalString(std::get<std::string>(ctx.getValue()), "", 0, m_module.get());
+      m_string_allocations[text] = m_builder.CreateGlobalString(std::get<std::string>(ctx.getValue()), ".intern.str", 0, m_module.get());
     }
 
     return cast<llvm::Value>(m_string_allocations[text]);
@@ -70,7 +70,7 @@ std::any IRGen::visit(const ast::VariableDefinition& ctx) {
 
   // A variable definition's value can only be a literal, which we know is a
   // Constant* so we static_cast it back to a Constant*.
-  llvm::Constant* init = static_cast<llvm::Constant*>(
+  llvm::Constant* init = cast<llvm::Constant>(
       std::any_cast<llvm::Value*>(visit(*ctx.getValue())));
 
   if (scope == 0) {
