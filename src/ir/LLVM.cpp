@@ -29,7 +29,6 @@ void IRGen::epilogue() {
       llvm::ConstantInt::get(llvm::Type::getInt32Ty(*m_ctx), 0);
 
   m_builder.CreateRet(ret_val);
-  m_module->print(llvm::outs(), nullptr);
 }
 
 std::any IRGen::visit(const ast::Program& ctx) {

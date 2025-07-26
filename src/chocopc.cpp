@@ -14,12 +14,14 @@
 using namespace llvm;
 using namespace chocopy;
 
-static cl::list<std::string>
-    input_file_names(cl::Positional, cl::desc("<input_files>"), cl::OneOrMore);
-static cl::opt<std::string> output_file_name("o", cl::desc("Output filename"),
-                                             cl::value_desc("filename"));
-
 int main(int argc, char* argv[]) {
+  cl::list<std::string>
+      input_file_names(cl::Positional, cl::desc("<input_files>"), cl::OneOrMore);
+  cl::opt<std::string> output_file_name("o", cl::desc("Output filename"),
+                                              cl::value_desc("filename"));
+  cl::opt<bool> do_emit_llvm("emit-llvm", cl::desc("Emit LLVM IR"));
+  cl::opt<bool> do_pprint("pretty-print-ast", cl::desc("Emit a pretty print of the AST"));
+
   cl::ParseCommandLineOptions(argc, argv);
 
   SourceMgr source_manager;
@@ -59,17 +61,19 @@ int main(int argc, char* argv[]) {
       continue;
     }
 
-    ast::PrettyPrinter pretty_printer{};
-    const std::string pretty_print = std::any_cast<std::string>(root->accept(pretty_printer));
-    std::cout << pretty_print << '\n';
+    if (do_pprint) {
+      ast::PrettyPrinter pretty_printer{};
+      const std::string pretty_print = std::any_cast<std::string>(root->accept(pretty_printer));
+      llvm::outs() << pretty_print << '\n';
+    }
 
     /* Semantic analysis */
     SymbolTableBuilder builder{diag_manager};
     root->accept(builder);
     auto& symbol_table = builder.getSymbolTable();
 
-    // TypeChecker type_checker{symbol_table, diag_manager};
-    // root->accept(type_checker);
+    TypeChecker type_checker{symbol_table, diag_manager};
+    root->accept(type_checker);
 
     if (diag_manager.hadError()) {
       diag_manager.printErrors();
@@ -79,6 +83,10 @@ int main(int argc, char* argv[]) {
     /* IR Generation */
     IRGen code_gen{input_file_name, symbol_table};
     root->accept(code_gen);
+
+    if (do_emit_llvm) {
+      code_gen.getModule().print(llvm::outs(), nullptr);
+    }
   }
 
   return 0;

@@ -31,8 +31,7 @@ public:
             std::make_unique<llvm::Module>(std::move(module_name), *m_ctx)},
         m_symbol_table(symbol_table) {};
 
-  void prologue();
-  void epilogue();
+  [[nodiscard]] const llvm::Module& getModule() const { return *m_module; }
 
   virtual std::any visit(const ast::Program& ctx) override;
   virtual std::any visit(const ast::Literal& ctx) override;
@@ -50,6 +49,9 @@ public:
   virtual std::any visit(const ast::Identifier& ctx) override;
 
 private:
+  void prologue();
+  void epilogue();
+
   std::unique_ptr<llvm::LLVMContext> m_ctx;
   llvm::IRBuilder<> m_builder;
   std::unique_ptr<llvm::Module> m_module;
