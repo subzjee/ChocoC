@@ -1,5 +1,6 @@
 #include "semantic/TypeChecker.h"
 #include "ast/AssignmentStatement.h"
+#include "ast/GroupingExpression.h"
 #include "ast/Identifier.h"
 #include "ast/VariableDefinition.h"
 
@@ -28,14 +29,18 @@ std::any TypeChecker::visit(const ast::VariableDefinition& ctx) {
 std::any TypeChecker::visit(const ast::AssignmentStatement& ctx) {
   const auto rhs_type = std::any_cast<std::optional<const Type>>(ctx.getExpr()->accept(*this));
 
-  // for (const auto& target : ctx.getTargets()) {
-  //   const auto name = std::get<std::string>(target->getName().getValue());
-  //   const Type& type_lhs = local_env.typeOf(target->getName());
+  if (!rhs_type) {
+    return {};
+  }
 
-  //   if (!type_rhs.isAssignmentCompatible(type_lhs)) {
+  // for (const auto& target : ctx.getTargets()) {
+  //   const auto name = target->getName().getText();
+  //   const Type& lhs_type = m_local_env.typeOf(target->getName());
+
+  //   if (!rhs_type->isAssignmentCompatible(lhs_type)) {
   //     m_diag_manager.addError(
   //         llvm::formatv("type mismatch: expected: {0}, got: {1}",
-  //                       type_lhs.toString(), type_rhs.toString()),
+  //                       lhs_type.toString(), rhs_type->toString()),
   //         ctx.getExpr()->getLocation(),
   //         {target->getLocation(), ctx.getExpr()->getLocation()});
   //   }
@@ -91,13 +96,17 @@ std::any TypeChecker::visit(const ast::BinaryExpression<ast::Expression>& ctx) {
 }
 
 std::any TypeChecker::visit(const ast::BinaryExpression<ast::ConstantExpression>& ctx) {
-  const auto lhs = std::any_cast<std::optional<const Type>>(ctx.getLHS()->accept(*this));
-  const auto rhs = std::any_cast<std::optional<const Type>>(ctx.getRHS()->accept(*this));
+  const auto lhs_type = std::any_cast<std::optional<const Type>>(ctx.getLHS()->accept(*this));
+  const auto rhs_type = std::any_cast<std::optional<const Type>>(ctx.getRHS()->accept(*this));
 
-  if (!lhs || !rhs) {
+  if (!lhs_type || !rhs_type) {
     return std::optional<const Type>{};
   }
 
   return std::optional<const Type>{};
+}
+
+std::any TypeChecker::visit(const ast::GroupingExpression& ctx) {
+  return ctx.getExpression()->accept(*this);
 }
 } // namespace chocopy

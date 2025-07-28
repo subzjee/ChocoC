@@ -3,11 +3,11 @@
 #include "DiagnosticsManager.h"
 #include "ast/ASTVisitor.h"
 #include "ast/AssignmentStatement.h"
+#include "ast/GroupingExpression.h"
 #include "ast/Identifier.h"
 #include "ast/Literal.h"
 #include "ast/VariableDefinition.h"
 #include "semantic/TypeEnvironment.h"
-#include <llvm-21/llvm/Support/SourceMgr.h>
 
 namespace chocopy {
 class TypeChecker : public ASTVisitor {
@@ -24,6 +24,7 @@ public:
   std::any visit(const ast::Identifier& ctx) override;
   std::any visit(const ast::BinaryExpression<ast::Expression>& ctx) override;
   std::any visit(const ast::BinaryExpression<ast::ConstantExpression>& ctx) override;
+  std::any visit(const ast::GroupingExpression& ctx) override;
 
 private:
   DiagnosticsManager& m_diag_manager;
