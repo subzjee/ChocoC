@@ -5,7 +5,6 @@
 #include "ast/VariableDefinition.h"
 
 #include "llvm/Support/FormatVariadic.h"
-#include <utility>
 
 namespace chocopy {
 std::any TypeChecker::visit(const ast::VariableDefinition& ctx) {
@@ -33,18 +32,18 @@ std::any TypeChecker::visit(const ast::AssignmentStatement& ctx) {
     return {};
   }
 
-  // for (const auto& target : ctx.getTargets()) {
-  //   const auto name = target->getName().getText();
-  //   const Type& lhs_type = m_local_env.typeOf(target->getName());
+  for (const auto& target : ctx.getTargets()) {
+    const auto name = target->getName().getText();
+    const Type& lhs_type = m_local_env.typeOf(target->getName());
 
-  //   if (!rhs_type->isAssignmentCompatible(lhs_type)) {
-  //     m_diag_manager.addError(
-  //         llvm::formatv("type mismatch: expected: {0}, got: {1}",
-  //                       lhs_type.toString(), rhs_type->toString()),
-  //         ctx.getExpr()->getLocation(),
-  //         {target->getLocation(), ctx.getExpr()->getLocation()});
-  //   }
-  // }
+    if (!rhs_type->isAssignmentCompatible(lhs_type)) {
+      m_diag_manager.addError(
+          llvm::formatv("type mismatch: expected: {0}, got: {1}",
+                        lhs_type.toString(), rhs_type->toString()),
+          ctx.getExpr()->getLocation(),
+          {target->getLocation(), ctx.getExpr()->getLocation()});
+    }
+  }
 
   return {};
 }
