@@ -9,16 +9,19 @@
 namespace chocopy {
 std::any TypeChecker::visit(const ast::VariableDefinition& ctx) {
   const auto lhs_type = m_local_env.typeOf(*ctx.getName());
-  const auto rhs_type = std::any_cast<std::optional<const Type>>(ctx.getValue()->accept(*this));
+  assert(lhs_type && "Variable does not exist in symbol table");
+
+  const auto rhs_type =
+      std::any_cast<std::optional<const Type>>(ctx.getValue()->accept(*this));
 
   if (!rhs_type) {
     return {};
   }
 
-  if (!rhs_type->isAssignmentCompatible(lhs_type)) {
+  if (!rhs_type->isAssignmentCompatible(*lhs_type)) {
     m_diag_manager.addError(
-        llvm::formatv("type mismatch: expected: {0}, got: {1}", lhs_type.toString(),
-                      rhs_type->toString()),
+        llvm::formatv("type mismatch: expected: {0}, got: {1}",
+                      lhs_type->get().toString(), rhs_type->toString()),
         ctx.getValue()->getLocation());
   }
 
@@ -26,20 +29,18 @@ std::any TypeChecker::visit(const ast::VariableDefinition& ctx) {
 }
 
 std::any TypeChecker::visit(const ast::AssignmentStatement& ctx) {
-  const auto rhs_type = std::any_cast<std::optional<const Type>>(ctx.getExpr()->accept(*this));
-
-  if (!rhs_type) {
-    return {};
-  }
+  const auto rhs_type =
+      std::any_cast<std::optional<const Type>>(ctx.getExpr()->accept(*this));
 
   for (const auto& target : ctx.getTargets()) {
-    const auto lhs_type = std::any_cast<std::optional<const Type>>(target->accept(*this));
+    const auto lhs_type =
+        std::any_cast<std::optional<const Type>>(target->accept(*this));
 
     if (!lhs_type) {
       continue;
     }
 
-    if (!rhs_type->isAssignmentCompatible(*lhs_type)) {
+    if (rhs_type && !rhs_type->isAssignmentCompatible(*lhs_type)) {
       m_diag_manager.addError(
           llvm::formatv("type mismatch: expected: {0}, got: {1}",
                         lhs_type->toString(), rhs_type->toString()),
@@ -52,7 +53,16 @@ std::any TypeChecker::visit(const ast::AssignmentStatement& ctx) {
 }
 
 std::any TypeChecker::visit(const ast::Identifier& ctx) {
-  return std::optional<const Type>(m_local_env.typeOf(ctx));
+  const auto type = m_local_env.typeOf(ctx);
+
+  if (!type) {
+    m_diag_manager.addError(
+        llvm::formatv("undefined name: {0}", ctx.getValue()),
+        ctx.getLocation());
+    return std::optional<const Type>{};
+  }
+
+  return std::optional<const Type>(*type);
 }
 
 std::any TypeChecker::visit(const ast::Literal& ctx) {
@@ -72,34 +82,41 @@ std::any TypeChecker::visit(const ast::Literal& ctx) {
 }
 
 std::any TypeChecker::visit(const ast::BinaryExpression<ast::Expression>& ctx) {
-  const auto lhs_type = std::any_cast<std::optional<const Type>>(ctx.getLHS()->accept(*this));
-  const auto rhs_type = std::any_cast<std::optional<const Type>>(ctx.getRHS()->accept(*this));
+  const auto lhs_type =
+      std::any_cast<std::optional<const Type>>(ctx.getLHS()->accept(*this));
+  const auto rhs_type =
+      std::any_cast<std::optional<const Type>>(ctx.getRHS()->accept(*this));
 
   if (!lhs_type || !rhs_type) {
     return std::optional<const Type>{};
   }
 
   switch (ctx.getOperator().getType()) {
-    case TokenType::AND:
-      [[fallthrough]];
-    case TokenType::OR:
-      if (!lhs_type->isBoolean() || !rhs_type->isBoolean()) {
-        m_diag_manager.addError(
-          llvm::formatv("unsupported operand type(s) for '{0}': '{1}' and '{2}'",
-                        ctx.getOperator().getText(), lhs_type->toString(), rhs_type->toString()),
+  case TokenType::AND:
+    [[fallthrough]];
+  case TokenType::OR:
+    if (!lhs_type->isBoolean() || !rhs_type->isBoolean()) {
+      m_diag_manager.addError(
+          llvm::formatv(
+              "unsupported operand type(s) for '{0}': '{1}' and '{2}'",
+              ctx.getOperator().getText(), lhs_type->toString(),
+              rhs_type->toString()),
           ctx.getLocation());
-          return std::optional<const Type>{};
-      }
-      
-      return std::optional<const Type>(*Type::getBooleanType());
-    default:
       return std::optional<const Type>{};
+    }
+
+    return std::optional<const Type>(*Type::getBooleanType());
+  default:
+    return std::optional<const Type>{};
   }
 }
 
-std::any TypeChecker::visit(const ast::BinaryExpression<ast::ConstantExpression>& ctx) {
-  const auto lhs_type = std::any_cast<std::optional<const Type>>(ctx.getLHS()->accept(*this));
-  const auto rhs_type = std::any_cast<std::optional<const Type>>(ctx.getRHS()->accept(*this));
+std::any
+TypeChecker::visit(const ast::BinaryExpression<ast::ConstantExpression>& ctx) {
+  const auto lhs_type =
+      std::any_cast<std::optional<const Type>>(ctx.getLHS()->accept(*this));
+  const auto rhs_type =
+      std::any_cast<std::optional<const Type>>(ctx.getRHS()->accept(*this));
 
   if (!lhs_type || !rhs_type) {
     return std::optional<const Type>{};

@@ -1,10 +1,10 @@
+#include "parser/ExpressionParser.h"
 #include "ast/BinaryExpression.h"
 #include "ast/ConstantExpression.h"
 #include "ast/GroupingExpression.h"
 #include "ast/Identifier.h"
 #include "ast/Literal.h"
 #include "ast/UnaryExpression.h"
-#include "parser/ExpressionParser.h"
 
 #include <memory>
 
@@ -38,23 +38,26 @@ ExpressionParser::parseExpression(unsigned int min_power) {
       return nullptr;
     }
 
-    // `AND` and `OR` are the only binary operators that have expressions instead of
-    // constant expressions as their operands. All constant expressions are expressions but not vice versa.
-    // Therefore, if the operator is either of these, we don't have to check whether the operands are
-    // constant expressions.
+    // `AND` and `OR` are the only binary operators that have expressions
+    // instead of constant expressions as their operands. All constant
+    // expressions are expressions but not vice versa. Therefore, if the
+    // operator is either of these, we don't have to check whether the operands
+    // are constant expressions.
     if (token_type == TokenType::AND || token_type == TokenType::OR) {
       lhs = std::make_unique<ast::BinaryExpression<ast::Expression>>(
-        std::move(lhs), token->get(), std::move(rhs));
+          std::move(lhs), token->get(), std::move(rhs));
       continue;
     }
 
     if (!dynamic_cast<ast::ConstantExpression*>(lhs.get())) {
-      m_diag_manager.addError("expected a constant expression", lhs.get()->getLocation());
+      m_diag_manager.addError("expected a constant expression",
+                              lhs.get()->getLocation());
       return nullptr;
     }
 
     if (!dynamic_cast<ast::ConstantExpression*>(rhs.get())) {
-      m_diag_manager.addError("expected a constant expression", rhs.get()->getLocation());
+      m_diag_manager.addError("expected a constant expression",
+                              rhs.get()->getLocation());
       return nullptr;
     }
 
@@ -76,9 +79,8 @@ ExpressionParser::parseExpression(unsigned int min_power) {
     return nullptr;
   }
 
-  if (expect(TokenType::STRING, TokenType::IDSTRING,
-                           TokenType::FALSE, TokenType::TRUE, TokenType::INTLIT,
-                           TokenType::NONE)) {
+  if (expect(TokenType::STRING, TokenType::IDSTRING, TokenType::FALSE,
+             TokenType::TRUE, TokenType::INTLIT, TokenType::NONE)) {
     return std::make_unique<ast::Literal>(*token);
   } else if (expect(TokenType::ID)) {
     return std::make_unique<ast::Identifier>(*token);
@@ -92,26 +94,28 @@ ExpressionParser::parseExpression(unsigned int min_power) {
     }
     auto right_paren = m_token_stream.peek(-1);
 
-    return std::make_unique<ast::GroupingExpression>(left_paren->get(), std::move(expr), right_paren->get());
+    return std::make_unique<ast::GroupingExpression>(
+        left_paren->get(), std::move(expr), right_paren->get());
   } else if (expect(TokenType::MINUS)) {
     const auto& op = m_token_stream.peek(-1);
     auto rhs = parseExpression(getPrefixPower(op->get().getType())->second);
 
     if (!rhs || !dynamic_cast<ast::ConstantExpression*>(rhs.get())) {
-      m_diag_manager.addError("missing operand for unary '-'", op->get().getLocation());
+      m_diag_manager.addError("missing operand for unary '-'",
+                              op->get().getLocation());
       return nullptr;
     }
 
     return std::make_unique<ast::UnaryExpression<ast::ConstantExpression>>(
-        op->get(),
-        std::unique_ptr<ast::ConstantExpression>(
-            static_cast<ast::ConstantExpression*>(rhs.release())));
+        op->get(), std::unique_ptr<ast::ConstantExpression>(
+                       static_cast<ast::ConstantExpression*>(rhs.release())));
   } else if (expect(TokenType::NOT)) {
     const auto& op = m_token_stream.peek(-1);
     auto rhs = parseExpression(getPrefixPower(op->get().getType())->second);
 
     if (!rhs) {
-      m_diag_manager.addError("missing operand for 'not'", op->get().getLocation());
+      m_diag_manager.addError("missing operand for 'not'",
+                              op->get().getLocation());
       return nullptr;
     }
 

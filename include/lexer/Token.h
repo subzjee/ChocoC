@@ -2,8 +2,8 @@
 
 #include "lexer/TokenType.h"
 
-#include "llvm/Support/SourceMgr.h"
 #include "llvm/Support/SMLoc.h"
+#include "llvm/Support/SourceMgr.h"
 
 #include <variant>
 
@@ -17,8 +17,12 @@ public:
   /// @param type The token type of the token.
   /// @param text The value of the token.
   /// @param location The location of the token in the source file.
-  Token(const TokenType type, const TokenValue value, const llvm::SMRange location)
-      : m_value{value}, m_type{type}, m_location{location}, m_text{location.isValid() ? std::string{location.Start.getPointer(), location.End.getPointer()} : ""} {
+  Token(const TokenType type, const TokenValue value,
+        const llvm::SMRange location)
+      : m_value{value}, m_type{type}, m_location{location},
+        m_text{location.isValid() ? std::string{location.Start.getPointer(),
+                                                location.End.getPointer()}
+                                  : ""} {
 #ifndef NDEBUG
     switch (type) {
     case TokenType::TRUE:
@@ -42,14 +46,14 @@ public:
 #endif
   }
 
-  constexpr bool operator==(const Token& other) const {
-    return m_value == other.getValue() && m_type == other.getType();
-  }
-
   [[nodiscard]] const TokenValue& getValue() const { return m_value; }
   [[nodiscard]] const llvm::SMRange& getLocation() const { return m_location; }
   [[nodiscard]] const TokenType& getType() const { return m_type; }
   [[nodiscard]] llvm::StringRef getText() const { return m_text; }
+
+  constexpr bool operator==(const Token& other) const {
+    return m_value == other.getValue() && m_type == other.getType();
+  }
 
   [[nodiscard]] bool isLiteral() const {
     return m_type == TokenType::NONE || m_type == TokenType::FALSE ||

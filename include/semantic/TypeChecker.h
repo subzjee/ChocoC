@@ -23,7 +23,8 @@ public:
   std::any visit(const ast::Literal& ctx) override;
   std::any visit(const ast::Identifier& ctx) override;
   std::any visit(const ast::BinaryExpression<ast::Expression>& ctx) override;
-  std::any visit(const ast::BinaryExpression<ast::ConstantExpression>& ctx) override;
+  std::any
+  visit(const ast::BinaryExpression<ast::ConstantExpression>& ctx) override;
   std::any visit(const ast::GroupingExpression& ctx) override;
 
 private:

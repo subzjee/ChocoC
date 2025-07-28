@@ -42,7 +42,9 @@ std::any ASTVisitor::visit(const ast::AssignmentStatement& ctx) {
 
 std::any ASTVisitor::visit(const ast::Type& ctx [[maybe_unused]]) { return {}; }
 
-std::any ASTVisitor::visit(const ast::Literal& ctx [[maybe_unused]]) { return {}; }
+std::any ASTVisitor::visit(const ast::Literal& ctx [[maybe_unused]]) {
+  return {};
+}
 
 std::any ASTVisitor::visit(const ast::BinaryExpression<ast::Expression>& ctx) {
   ctx.getLHS()->accept(*this);
@@ -72,9 +74,13 @@ ASTVisitor::visit(const ast::UnaryExpression<ast::ConstantExpression>& ctx) {
   return {};
 }
 
-std::any ASTVisitor::visit(const ast::Target& ctx [[maybe_unused]]) { return {}; }
+std::any ASTVisitor::visit(const ast::Target& ctx [[maybe_unused]]) {
+  return {};
+}
 
-std::any ASTVisitor::visit(const ast::Identifier& ctx [[maybe_unused]]) { return {}; }
+std::any ASTVisitor::visit(const ast::Identifier& ctx [[maybe_unused]]) {
+  return {};
+}
 
 std::any ASTVisitor::visit(const ast::Block& ctx) {
   for (const auto& statement : ctx.getStatements()) {

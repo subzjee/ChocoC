@@ -13,10 +13,15 @@
 namespace chocopy::ast {
 class CallExpression : public ConstantExpression {
 public:
-  CallExpression(const Token& callee, std::vector<std::unique_ptr<ast::Expression>> arguments) : m_callee{callee}, m_args(std::move(arguments)) {};
+  CallExpression(const Token& callee,
+                 std::vector<std::unique_ptr<ast::Expression>> arguments)
+      : m_callee{callee}, m_args(std::move(arguments)) {};
 
   [[nodiscard]] const Token& getCallee() const { return m_callee; }
-  [[nodiscard]] std::span<const std::unique_ptr<ast::Expression>> getArguments() const { return m_args; }
+  [[nodiscard]] std::span<const std::unique_ptr<ast::Expression>>
+  getArguments() const {
+    return m_args;
+  }
 
   [[nodiscard]] llvm::SMRange getLocation() const override {
     return {m_callee.getLocation().Start, m_args.back()->getLocation().End};
@@ -28,4 +33,4 @@ private:
   const Token& m_callee;
   std::vector<std::unique_ptr<ast::Expression>> m_args;
 };
-}
+} // namespace chocopy::ast

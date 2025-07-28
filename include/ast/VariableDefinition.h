@@ -12,12 +12,14 @@ class VariableDefinition : public ASTNode {
 public:
   VariableDefinition(std::unique_ptr<TypedVariable> typed_var,
                      std::unique_ptr<Literal> value)
-      : m_name(std::move(typed_var->getName())), m_type(std::move(typed_var->getType())),
-        m_value(std::move(value)) {};
+      : m_name(std::move(typed_var->getName())),
+        m_type(std::move(typed_var->getType())), m_value(std::move(value)) {};
 
   /// Get the name of the variable.
   /// @returns The name.
-  [[nodiscard]] const std::unique_ptr<Identifier>& getName() const { return m_name; };
+  [[nodiscard]] const std::unique_ptr<Identifier>& getName() const {
+    return m_name;
+  };
 
   /// Get the type of the variable.
   /// @returns The type.

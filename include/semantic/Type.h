@@ -91,4 +91,4 @@ struct Type {
   const unsigned int dimension;
   const std::shared_ptr<Type> super_class;
 };
-}
+} // namespace chocopy::sema

@@ -1,8 +1,8 @@
+#include "ir/LLVM.h"
 #include "ast/BinaryExpression.h"
 #include "ast/ConstantExpression.h"
 #include "ast/GroupingExpression.h"
 #include "ast/Identifier.h"
-#include "ir/LLVM.h"
 #include "semantic/SymbolTable.h"
 
 #include "llvm/IR/GlobalVariable.h"
@@ -20,10 +20,12 @@ llvm::Value* IRGen::createLoadOrConstant(llvm::Value* allocation) {
   }
 
   if (auto global = llvm::dyn_cast<llvm::GlobalVariable>(allocation)) {
-    return cast<llvm::Value>(m_builder.CreateLoad(global->getValueType(), allocation));
+    return cast<llvm::Value>(
+        m_builder.CreateLoad(global->getValueType(), allocation));
   }
 
-  return cast<llvm::Value>(m_builder.CreateLoad(allocation->getType(), allocation));
+  return cast<llvm::Value>(
+      m_builder.CreateLoad(allocation->getType(), allocation));
 }
 
 void IRGen::prologue() {
@@ -62,14 +64,15 @@ std::any IRGen::visit(const ast::Literal& ctx) {
         llvm::ConstantInt::get(llvm::Type::getInt32Ty(*m_ctx),
                                std::get<std::int32_t>(ctx.getValue())));
   } else if (ctx.getType() == "bool") {
-    return cast<llvm::Value>(
-        llvm::ConstantInt::get(llvm::Type::getInt1Ty(*m_ctx),
-                               std::get<bool>(ctx.getValue())));
+    return cast<llvm::Value>(llvm::ConstantInt::get(
+        llvm::Type::getInt1Ty(*m_ctx), std::get<bool>(ctx.getValue())));
   } else if (ctx.getType() == "str") {
     const std::string text = std::get<std::string>(ctx.getValue());
 
     if (!m_string_allocations.contains(text)) {
-      m_string_allocations[text] = m_builder.CreateGlobalString(std::get<std::string>(ctx.getValue()), ".intern.str", 0, m_module.get());
+      m_string_allocations[text] =
+          m_builder.CreateGlobalString(std::get<std::string>(ctx.getValue()),
+                                       ".intern.str", 0, m_module.get());
     }
 
     return cast<llvm::Value>(m_string_allocations[text]);
@@ -81,7 +84,8 @@ std::any IRGen::visit(const ast::Literal& ctx) {
 std::any IRGen::visit(const ast::Identifier& ctx) {
   const auto entry = m_symbol_table.getEntry(ctx.getValue());
   assert(entry && "Identifier not stored in symbol table");
-  assert(std::holds_alternative<Variable>(entry->get()) && "Entry is not a variable");
+  assert(std::holds_alternative<Variable>(entry->get()) &&
+         "Entry is not a variable");
 
   auto variable = std::get<Variable>(entry->get());
 
@@ -94,13 +98,13 @@ std::any IRGen::visit(const ast::VariableDefinition& ctx) {
 
   // A variable definition's value can only be a literal, which we know is a
   // Constant* so we static_cast it back to a Constant*.
-  llvm::Constant* init = cast<llvm::Constant>(
-      std::any_cast<llvm::Value*>(visit(*ctx.getValue())));
+  llvm::Constant* init =
+      cast<llvm::Constant>(std::any_cast<llvm::Value*>(visit(*ctx.getValue())));
 
   if (scope == 0) {
     llvm::GlobalVariable* g = new llvm::GlobalVariable(
-        *m_module, init->getType(), false, llvm::GlobalValue::ExternalLinkage, init,
-        name);
+        *m_module, init->getType(), false, llvm::GlobalValue::ExternalLinkage,
+        init, name);
     variable.allocation = g;
   }
 
@@ -108,10 +112,12 @@ std::any IRGen::visit(const ast::VariableDefinition& ctx) {
 }
 
 std::any IRGen::visit(const ast::AssignmentStatement& ctx) {
-  const auto expr = createLoadOrConstant(std::any_cast<llvm::Value*>(ctx.getExpr()->accept(*this)));
+  const auto expr = createLoadOrConstant(
+      std::any_cast<llvm::Value*>(ctx.getExpr()->accept(*this)));
 
   for (const auto& target : ctx.getTargets()) {
-    llvm::Value* allocation = std::any_cast<llvm::Value*>(target->accept(*this));
+    llvm::Value* allocation =
+        std::any_cast<llvm::Value*>(target->accept(*this));
     assert(allocation && "Variable allocation is nullptr");
 
     m_builder.CreateStore(expr, allocation);
@@ -121,8 +127,10 @@ std::any IRGen::visit(const ast::AssignmentStatement& ctx) {
 }
 
 std::any IRGen::visit(const ast::BinaryExpression<ast::Expression>& ctx) {
-  llvm::Value* lhs = createLoadOrConstant(std::any_cast<llvm::Value*>(ctx.getLHS()->accept(*this)));
-  llvm::Value* rhs = createLoadOrConstant(std::any_cast<llvm::Value*>(ctx.getRHS()->accept(*this)));
+  llvm::Value* lhs = createLoadOrConstant(
+      std::any_cast<llvm::Value*>(ctx.getLHS()->accept(*this)));
+  llvm::Value* rhs = createLoadOrConstant(
+      std::any_cast<llvm::Value*>(ctx.getRHS()->accept(*this)));
 
   switch (ctx.getOperator().getType()) {
   case TokenType::AND:
@@ -138,8 +146,10 @@ std::any IRGen::visit(const ast::BinaryExpression<ast::Expression>& ctx) {
 
 std::any
 IRGen::visit(const ast::BinaryExpression<ast::ConstantExpression>& ctx) {
-  llvm::Value* lhs = createLoadOrConstant(std::any_cast<llvm::Value*>(ctx.getLHS()->accept(*this)));
-  llvm::Value* rhs = createLoadOrConstant(std::any_cast<llvm::Value*>(ctx.getRHS()->accept(*this)));
+  llvm::Value* lhs = createLoadOrConstant(
+      std::any_cast<llvm::Value*>(ctx.getLHS()->accept(*this)));
+  llvm::Value* rhs = createLoadOrConstant(
+      std::any_cast<llvm::Value*>(ctx.getRHS()->accept(*this)));
 
   switch (ctx.getOperator().getType()) {
   case TokenType::PLUS:
@@ -172,7 +182,8 @@ IRGen::visit(const ast::BinaryExpression<ast::ConstantExpression>& ctx) {
 }
 
 std::any IRGen::visit(const ast::UnaryExpression<ast::Expression>& ctx) {
-  llvm::Value* rhs = createLoadOrConstant(std::any_cast<llvm::Value*>(ctx.getRHS()->accept(*this)));
+  llvm::Value* rhs = createLoadOrConstant(
+      std::any_cast<llvm::Value*>(ctx.getRHS()->accept(*this)));
 
   switch (ctx.getOperator().getType()) {
   case TokenType::NOT:
@@ -186,7 +197,8 @@ std::any IRGen::visit(const ast::UnaryExpression<ast::Expression>& ctx) {
 
 std::any
 IRGen::visit(const ast::UnaryExpression<ast::ConstantExpression>& ctx) {
-  llvm::Value* rhs = createLoadOrConstant(std::any_cast<llvm::Value*>(ctx.getRHS()->accept(*this)));
+  llvm::Value* rhs = createLoadOrConstant(
+      std::any_cast<llvm::Value*>(ctx.getRHS()->accept(*this)));
 
   switch (ctx.getOperator().getType()) {
   case TokenType::MINUS:

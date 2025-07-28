@@ -1,5 +1,5 @@
-#include "ast/VariableDefinition.h"
 #include "semantic/SymbolTableBuilder.h"
+#include "ast/VariableDefinition.h"
 
 #include "llvm/Support/FormatVariadic.h"
 

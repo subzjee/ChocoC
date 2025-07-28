@@ -15,12 +15,13 @@ using namespace llvm;
 using namespace chocopy;
 
 int main(int argc, char* argv[]) {
-  cl::list<std::string>
-      input_file_names(cl::Positional, cl::desc("<input_files>"), cl::OneOrMore);
+  cl::list<std::string> input_file_names(
+      cl::Positional, cl::desc("<input_files>"), cl::OneOrMore);
   cl::opt<std::string> output_file_name("o", cl::desc("Output filename"),
-                                              cl::value_desc("filename"));
+                                        cl::value_desc("filename"));
   cl::opt<bool> do_emit_llvm("emit-llvm", cl::desc("Emit LLVM IR"));
-  cl::opt<bool> do_pprint("pretty-print-ast", cl::desc("Emit a pretty print of the AST"));
+  cl::opt<bool> do_pprint("pretty-print-ast",
+                          cl::desc("Emit a pretty print of the AST"));
 
   cl::ParseCommandLineOptions(argc, argv);
 
@@ -63,7 +64,8 @@ int main(int argc, char* argv[]) {
 
     if (do_pprint) {
       ast::PrettyPrinter pretty_printer{};
-      const std::string pretty_print = std::any_cast<std::string>(root->accept(pretty_printer));
+      const std::string pretty_print =
+          std::any_cast<std::string>(root->accept(pretty_printer));
       llvm::outs() << pretty_print << '\n';
     }
 

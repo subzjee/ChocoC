@@ -28,8 +28,7 @@ public:
   /// Get an entry from the symbol table.
   /// @param name The name of the symbol to get.
   /// @returns The symbol.
-  OptionalRef<SymbolTableEntry>
-  getEntry(const llvm::StringRef name);
+  OptionalRef<SymbolTableEntry> getEntry(const llvm::StringRef name);
 
   /// Get all entries from the symbol table.
   /// @returns All entries.

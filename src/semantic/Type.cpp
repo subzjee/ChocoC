@@ -13,8 +13,7 @@ namespace chocopy::sema {
   return (*this == type) || isSubclass(type);
 }
 
-[[nodiscard]] bool
-Type::isAssignmentCompatible(const Type& type) const {
+[[nodiscard]] bool Type::isAssignmentCompatible(const Type& type) const {
   // 1. Ordinary subtyping.
   if (conformsTo(type)) {
     return true;
@@ -40,4 +39,4 @@ Type::isAssignmentCompatible(const Type& type) const {
 
   return false;
 }
-}
+} // namespace chocopy::sema

@@ -48,7 +48,7 @@ private:
     }
 
     m_token_stream.advance();
-    
+
     return true;
   }
 

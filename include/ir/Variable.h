@@ -8,4 +8,4 @@ struct Variable {
 
   llvm::Value* allocation{nullptr};
 };
-};
+}; // namespace chocopy::ir

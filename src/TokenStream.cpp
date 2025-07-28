@@ -1,8 +1,7 @@
 #include "TokenStream.h"
 
 namespace chocopy {
-OptionalRef<const Token>
-TokenStream::peek(const int n) const {
+OptionalRef<const Token> TokenStream::peek(const int n) const {
   const auto idx = m_current_idx + n;
 
   if (idx < 0 || idx >= m_tokens.size()) {

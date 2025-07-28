@@ -19,7 +19,9 @@ public:
 
   /// Get all targets to be assigned to.
   /// @returns The targets.
-  [[nodiscard]] llvm::ArrayRef<std::unique_ptr<Target>> getTargets() const { return m_targets; }
+  [[nodiscard]] llvm::ArrayRef<std::unique_ptr<Target>> getTargets() const {
+    return m_targets;
+  }
 
   /// Get the expression on the right-hand side.
   /// @returns The expression.

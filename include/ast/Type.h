@@ -21,11 +21,10 @@ public:
   /// Get the string representation of the type.
   /// @returns The string representation.
   [[nodiscard]] std::string getText() const {
-    return std::string(m_dimension, '[') +
-           m_base_type.getText().str() +
+    return std::string(m_dimension, '[') + m_base_type.getText().str() +
            std::string(m_dimension, ']');
   };
-  
+
   [[nodiscard]] llvm::SMRange getLocation() const override {
     return m_base_type.getLocation();
   };

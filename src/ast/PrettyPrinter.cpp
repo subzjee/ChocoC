@@ -52,8 +52,7 @@ std::any PrettyPrinter::visit(const Literal& ctx) {
 
 std::any PrettyPrinter::visit(const VariableDefinition& ctx) {
   ctx.getName()->accept(*this);
-  out << ": "
-      << ctx.getType()->getText() << " = ";
+  out << ": " << ctx.getType()->getText() << " = ";
   ctx.getValue()->accept(*this);
   out << '\n';
 

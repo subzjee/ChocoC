@@ -10,8 +10,7 @@ class TokenStream {
 public:
   TokenStream(std::span<const Token> tokens) : m_tokens(tokens) {};
 
-  [[nodiscard]] OptionalRef<const Token>
-  peek(const int n = 0) const;
+  [[nodiscard]] OptionalRef<const Token> peek(const int n = 0) const;
 
   OptionalRef<const Token> advance();
 

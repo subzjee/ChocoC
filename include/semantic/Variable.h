@@ -11,4 +11,4 @@ struct Variable {
   const Type& type;
   llvm::Value* allocation;
 };
-};
+}; // namespace chocopy::sema

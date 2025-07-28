@@ -1,3 +1,4 @@
+#include "parser/Parser.h"
 #include "ast/AssignmentStatement.h"
 #include "ast/Expression.h"
 #include "ast/Identifier.h"
@@ -6,7 +7,6 @@
 #include "ast/VariableDefinition.h"
 #include "lexer/Token.h"
 #include "lexer/TokenType.h"
-#include "parser/Parser.h"
 
 #include "llvm/Support/FormatVariadic.h"
 #include <utility>
@@ -23,8 +23,7 @@ std::unique_ptr<ast::Program> Parser::parseProgram() {
   }
 
   while (m_token_stream.peek()) {
-    if (match(TokenType::ID) &&
-        m_token_stream.peek(1) == TokenType::COLON) {
+    if (match(TokenType::ID) && m_token_stream.peek(1) == TokenType::COLON) {
       auto var_def_ctx = parseVariableDefinition();
       if (!var_def_ctx) {
         return nullptr;
@@ -61,7 +60,7 @@ std::unique_ptr<ast::Type> Parser::parseType() {
 
     if (!expect(TokenType::CLOSEBRACK)) {
       m_diag_manager.addError(formatv("expected `]`"),
-                      m_token_stream.peek()->get().getLocation());
+                              m_token_stream.peek()->get().getLocation());
       return nullptr;
     }
 
@@ -70,7 +69,7 @@ std::unique_ptr<ast::Type> Parser::parseType() {
   }
 
   m_diag_manager.addError(formatv("expected a type"),
-                      m_token_stream.peek()->get().getLocation());
+                          m_token_stream.peek()->get().getLocation());
 
   return nullptr;
 }
@@ -78,15 +77,16 @@ std::unique_ptr<ast::Type> Parser::parseType() {
 std::unique_ptr<ast::TypedVariable> Parser::parseTypedVariable() {
   if (!expect(TokenType::ID)) [[unlikely]] {
     m_diag_manager.addError(formatv("expected an identifier"),
-                      m_token_stream.peek()->get().getLocation());
+                            m_token_stream.peek()->get().getLocation());
     return nullptr;
   }
 
-  std::unique_ptr<ast::Identifier> identifier = std::make_unique<ast::Identifier>(*m_token_stream.peek(-1));
+  std::unique_ptr<ast::Identifier> identifier =
+      std::make_unique<ast::Identifier>(*m_token_stream.peek(-1));
 
   if (!expect(TokenType::COLON)) [[unlikely]] {
     m_diag_manager.addError(formatv("expected `:`"),
-                      m_token_stream.peek()->get().getLocation());
+                            m_token_stream.peek()->get().getLocation());
     return nullptr;
   }
 
@@ -95,7 +95,8 @@ std::unique_ptr<ast::TypedVariable> Parser::parseTypedVariable() {
     return nullptr;
   }
 
-  return std::make_unique<ast::TypedVariable>(std::move(identifier), std::move(type_ctx));
+  return std::make_unique<ast::TypedVariable>(std::move(identifier),
+                                              std::move(type_ctx));
 }
 
 std::unique_ptr<ast::VariableDefinition> Parser::parseVariableDefinition() {
@@ -106,7 +107,7 @@ std::unique_ptr<ast::VariableDefinition> Parser::parseVariableDefinition() {
 
   if (!expect(TokenType::ASSIGN)) {
     m_diag_manager.addError(formatv("expected `=`"),
-                      m_token_stream.peek()->get().getLocation());
+                            m_token_stream.peek()->get().getLocation());
     return nullptr;
   }
 
@@ -117,7 +118,7 @@ std::unique_ptr<ast::VariableDefinition> Parser::parseVariableDefinition() {
 
   if (!expect(TokenType::NEWLINE)) {
     m_diag_manager.addError(formatv("expected a new line after"),
-                      m_token_stream.peek(-1)->get().getLocation());
+                            m_token_stream.peek(-1)->get().getLocation());
     return nullptr;
   }
 
@@ -127,10 +128,9 @@ std::unique_ptr<ast::VariableDefinition> Parser::parseVariableDefinition() {
 
 std::unique_ptr<ast::Literal> Parser::parseLiteral() {
   if (!expect(TokenType::NONE, TokenType::FALSE, TokenType::TRUE,
-                            TokenType::INTLIT, TokenType::IDSTRING,
-                            TokenType::STRING)) {
+              TokenType::INTLIT, TokenType::IDSTRING, TokenType::STRING)) {
     m_diag_manager.addError(formatv("expected a literal value"),
-                  m_token_stream.peek()->get().getLocation());                          
+                            m_token_stream.peek()->get().getLocation());
     return nullptr;
   }
 
@@ -140,7 +140,7 @@ std::unique_ptr<ast::Literal> Parser::parseLiteral() {
 [[nodiscard]] std::unique_ptr<ast::Target> Parser::parseTarget() {
   if (!expect(TokenType::ID)) {
     m_diag_manager.addError(formatv("expected an identifier"),
-                  m_token_stream.peek(-1)->get().getLocation());
+                            m_token_stream.peek(-1)->get().getLocation());
     return nullptr;
   }
 
@@ -152,14 +152,17 @@ std::unique_ptr<ast::Literal> Parser::parseLiteral() {
 }
 
 [[nodiscard]] std::unique_ptr<ast::Statement> Parser::parseStatement() {
-  if (match(TokenType::IF)) {   // TODO: If-elif-else statements
+  if (match(TokenType::IF)) { // TODO: If-elif-else statements
     return nullptr;
-  } else if (match(TokenType::WHILE)) {   // TODO: While statements
+  } else if (match(TokenType::WHILE)) { // TODO: While statements
     return nullptr;
-  } else if (match(TokenType::FOR)) {   // TODO: For statements
+  } else if (match(TokenType::FOR)) { // TODO: For statements
     return nullptr;
-  } else if (match(TokenType::PASS, TokenType::RETURN, TokenType::ID, TokenType::NOT, TokenType::TRUE, TokenType::FALSE, TokenType::NONE,
-  TokenType::INTLIT, TokenType::IDSTRING, TokenType::STRING, TokenType::OPENBRACK, TokenType::OPENPAREN, TokenType::MINUS)) {
+  } else if (match(TokenType::PASS, TokenType::RETURN, TokenType::ID,
+                   TokenType::NOT, TokenType::TRUE, TokenType::FALSE,
+                   TokenType::NONE, TokenType::INTLIT, TokenType::IDSTRING,
+                   TokenType::STRING, TokenType::OPENBRACK,
+                   TokenType::OPENPAREN, TokenType::MINUS)) {
     auto simple_stmt = parseSimpleStatement();
     if (!simple_stmt) {
       return nullptr;
@@ -167,7 +170,7 @@ std::unique_ptr<ast::Literal> Parser::parseLiteral() {
 
     if (!expect(TokenType::NEWLINE)) {
       m_diag_manager.addError(formatv("expected a new line after"),
-                      m_token_stream.peek(-1)->get().getLocation());
+                              m_token_stream.peek(-1)->get().getLocation());
       return nullptr;
     }
 
@@ -175,7 +178,7 @@ std::unique_ptr<ast::Literal> Parser::parseLiteral() {
   }
 
   m_diag_manager.addError(formatv("expected a statement"),
-                        m_token_stream.peek()->get().getLocation());
+                          m_token_stream.peek()->get().getLocation());
 
   return nullptr;
 }
@@ -203,7 +206,7 @@ Parser::parseAssignmentStatement() {
 
     if (!expect(TokenType::ASSIGN)) {
       m_diag_manager.addError(formatv("expected `=`"),
-                      m_token_stream.peek()->get().getLocation());
+                              m_token_stream.peek()->get().getLocation());
       return nullptr;
     }
   }
