@@ -26,6 +26,8 @@ void DiagnosticsManager::addError(const Twine& message, SMRange location,
 
 void DiagnosticsManager::printErrors() const {
   for (const auto& diagnostic : m_diagnostics) {
-    diagnostic.print("", llvm::errs());
+    if (diagnostic.getKind() == llvm::SourceMgr::DK_Error) {
+      diagnostic.print("", llvm::errs());
+    }
   }
 }

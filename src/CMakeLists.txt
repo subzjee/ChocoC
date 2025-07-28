@@ -20,6 +20,7 @@ add_library(chocopc_lib
     parser/Parser.cpp
     semantic/SymbolTable.cpp
     semantic/SymbolTableBuilder.cpp
+    semantic/Type.cpp
     semantic/TypeChecker.cpp
     semantic/TypeEnvironment.cpp
 )

@@ -15,7 +15,6 @@ public:
       : m_diag_manager{diagnostics_manager} {};
 
   std::any visit(const ast::VariableDefinition& ctx) override;
-  std::any visit(const ast::AssignmentStatement& ctx) override;
 
   SymbolTable& getSymbolTable() { return m_symbol_table; };
 

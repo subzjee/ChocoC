@@ -64,7 +64,7 @@ std::any IRGen::visit(const ast::Literal& ctx) {
 }
 
 std::any IRGen::visit(const ast::VariableDefinition& ctx) {
-  const auto name = std::get<std::string>(ctx.getName().getValue());
+  const auto name = ctx.getName()->getValue();
   auto& variable = std::get<Variable>(m_symbol_table.getEntry(name)->get());
 
   // A variable definition's value can only be a literal, which we know is a
@@ -180,7 +180,7 @@ std::any IRGen::visit(const ast::GroupingExpression& ctx) {
 }
 
 std::any IRGen::visit(const ast::Identifier& ctx) {
-  const auto entry = m_symbol_table.getEntry(ctx.getName());
+  const auto entry = m_symbol_table.getEntry(ctx.getValue());
   assert(entry && "Identifier not stored in symbol table");
   assert(std::holds_alternative<Variable>(entry->get()) && "Entry is not a variable");
 

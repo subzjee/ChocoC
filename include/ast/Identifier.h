@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ast/ConstantExpression.h"
+#include "ast/Target.h"
 #include "lexer/Token.h"
 
 namespace chocopy::ast {
@@ -12,7 +13,7 @@ public:
 
   /// Get the name of the identifier.
   /// @returns The value.
-  [[nodiscard]] const llvm::StringRef getName() const {
+  [[nodiscard]] const llvm::StringRef getValue() const {
     return std::get<std::string>(m_identifier.getValue());
   };
 

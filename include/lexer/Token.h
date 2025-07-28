@@ -2,11 +2,10 @@
 
 #include "lexer/TokenType.h"
 
+#include "llvm/Support/SourceMgr.h"
 #include "llvm/Support/SMLoc.h"
 
 #include <variant>
-
-#include <iostream>
 
 namespace chocopy {
 using TokenValue =
@@ -18,9 +17,8 @@ public:
   /// @param type The token type of the token.
   /// @param text The value of the token.
   /// @param location The location of the token in the source file.
-  Token(const TokenType type, const TokenValue value = std::monostate{},
-        const llvm::SMRange location = {})
-      : m_value{value}, m_location{location}, m_type{type} {
+  Token(const TokenType type, const TokenValue value, const llvm::SMRange location)
+      : m_value{value}, m_type{type}, m_location{location}, m_text{location.isValid() ? std::string{location.Start.getPointer(), location.End.getPointer()} : ""} {
 #ifndef NDEBUG
     switch (type) {
     case TokenType::TRUE:
@@ -42,15 +40,16 @@ public:
       assert(std::holds_alternative<std::monostate>(value));
     }
 #endif
-  };
+  }
 
   constexpr bool operator==(const Token& other) const {
     return m_value == other.getValue() && m_type == other.getType();
   }
 
-  [[nodiscard]] const TokenValue& getValue() const { return m_value; };
-  [[nodiscard]] const llvm::SMRange& getLocation() const { return m_location; };
-  [[nodiscard]] const TokenType& getType() const { return m_type; };
+  [[nodiscard]] const TokenValue& getValue() const { return m_value; }
+  [[nodiscard]] const llvm::SMRange& getLocation() const { return m_location; }
+  [[nodiscard]] const TokenType& getType() const { return m_type; }
+  [[nodiscard]] std::string getText() const { return m_text; }
 
   [[nodiscard]] bool isLiteral() const {
     return m_type == TokenType::NONE || m_type == TokenType::FALSE ||
@@ -76,8 +75,9 @@ public:
 
 private:
   const TokenValue m_value;
-  const llvm::SMRange m_location;
   const TokenType m_type;
+  const llvm::SMRange m_location;
+  const std::string m_text;
 };
 
 /// Compare the token type of an optional token to a given type.

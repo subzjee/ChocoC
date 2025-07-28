@@ -3,6 +3,7 @@
 #include "ast/AssignmentStatement.h"
 #include "ast/ConstantExpression.h"
 #include "ast/Expression.h"
+#include "ast/Identifier.h"
 #include "ast/SimpleStatement.h"
 #include "ast/TypedVariable.h"
 #include "ast/VariableDefinition.h"
@@ -83,7 +84,7 @@ std::unique_ptr<ast::TypedVariable> Parser::parseTypedVariable() {
     return nullptr;
   }
 
-  const auto& name = m_token_stream.peek(-1);
+  std::unique_ptr<ast::Identifier> identifier = std::make_unique<ast::Identifier>(*m_token_stream.peek(-1));
 
   if (!expect(TokenType::COLON)) [[unlikely]] {
     m_diag_manager.addError(formatv("expected `:`"),
@@ -96,7 +97,7 @@ std::unique_ptr<ast::TypedVariable> Parser::parseTypedVariable() {
     return nullptr;
   }
 
-  return std::make_unique<ast::TypedVariable>(*name, std::move(type_ctx));
+  return std::make_unique<ast::TypedVariable>(std::move(identifier), std::move(type_ctx));
 }
 
 std::unique_ptr<ast::VariableDefinition> Parser::parseVariableDefinition() {

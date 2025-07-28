@@ -22,7 +22,7 @@ public:
   /// @returns The string representation.
   [[nodiscard]] std::string getText() const {
     return std::string(m_dimension, '[') +
-           std::get<std::string>(m_base_type.getValue()) +
+           m_base_type.getText() +
            std::string(m_dimension, ']');
   };
   [[nodiscard]] llvm::SMRange getLocation() const override {

@@ -12,12 +12,12 @@ class VariableDefinition : public ASTNode {
 public:
   VariableDefinition(std::unique_ptr<TypedVariable> typed_var,
                      std::unique_ptr<Literal> value)
-      : m_name(typed_var->getName()), m_type(std::move(typed_var->getType())),
+      : m_name(std::move(typed_var->getName())), m_type(std::move(typed_var->getType())),
         m_value(std::move(value)) {};
 
   /// Get the name of the variable.
   /// @returns The name.
-  [[nodiscard]] const Token& getName() const { return m_name; };
+  [[nodiscard]] const std::unique_ptr<Identifier>& getName() const { return m_name; };
 
   /// Get the type of the variable.
   /// @returns The type.
@@ -32,7 +32,7 @@ public:
   std::any accept(ASTVisitor& visitor) const override;
 
 private:
-  const Token& m_name;
+  std::unique_ptr<Identifier> m_name;
   std::unique_ptr<Type> m_type;
   std::unique_ptr<Literal> m_value;
 };
