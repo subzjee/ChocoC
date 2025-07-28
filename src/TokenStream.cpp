@@ -1,7 +1,7 @@
 #include "TokenStream.h"
 
 namespace chocopy {
-std::optional<std::reference_wrapper<const Token>>
+OptionalRef<const Token>
 TokenStream::peek(const int n) const {
   const auto idx = m_current_idx + n;
 
@@ -12,7 +12,7 @@ TokenStream::peek(const int n) const {
   return std::cref(m_tokens[idx]);
 }
 
-std::optional<std::reference_wrapper<const Token>> TokenStream::advance() {
+OptionalRef<const Token> TokenStream::advance() {
   const auto current_token = peek();
 
   if (current_token) {

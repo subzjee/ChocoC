@@ -3,7 +3,6 @@
 #include "DiagnosticsManager.h"
 #include "SymbolTable.h"
 #include "ast/ASTVisitor.h"
-#include "ast/AssignmentStatement.h"
 #include "ast/VariableDefinition.h"
 
 namespace chocopy {

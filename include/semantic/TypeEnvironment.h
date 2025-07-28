@@ -2,13 +2,7 @@
 
 #include "SymbolTable.h"
 
-#include "ast/BinaryExpression.h"
-#include "ast/ConstantExpression.h"
-#include "ast/Expression.h"
 #include "ast/Identifier.h"
-#include "ast/Literal.h"
-
-#include "llvm/Support/ErrorHandling.h"
 
 namespace chocopy {
 class TypeEnvironment {

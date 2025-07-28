@@ -31,6 +31,12 @@ public:
             std::make_unique<llvm::Module>(std::move(module_name), *m_ctx)},
         m_symbol_table(symbol_table) {};
 
+  /// Create a `load` instruction if \p allocation is not a constant.
+  /// Otherwise, get the constant.
+  /// @param allocation The allocation to make a load of.
+  /// @returns Either the load instruction or a constant.
+  [[nodiscard]] llvm::Value* createLoadOrConstant(llvm::Value* allocation);
+
   [[nodiscard]] const llvm::Module& getModule() const { return *m_module; }
 
   virtual std::any visit(const ast::Program& ctx) override;

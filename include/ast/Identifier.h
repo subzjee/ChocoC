@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ast/ConstantExpression.h"
-#include "ast/Target.h"
 #include "lexer/Token.h"
 
 namespace chocopy::ast {

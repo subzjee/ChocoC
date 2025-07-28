@@ -13,6 +13,19 @@
 #include <variant>
 
 namespace chocopy {
+llvm::Value* IRGen::createLoadOrConstant(llvm::Value* allocation) {
+  // If the allocation is a constant, we do not need to load it.
+  if (llvm::isa<llvm::Constant>(allocation)) {
+    return allocation;
+  }
+
+  if (auto global = llvm::dyn_cast<llvm::GlobalVariable>(allocation)) {
+    return cast<llvm::Value>(m_builder.CreateLoad(global->getValueType(), allocation));
+  }
+
+  return cast<llvm::Value>(m_builder.CreateLoad(allocation->getType(), allocation));
+}
+
 void IRGen::prologue() {
   // Setup the main function.
   llvm::FunctionType* func_type =
@@ -65,6 +78,15 @@ std::any IRGen::visit(const ast::Literal& ctx) {
   return {};
 }
 
+std::any IRGen::visit(const ast::Identifier& ctx) {
+  const auto entry = m_symbol_table.getEntry(ctx.getValue());
+  assert(entry && "Identifier not stored in symbol table");
+  assert(std::holds_alternative<Variable>(entry->get()) && "Entry is not a variable");
+
+  auto variable = std::get<Variable>(entry->get());
+  return variable.allocation;
+}
+
 std::any IRGen::visit(const ast::VariableDefinition& ctx) {
   const auto name = ctx.getName()->getValue();
   auto& variable = std::get<Variable>(m_symbol_table.getEntry(name)->get());
@@ -85,7 +107,7 @@ std::any IRGen::visit(const ast::VariableDefinition& ctx) {
 }
 
 std::any IRGen::visit(const ast::AssignmentStatement& ctx) {
-  const auto expr = std::any_cast<llvm::Value*>(ctx.getExpr()->accept(*this));
+  const auto expr = createLoadOrConstant(std::any_cast<llvm::Value*>(ctx.getExpr()->accept(*this)));
 
   for (const auto& target : ctx.getTargets()) {
     const auto& entry = m_symbol_table.getEntry(
@@ -100,8 +122,8 @@ std::any IRGen::visit(const ast::AssignmentStatement& ctx) {
 }
 
 std::any IRGen::visit(const ast::BinaryExpression<ast::Expression>& ctx) {
-  llvm::Value* lhs = std::any_cast<llvm::Value*>(ctx.getLHS()->accept(*this));
-  llvm::Value* rhs = std::any_cast<llvm::Value*>(ctx.getRHS()->accept(*this));
+  llvm::Value* lhs = createLoadOrConstant(std::any_cast<llvm::Value*>(ctx.getLHS()->accept(*this)));
+  llvm::Value* rhs = createLoadOrConstant(std::any_cast<llvm::Value*>(ctx.getRHS()->accept(*this)));
 
   switch (ctx.getOperator().getType()) {
   case TokenType::AND:
@@ -117,8 +139,8 @@ std::any IRGen::visit(const ast::BinaryExpression<ast::Expression>& ctx) {
 
 std::any
 IRGen::visit(const ast::BinaryExpression<ast::ConstantExpression>& ctx) {
-  llvm::Value* lhs = std::any_cast<llvm::Value*>(ctx.getLHS()->accept(*this));
-  llvm::Value* rhs = std::any_cast<llvm::Value*>(ctx.getRHS()->accept(*this));
+  llvm::Value* lhs = createLoadOrConstant(std::any_cast<llvm::Value*>(ctx.getLHS()->accept(*this)));
+  llvm::Value* rhs = createLoadOrConstant(std::any_cast<llvm::Value*>(ctx.getRHS()->accept(*this)));
 
   switch (ctx.getOperator().getType()) {
   case TokenType::PLUS:
@@ -151,7 +173,7 @@ IRGen::visit(const ast::BinaryExpression<ast::ConstantExpression>& ctx) {
 }
 
 std::any IRGen::visit(const ast::UnaryExpression<ast::Expression>& ctx) {
-  llvm::Value* rhs = std::any_cast<llvm::Value*>(ctx.getRHS()->accept(*this));
+  llvm::Value* rhs = createLoadOrConstant(std::any_cast<llvm::Value*>(ctx.getRHS()->accept(*this)));
 
   switch (ctx.getOperator().getType()) {
   case TokenType::NOT:
@@ -165,7 +187,7 @@ std::any IRGen::visit(const ast::UnaryExpression<ast::Expression>& ctx) {
 
 std::any
 IRGen::visit(const ast::UnaryExpression<ast::ConstantExpression>& ctx) {
-  llvm::Value* rhs = std::any_cast<llvm::Value*>(ctx.getRHS()->accept(*this));
+  llvm::Value* rhs = createLoadOrConstant(std::any_cast<llvm::Value*>(ctx.getRHS()->accept(*this)));
 
   switch (ctx.getOperator().getType()) {
   case TokenType::MINUS:
@@ -179,19 +201,5 @@ IRGen::visit(const ast::UnaryExpression<ast::ConstantExpression>& ctx) {
 
 std::any IRGen::visit(const ast::GroupingExpression& ctx) {
   return ctx.getExpression()->accept(*this);
-}
-
-std::any IRGen::visit(const ast::Identifier& ctx) {
-  const auto entry = m_symbol_table.getEntry(ctx.getValue());
-  assert(entry && "Identifier not stored in symbol table");
-  assert(std::holds_alternative<Variable>(entry->get()) && "Entry is not a variable");
-
-  auto variable = std::get<Variable>(entry->get());
-
-  if (auto global = llvm::dyn_cast<llvm::GlobalVariable>(variable.allocation)) {
-    return cast<llvm::Value>(m_builder.CreateLoad(global->getValueType(), variable.allocation));
-  }
-
-  return cast<llvm::Value>(m_builder.CreateLoad(variable.allocation->getType(), variable.allocation));
 }
 } // namespace chocopy
