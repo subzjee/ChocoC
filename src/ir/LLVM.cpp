@@ -84,6 +84,7 @@ std::any IRGen::visit(const ast::Identifier& ctx) {
   assert(std::holds_alternative<Variable>(entry->get()) && "Entry is not a variable");
 
   auto variable = std::get<Variable>(entry->get());
+
   return variable.allocation;
 }
 
@@ -110,12 +111,10 @@ std::any IRGen::visit(const ast::AssignmentStatement& ctx) {
   const auto expr = createLoadOrConstant(std::any_cast<llvm::Value*>(ctx.getExpr()->accept(*this)));
 
   for (const auto& target : ctx.getTargets()) {
-    const auto& entry = m_symbol_table.getEntry(
-        std::get<std::string>(target->getName().getValue()));
-    const auto& variable = std::get<Variable>(entry->get());
+    llvm::Value* allocation = std::any_cast<llvm::Value*>(target->accept(*this));
+    assert(allocation && "Variable allocation is nullptr");
 
-    assert(variable.allocation && "Variable allocation is nullptr");
-    m_builder.CreateStore(expr, variable.allocation);
+    m_builder.CreateStore(expr, allocation);
   }
 
   return {};

@@ -33,13 +33,16 @@ std::any TypeChecker::visit(const ast::AssignmentStatement& ctx) {
   }
 
   for (const auto& target : ctx.getTargets()) {
-    const auto name = target->getName().getText();
-    const Type& lhs_type = m_local_env.typeOf(target->getName());
+    const auto lhs_type = std::any_cast<std::optional<const Type>>(target->accept(*this));
 
-    if (!rhs_type->isAssignmentCompatible(lhs_type)) {
+    if (!lhs_type) {
+      continue;
+    }
+
+    if (!rhs_type->isAssignmentCompatible(*lhs_type)) {
       m_diag_manager.addError(
           llvm::formatv("type mismatch: expected: {0}, got: {1}",
-                        lhs_type.toString(), rhs_type->toString()),
+                        lhs_type->toString(), rhs_type->toString()),
           ctx.getExpr()->getLocation(),
           {target->getLocation(), ctx.getExpr()->getLocation()});
     }

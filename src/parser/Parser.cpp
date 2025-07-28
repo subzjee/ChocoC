@@ -144,7 +144,7 @@ std::unique_ptr<ast::Literal> Parser::parseLiteral() {
     return nullptr;
   }
 
-  return std::make_unique<ast::Target>(*m_token_stream.peek(-1));
+  return std::make_unique<ast::Identifier>(*m_token_stream.peek(-1));
 }
 
 [[nodiscard]] std::unique_ptr<ast::Expression> Parser::parseExpression() {

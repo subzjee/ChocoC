@@ -1,10 +1,11 @@
 #pragma once
 
 #include "ast/ConstantExpression.h"
+#include "ast/Target.h"
 #include "lexer/Token.h"
 
 namespace chocopy::ast {
-class Identifier : public ConstantExpression {
+class Identifier : public Target, public ConstantExpression {
 public:
   Identifier(const Token& identifier) : m_identifier(identifier) {
     assert(identifier.getType() == TokenType::ID);
@@ -12,8 +13,8 @@ public:
 
   /// Get the name of the identifier.
   /// @returns The value.
-  [[nodiscard]] const llvm::StringRef getValue() const {
-    return std::get<std::string>(m_identifier.getValue());
+  [[nodiscard]] llvm::StringRef getValue() const {
+    return m_identifier.getText();
   };
 
   /// Get the location of the identifier.

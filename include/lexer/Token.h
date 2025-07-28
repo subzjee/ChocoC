@@ -49,7 +49,7 @@ public:
   [[nodiscard]] const TokenValue& getValue() const { return m_value; }
   [[nodiscard]] const llvm::SMRange& getLocation() const { return m_location; }
   [[nodiscard]] const TokenType& getType() const { return m_type; }
-  [[nodiscard]] std::string getText() const { return m_text; }
+  [[nodiscard]] llvm::StringRef getText() const { return m_text; }
 
   [[nodiscard]] bool isLiteral() const {
     return m_type == TokenType::NONE || m_type == TokenType::FALSE ||

@@ -11,7 +11,7 @@ SymbolTable::addEntry(const llvm::StringRef name,
   return m_entries.try_emplace(name, entry);
 }
 
-std::optional<std::reference_wrapper<SymbolTableEntry>>
+OptionalRef<SymbolTableEntry>
 SymbolTable::getEntry(const llvm::StringRef name) {
   auto it = m_entries.find(name);
 

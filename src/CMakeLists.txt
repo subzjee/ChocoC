@@ -10,7 +10,6 @@ add_library(chocopc_lib
     ast/Literal.cpp
     ast/PrettyPrinter.cpp
     ast/Program.cpp
-    ast/Target.cpp
     ast/Type.cpp
     ast/UnaryExpression.cpp
     ast/VariableDefinition.cpp
