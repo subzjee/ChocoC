@@ -1,12 +1,14 @@
-#include "ir/LLVM.h"
 #include "ast/BinaryExpression.h"
 #include "ast/ConstantExpression.h"
 #include "ast/GroupingExpression.h"
 #include "ast/Identifier.h"
+#include "ir/LLVM.h"
 #include "semantic/SymbolTable.h"
+
+#include "llvm/IR/GlobalVariable.h"
+#include "llvm/Support/Casting.h"
+
 #include <any>
-#include <llvm-21/llvm/IR/GlobalVariable.h>
-#include <llvm-21/llvm/Support/Casting.h>
 #include <utility>
 #include <variant>
 

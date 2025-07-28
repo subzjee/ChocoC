@@ -1,7 +1,4 @@
-#include "parser/Parser.h"
-
 #include "ast/AssignmentStatement.h"
-#include "ast/ConstantExpression.h"
 #include "ast/Expression.h"
 #include "ast/Identifier.h"
 #include "ast/SimpleStatement.h"
@@ -9,6 +6,7 @@
 #include "ast/VariableDefinition.h"
 #include "lexer/Token.h"
 #include "lexer/TokenType.h"
+#include "parser/Parser.h"
 
 #include "llvm/Support/FormatVariadic.h"
 #include <utility>

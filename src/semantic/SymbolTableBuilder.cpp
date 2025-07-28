@@ -1,6 +1,5 @@
-#include "semantic/SymbolTableBuilder.h"
-#include "ast/AssignmentStatement.h"
 #include "ast/VariableDefinition.h"
+#include "semantic/SymbolTableBuilder.h"
 
 #include "llvm/Support/FormatVariadic.h"
 

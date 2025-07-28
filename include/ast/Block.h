@@ -6,7 +6,7 @@
 #include <vector>
 
 namespace chocopy::ast {
-class Block {
+class Block : public ASTNode {
 public:
   Block(std::vector<std::unique_ptr<Statement>> statements)
       : m_statements(std::move(statements)) {};

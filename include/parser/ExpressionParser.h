@@ -2,10 +2,8 @@
 
 #include "DiagnosticsManager.h"
 #include "TokenStream.h"
-#include "ast/BinaryExpression.h"
 #include "ast/Expression.h"
 #include "lexer/TokenType.h"
-#include "parser/ExpressionKind.h"
 
 #include <memory>
 #include <optional>

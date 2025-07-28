@@ -1,13 +1,10 @@
-#include "parser/ExpressionParser.h"
 #include "ast/BinaryExpression.h"
 #include "ast/ConstantExpression.h"
 #include "ast/GroupingExpression.h"
 #include "ast/Identifier.h"
 #include "ast/Literal.h"
 #include "ast/UnaryExpression.h"
-#include "parser/ExpressionKind.h"
-
-#include "llvm/Support/raw_ostream.h"
+#include "parser/ExpressionParser.h"
 
 #include <memory>
 
@@ -21,46 +18,52 @@ ExpressionParser::parseExpression(unsigned int min_power) {
   }
 
   while (const auto token = m_token_stream.peek()) {
-    const auto binding_power = getInfixPower(token->get().getType());
+    const auto token_type = token->get().getType();
+
+    if (!token->get().isBinOp()) {
+      break;
+    }
+
+    const auto binding_power = getInfixPower(token_type);
 
     if (!binding_power || binding_power->first < min_power) {
       break;
     }
 
-    if (expect(TokenType::AND, TokenType::OR)) {
-      auto rhs = parseExpression(binding_power->second);
+    m_token_stream.advance();
 
-      if (!rhs) {
-        return nullptr;
-      }
+    auto rhs = parseExpression(binding_power->second);
 
-      lhs = std::make_unique<ast::BinaryExpression<ast::Expression>>(
-          std::move(lhs), token->get(), std::move(rhs));
-
-    } else if (token->get().isBinOp()) {
-      m_token_stream.advance();
-
-      auto rhs = parseExpression(binding_power->second);
-
-      if (!rhs) {
-        return nullptr;
-      }
-
-      if (!dynamic_cast<ast::ConstantExpression*>(lhs.get())) {
-        return nullptr;
-      }
-
-      if (!dynamic_cast<ast::ConstantExpression*>(rhs.get())) {
-        return nullptr;
-      }
-
-      lhs = std::make_unique<ast::BinaryExpression<ast::ConstantExpression>>(
-          std::unique_ptr<ast::ConstantExpression>(
-              static_cast<ast::ConstantExpression*>(lhs.release())),
-          token->get(),
-          std::unique_ptr<ast::ConstantExpression>(
-              static_cast<ast::ConstantExpression*>(rhs.release())));
+    if (!rhs) {
+      return nullptr;
     }
+
+    // `AND` and `OR` are the only binary operators that have expressions instead of
+    // constant expressions as their operands. All constant expressions are expressions but not vice versa.
+    // Therefore, if the operator is either of these, we don't have to check whether the operands are
+    // constant expressions.
+    if (token_type == TokenType::AND || token_type == TokenType::OR) {
+      lhs = std::make_unique<ast::BinaryExpression<ast::Expression>>(
+        std::move(lhs), token->get(), std::move(rhs));
+      continue;
+    }
+
+    if (!dynamic_cast<ast::ConstantExpression*>(lhs.get())) {
+      m_diag_manager.addError("expected a constant expression", lhs.get()->getLocation());
+      return nullptr;
+    }
+
+    if (!dynamic_cast<ast::ConstantExpression*>(rhs.get())) {
+      m_diag_manager.addError("expected a constant expression", rhs.get()->getLocation());
+      return nullptr;
+    }
+
+    lhs = std::make_unique<ast::BinaryExpression<ast::ConstantExpression>>(
+        std::unique_ptr<ast::ConstantExpression>(
+            static_cast<ast::ConstantExpression*>(lhs.release())),
+        token->get(),
+        std::unique_ptr<ast::ConstantExpression>(
+            static_cast<ast::ConstantExpression*>(rhs.release())));
   }
 
   return lhs;
@@ -84,6 +87,7 @@ ExpressionParser::parseExpression(unsigned int min_power) {
     auto expr = parseExpression(0);
 
     if (!expect(TokenType::CLOSEPAREN)) {
+      m_diag_manager.addError("unclosed '('", token->get().getLocation());
       return nullptr;
     }
     auto right_paren = m_token_stream.peek(-1);
@@ -93,7 +97,8 @@ ExpressionParser::parseExpression(unsigned int min_power) {
     const auto& op = m_token_stream.peek(-1);
     auto rhs = parseExpression(getPrefixPower(op->get().getType())->second);
 
-    if (!dynamic_cast<ast::ConstantExpression*>(rhs.get())) {
+    if (!rhs || !dynamic_cast<ast::ConstantExpression*>(rhs.get())) {
+      m_diag_manager.addError("missing operand for unary '-'", op->get().getLocation());
       return nullptr;
     }
 
@@ -104,6 +109,11 @@ ExpressionParser::parseExpression(unsigned int min_power) {
   } else if (expect(TokenType::NOT)) {
     const auto& op = m_token_stream.peek(-1);
     auto rhs = parseExpression(getPrefixPower(op->get().getType())->second);
+
+    if (!rhs) {
+      m_diag_manager.addError("missing operand for 'not'", op->get().getLocation());
+      return nullptr;
+    }
 
     return std::make_unique<ast::UnaryExpression<ast::Expression>>(
         op->get(), std::move(rhs));
