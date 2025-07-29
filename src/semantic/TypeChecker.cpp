@@ -1,11 +1,4 @@
 #include "semantic/TypeChecker.h"
-#include "ast/AssignmentStatement.h"
-#include "ast/GroupingExpression.h"
-#include "ast/Identifier.h"
-#include "ast/VariableDefinition.h"
-#include "diagnostics/DiagID.h"
-
-#include "llvm/Support/FormatVariadic.h"
 
 namespace chocopy {
 std::any TypeChecker::visit(const ast::VariableDefinition& ctx) {
