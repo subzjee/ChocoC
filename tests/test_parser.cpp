@@ -1,5 +1,5 @@
-#include "DiagnosticsManager.h"
 #include "ast/PrettyPrinter.h"
+#include "diagnostics/DiagnosticsManager.h"
 #include "lexer/Lexer.h"
 #include "parser/Parser.h"
 
@@ -19,8 +19,8 @@ protected:
 };
 
 TEST_P(ParserTest, Parser) {
-  auto input_file = llvm::MemoryBuffer::getFile("tests/input/" + GetParam() + ".choco");
-  auto golden_file = llvm::MemoryBuffer::getFile("tests/input/" + GetParam() + ".golden");
+  auto input_file = llvm::MemoryBuffer::getFile("tests/input/parser/" + GetParam() + ".choco");
+  auto golden_file = llvm::MemoryBuffer::getFile("tests/input/parser/" + GetParam() + ".golden");
 
   unsigned int buffer_id =
       source_manager.AddNewSourceBuffer(std::move(input_file.get()), llvm::SMLoc());
@@ -39,7 +39,8 @@ TEST_P(ParserTest, Parser) {
 }
 
 static const std::vector<std::string> test_names = {
-  "vardefs"
+  "vardefs",
+  "binary_ops"
 };
 
 INSTANTIATE_TEST_SUITE_P(
