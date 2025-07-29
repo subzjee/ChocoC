@@ -24,20 +24,51 @@ public:
     return parseProgram();
   };
 
+  /// Parse a program.
+  /// @returns AST node for a program.
   [[nodiscard]] std::unique_ptr<ast::Program> parseProgram();
+
+  /// Parse a typed variable.
+  /// @returns AST node for a typed variable.
   [[nodiscard]] std::unique_ptr<ast::TypedVariable> parseTypedVariable();
+
+  /// Parse a type.
+  /// @returns AST node for a type.
   [[nodiscard]] std::unique_ptr<ast::Type> parseType();
+
+  /// Parse a variable definition.
+  /// @returns AST node for a variable definition.
   [[nodiscard]] std::unique_ptr<ast::VariableDefinition>
   parseVariableDefinition();
+
+  /// Parse a literal.
+  /// @returns AST node for a literal.
   [[nodiscard]] std::unique_ptr<ast::Literal> parseLiteral();
+
+  /// Parse a target.
+  /// @returns AST node for a target.
   [[nodiscard]] std::unique_ptr<ast::Target> parseTarget();
+
+  /// Parse an expression.
+  /// @returns AST node for an expression.
   [[nodiscard]] std::unique_ptr<ast::Expression> parseExpression();
+
+  /// Parse a statement.
+  /// @returns AST node for a statement.
   [[nodiscard]] std::unique_ptr<ast::Statement> parseStatement();
+
+  /// Parse a simple statement.
+  /// @returns AST node for a simple statement.
   [[nodiscard]] std::unique_ptr<ast::SimpleStatement> parseSimpleStatement();
+
+  /// Parse an assignment statement.
+  /// @returns AST node for an assignment statement.
   [[nodiscard]] std::unique_ptr<ast::AssignmentStatement>
   parseAssignmentStatement();
 
 private:
+  /// Check whether the current token in the stream matches one of the given token types.
+  /// @returns Whether current token matches.
   template <typename... TokenTypes>
   [[nodiscard]] bool match(const TokenTypes&... token_types) {
     const auto current_token = m_token_stream.peek();
@@ -53,6 +84,9 @@ private:
     return false;
   }
 
+  /// Check whether the current token in the stream matches one of the given token types.
+  /// If so, advance the stream.
+  /// @returns Whether the current token matches.
   template <typename... TokenTypes>
   [[nodiscard]] bool expect(const TokenTypes&... token_types) {
     if (!match(token_types...)) {

@@ -12,11 +12,28 @@ struct Type {
 
   constexpr bool operator==(const Type& other) const = default;
 
+  /// Check if the type is equivalent to the <Empty> type.
+  /// @returns Whether the type is equivalent to the Empty type.
   constexpr bool isEmpty() const { return *this == *Type::getEmptyType(); }
+
+  /// Check if the type is equivalent to the <None> type.
+  /// @returns Whether the type is equivalent to the Empty type.
   constexpr bool isNone() const { return *this == *Type::getNoneType(); }
+
+  /// Check if the type is equivalent to the `int` type.
+  /// @returns Whether the type is equivalent to the Empty type.
   constexpr bool isInteger() const { return *this == *Type::getIntegerType(); }
+
+  /// Check if the type is equivalent to the `bool` type.
+  /// @returns Whether the type is equivalent to the Empty type.
   constexpr bool isBoolean() const { return *this == *Type::getBooleanType(); }
+
+  /// Check if the type is equivalent to the `str` type.
+  /// @returns Whether the type is equivalent to the Empty type.
   constexpr bool isString() const { return *this == *Type::getStringType(); }
+
+  /// Check if the type is a list.
+  /// @returns Whether the type is a list.
   constexpr bool isList() const { return dimension >= 1; }
 
   /// Check whether the type is a subclass of \p type.

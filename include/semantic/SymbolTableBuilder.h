@@ -13,9 +13,11 @@ public:
   SymbolTableBuilder(DiagnosticsManager& diagnostics_manager)
       : m_diag_manager{diagnostics_manager} {};
 
-  std::any visit(const ast::VariableDefinition& ctx) override;
-
+  /// Get the symbol table.
+  /// @returns The symbol table.
   SymbolTable& getSymbolTable() { return m_symbol_table; };
+
+  std::any visit(const ast::VariableDefinition& ctx) override;
 
 private:
   DiagnosticsManager& m_diag_manager;

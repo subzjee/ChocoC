@@ -26,6 +26,8 @@ public:
   parseExpression(unsigned int min_power = 0);
 
 private:
+  /// Check whether the current token in the stream matches one of the given token types.
+  /// @returns Whether current token matches.
   template <typename... TokenTypes>
   [[nodiscard]] bool match(const TokenTypes&... token_types) {
     const auto current_token = m_token_stream.peek();
@@ -41,6 +43,9 @@ private:
     return false;
   }
 
+  /// Check whether the current token in the stream matches one of the given token types.
+  /// If so, advance the stream.
+  /// @returns Whether the current token matches.
   template <typename... TokenTypes>
   [[nodiscard]] bool expect(const TokenTypes&... token_types) {
     if (!match(token_types...)) {

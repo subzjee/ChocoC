@@ -147,11 +147,17 @@ std::unique_ptr<ast::Literal> Parser::parseLiteral() {
 [[nodiscard]] std::unique_ptr<ast::Statement> Parser::parseStatement() {
   if (match(TokenType::IF)) { // TODO: If-elif-else statements
     return nullptr;
-  } else if (match(TokenType::WHILE)) { // TODO: While statements
+  }
+  
+  if (match(TokenType::WHILE)) { // TODO: While statements
     return nullptr;
-  } else if (match(TokenType::FOR)) { // TODO: For statements
+  }
+
+  if (match(TokenType::FOR)) { // TODO: For statements
     return nullptr;
-  } else if (match(TokenType::PASS, TokenType::RETURN, TokenType::ID,
+  }
+
+  if (match(TokenType::PASS, TokenType::RETURN, TokenType::ID,
                    TokenType::NOT, TokenType::TRUE, TokenType::FALSE,
                    TokenType::NONE, TokenType::INTLIT, TokenType::IDSTRING,
                    TokenType::STRING, TokenType::OPENBRACK,

@@ -45,12 +45,17 @@ std::any IRGen::visit(const ast::Literal& ctx) {
     return cast<llvm::Value>(
         llvm::ConstantInt::get(llvm::Type::getInt32Ty(*m_ctx),
                                std::get<std::int32_t>(ctx.getValue())));
-  } else if (ctx.getType() == "bool") {
+  }
+  
+  if (ctx.getType() == "bool") {
     return cast<llvm::Value>(llvm::ConstantInt::get(
         llvm::Type::getInt1Ty(*m_ctx), std::get<bool>(ctx.getValue())));
-  } else if (ctx.getType() == "str") {
+  }
+  
+  if (ctx.getType() == "str") {
     const std::string text = std::get<std::string>(ctx.getValue());
 
+    // Perform string interning.
     if (!m_string_allocations.contains(text)) {
       m_string_allocations[text] =
           m_builder.CreateGlobalString(std::get<std::string>(ctx.getValue()),
