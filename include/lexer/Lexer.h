@@ -3,12 +3,7 @@
 #include "diagnostics/DiagnosticsManager.h"
 #include "lexer/Token.h"
 
-#include "llvm/Support/SourceMgr.h"
-
-#include <span>
 #include <stack>
-#include <variant>
-#include <vector>
 
 namespace chocopy {
 class Lexer {
