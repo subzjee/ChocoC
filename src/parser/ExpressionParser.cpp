@@ -80,9 +80,13 @@ ExpressionParser::parseExpression(unsigned int min_power) {
   if (expect(TokenType::STRING, TokenType::IDSTRING, TokenType::FALSE,
              TokenType::TRUE, TokenType::INTLIT, TokenType::NONE)) {
     return std::make_unique<ast::Literal>(*token);
-  } else if (expect(TokenType::ID)) {
+  } 
+
+  if (expect(TokenType::ID)) {
     return std::make_unique<ast::Identifier>(*token);
-  } else if (expect(TokenType::OPENPAREN)) {
+  }
+  
+  if (expect(TokenType::OPENPAREN)) {
     auto left_paren = m_token_stream.peek(-1);
     auto expr = parseExpression(0);
 
@@ -95,7 +99,9 @@ ExpressionParser::parseExpression(unsigned int min_power) {
 
     return std::make_unique<ast::GroupingExpression>(
         left_paren->get(), std::move(expr), right_paren->get());
-  } else if (expect(TokenType::MINUS)) {
+  }
+
+  if (expect(TokenType::MINUS)) {
     const auto& op = m_token_stream.peek(-1);
     auto rhs = parseExpression(getPrefixPower(op->get().getType())->second);
 
@@ -108,7 +114,9 @@ ExpressionParser::parseExpression(unsigned int min_power) {
     return std::make_unique<ast::UnaryExpression<ast::ConstantExpression>>(
         op->get(), std::unique_ptr<ast::ConstantExpression>(
                        static_cast<ast::ConstantExpression*>(rhs.release())));
-  } else if (expect(TokenType::NOT)) {
+  } 
+  
+  if (expect(TokenType::NOT)) {
     const auto& op = m_token_stream.peek(-1);
     auto rhs = parseExpression(getPrefixPower(op->get().getType())->second);
 
