@@ -36,6 +36,7 @@ public:
   /// Get the formatted message of a diagnostic ID's message.
   /// It will format based on index, where the argument's index is given as {idx}.
   /// For example: "{1} and {0}" with {"a", "b"} will return "b and a".
+  /// If the index does not exist in \p format_args, it will simply append it verbatim.
   /// @param diag_id The diagnostic ID.
   /// @param format_args The format arguments.
   /// @returns The formatted message.
@@ -44,12 +45,21 @@ public:
     const auto& diag_info = getDiagInfo(diag_id);
 
     std::string result;
-    size_t i = 0, arg_index = 0;
+    size_t i = 0;
 
     while (i < diag_info.format.size()) {
-      if (arg_index < format_args.size() && diag_info.format[i] == '{' &&
-          i + 1 < diag_info.format.size() && diag_info.format[i + 2] == '}') {
-        result += format_args[arg_index++];
+      if (diag_info.format[i] == '{' &&
+          i + 1 < diag_info.format.size() - 1 && std::isdigit(diag_info.format[i+1]) && diag_info.format[i + 2] == '}') {
+        std::size_t arg_index = diag_info.format[i + 1] - '0';
+
+        if (arg_index < format_args.size()) {
+          result += format_args[arg_index];
+        } else {
+          result += "{";
+          result += diag_info.format[i+1];
+          result += '}';
+        }
+
         i += 3;
       } else {
         result += diag_info.format[i++];
