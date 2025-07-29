@@ -41,7 +41,8 @@ TEST_P(ParserTest, Parser) {
 static const std::vector<std::string> test_names = {
   "vardefs",
   "binary_ops",
-  "unary_ops"
+  "unary_ops",
+  "operator_precedence"
 };
 
 INSTANTIATE_TEST_SUITE_P(
