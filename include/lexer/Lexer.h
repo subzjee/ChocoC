@@ -1,6 +1,6 @@
 #pragma once
 
-#include "DiagnosticsManager.h"
+#include "diagnostics/DiagnosticsManager.h"
 #include "lexer/Token.h"
 
 #include "llvm/Support/SourceMgr.h"

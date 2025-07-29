@@ -5,6 +5,7 @@
 #include "ast/Identifier.h"
 #include "ast/Literal.h"
 #include "ast/UnaryExpression.h"
+#include "diagnostics/DiagID.h"
 
 #include <memory>
 
@@ -50,14 +51,14 @@ ExpressionParser::parseExpression(unsigned int min_power) {
     }
 
     if (!dynamic_cast<ast::ConstantExpression*>(lhs.get())) {
-      m_diag_manager.addError("expected a constant expression",
-                              lhs.get()->getLocation());
+      m_diag_manager.report(DiagID::ExpectedToken, lhs.get()->getLocation(),
+                            {"a constant expression"});
       return nullptr;
     }
 
     if (!dynamic_cast<ast::ConstantExpression*>(rhs.get())) {
-      m_diag_manager.addError("expected a constant expression",
-                              rhs.get()->getLocation());
+      m_diag_manager.report(DiagID::ExpectedToken, rhs.get()->getLocation(),
+                            {"a constant expression"});
       return nullptr;
     }
 
@@ -89,7 +90,8 @@ ExpressionParser::parseExpression(unsigned int min_power) {
     auto expr = parseExpression(0);
 
     if (!expect(TokenType::CLOSEPAREN)) {
-      m_diag_manager.addError("unclosed '('", token->get().getLocation());
+      m_diag_manager.report(DiagID::UnclosedParenthesis,
+                            token->get().getLocation());
       return nullptr;
     }
     auto right_paren = m_token_stream.peek(-1);
@@ -101,8 +103,8 @@ ExpressionParser::parseExpression(unsigned int min_power) {
     auto rhs = parseExpression(getPrefixPower(op->get().getType())->second);
 
     if (!rhs || !dynamic_cast<ast::ConstantExpression*>(rhs.get())) {
-      m_diag_manager.addError("missing operand for unary '-'",
-                              op->get().getLocation());
+      m_diag_manager.report(DiagID::MissingUnaryOperand,
+                            op->get().getLocation(), {"-"});
       return nullptr;
     }
 
@@ -114,8 +116,8 @@ ExpressionParser::parseExpression(unsigned int min_power) {
     auto rhs = parseExpression(getPrefixPower(op->get().getType())->second);
 
     if (!rhs) {
-      m_diag_manager.addError("missing operand for 'not'",
-                              op->get().getLocation());
+      m_diag_manager.report(DiagID::MissingUnaryOperand,
+                            op->get().getLocation(), {"not"});
       return nullptr;
     }
 

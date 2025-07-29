@@ -1,9 +1,7 @@
 #include "lexer/Lexer.h"
-#include "DiagnosticsManager.h"
 #include "lexer/TokenType.h"
 
 #include "llvm/ADT/StringExtras.h"
-#include "llvm/Support/FormatVariadic.h"
 #include "llvm/Support/SMLoc.h"
 #include "llvm/Support/SourceMgr.h"
 
@@ -127,8 +125,8 @@ std::span<const Token> Lexer::lex() {
       } else if (isDigit(current_char)) {
         scanNumber();
       } else {
-        m_diag_manager.addError("unexpected character",
-                                getCurrentLexemeLocation());
+        m_diag_manager.report(DiagID::UnexpectedCharacter,
+                              getCurrentLexemeLocation());
         addToken(TokenType::INVALID);
       }
     }
@@ -165,10 +163,8 @@ bool Lexer::expect(const char ch) {
     return true;
   }
 
-  m_diag_manager.addError(
-      formatv("unexpected character. Did you mean `{0}{1}`?",
-              getCurrentLexeme(), ch),
-      getCurrentLexemeLocation());
+  m_diag_manager.report(DiagID::UnexpectedCharacter,
+                        getCurrentLexemeLocation());
 
   return false;
 }
@@ -209,16 +205,14 @@ void Lexer::scanNumber() {
 
   if ((value.starts_with('0') && value.size() > 1)) {
     token_type = TokenType::INVALID;
-    m_diag_manager.addError("an integer may not have leading zeros",
-                            getCurrentLexemeLocation());
+    m_diag_manager.report(DiagID::LeadingZeros, getCurrentLexemeLocation());
   }
 
   std::int32_t value_as_int;
   if (!to_integer(value, value_as_int, 10)) {
     token_type = TokenType::INVALID;
-    m_diag_manager.addError(
-        "an integer must be within the range [-2147483648, 2147483647]",
-        getCurrentLexemeLocation());
+    m_diag_manager.report(DiagID::IntegerOutOfRange,
+                          getCurrentLexemeLocation());
   }
 
   if (token_type == TokenType::INTLIT) {
@@ -282,9 +276,7 @@ void Lexer::scanString() {
         token_type = TokenType::INVALID;
         SMRange location = {getCurrentLexemeEndLocation(),
                             getCurrentLexemeEndLocation()};
-        m_diag_manager.addError("invalid escape character. Only \\\\, \\\", "
-                                "\\n and \\t are allowed",
-                                location);
+        m_diag_manager.report(DiagID::InvalidEscapeCharacter, location);
       }
     } else {
       value += peek().value();
@@ -296,8 +288,8 @@ void Lexer::scanString() {
   if (!match('"')) {
     token_type = TokenType::INVALID;
     SMFixIt fixit{getCurrentLexemeLocation(), getCurrentLexeme().str() + '"'};
-    m_diag_manager.addError("unterminated string", getCurrentLexemeLocation(),
-                            fixit);
+    m_diag_manager.report(DiagID::UnterminatedString,
+                          getCurrentLexemeLocation(), {}, {}, {fixit});
   }
 
   advance();

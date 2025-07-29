@@ -1,6 +1,5 @@
 #pragma once
 
-#include "DiagnosticsManager.h"
 #include "TokenStream.h"
 #include "ast/AssignmentStatement.h"
 #include "ast/Expression.h"
@@ -11,6 +10,7 @@
 #include "ast/Target.h"
 #include "ast/TypedVariable.h"
 #include "ast/VariableDefinition.h"
+#include "diagnostics/DiagnosticsManager.h"
 #include "parser/ExpressionParser.h"
 
 namespace chocopy {

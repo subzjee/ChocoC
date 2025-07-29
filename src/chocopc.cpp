@@ -1,5 +1,5 @@
-#include "DiagnosticsManager.h"
 #include "ast/PrettyPrinter.h"
+#include "diagnostics/DiagnosticsManager.h"
 #include "ir/LLVM.h"
 #include "lexer/Lexer.h"
 #include "parser/Parser.h"
@@ -46,8 +46,8 @@ int main(int argc, char* argv[]) {
     Lexer lexer{buffer_id, source_manager, diag_manager};
     auto tokens = lexer.lex();
 
+    diag_manager.printAll();
     if (diag_manager.hadError()) {
-      diag_manager.printErrors();
       continue;
     }
 
@@ -57,8 +57,8 @@ int main(int argc, char* argv[]) {
     Parser parser{token_stream, diag_manager};
     const auto root = parser.parse();
 
+    diag_manager.printAll();
     if (!root || diag_manager.hadError()) {
-      diag_manager.printErrors();
       continue;
     }
 
@@ -77,8 +77,8 @@ int main(int argc, char* argv[]) {
     TypeChecker type_checker{symbol_table, diag_manager};
     root->accept(type_checker);
 
+    diag_manager.printAll();
     if (diag_manager.hadError()) {
-      diag_manager.printErrors();
       continue;
     }
 

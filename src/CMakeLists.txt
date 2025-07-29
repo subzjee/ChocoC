@@ -1,5 +1,4 @@
 add_library(chocopc_lib
-    DiagnosticsManager.cpp
     TokenStream.cpp
     ast/AssignmentStatement.cpp
     ast/ASTVisitor.cpp
@@ -13,6 +12,8 @@ add_library(chocopc_lib
     ast/Type.cpp
     ast/UnaryExpression.cpp
     ast/VariableDefinition.cpp
+    diagnostics/DiagInfo.cpp
+    diagnostics/DiagnosticsManager.cpp
     ir/LLVM.cpp
     lexer/Lexer.cpp
     parser/ExpressionParser.cpp

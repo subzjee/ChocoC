@@ -3,6 +3,7 @@
 #include "ast/GroupingExpression.h"
 #include "ast/Identifier.h"
 #include "ast/VariableDefinition.h"
+#include "diagnostics/DiagID.h"
 
 #include "llvm/Support/FormatVariadic.h"
 
@@ -19,10 +20,8 @@ std::any TypeChecker::visit(const ast::VariableDefinition& ctx) {
   }
 
   if (!rhs_type->isAssignmentCompatible(*lhs_type)) {
-    m_diag_manager.addError(
-        llvm::formatv("type mismatch: expected: {0}, got: {1}",
-                      lhs_type->get().toString(), rhs_type->toString()),
-        ctx.getValue()->getLocation());
+    m_diag_manager.report(DiagID::TypeMismatch, ctx.getValue()->getLocation(),
+                          {lhs_type->get().toString(), rhs_type->toString()});
   }
 
   return {};
@@ -41,10 +40,9 @@ std::any TypeChecker::visit(const ast::AssignmentStatement& ctx) {
     }
 
     if (rhs_type && !rhs_type->isAssignmentCompatible(*lhs_type)) {
-      m_diag_manager.addError(
-          llvm::formatv("type mismatch: expected: {0}, got: {1}",
-                        lhs_type->toString(), rhs_type->toString()),
-          ctx.getExpr()->getLocation(),
+      m_diag_manager.report(
+          DiagID::TypeMismatch, ctx.getExpr()->getLocation(),
+          {lhs_type->toString(), rhs_type->toString()},
           {target->getLocation(), ctx.getExpr()->getLocation()});
     }
   }
@@ -56,9 +54,8 @@ std::any TypeChecker::visit(const ast::Identifier& ctx) {
   const auto type = m_local_env.typeOf(ctx);
 
   if (!type) {
-    m_diag_manager.addError(
-        llvm::formatv("undefined name: {0}", ctx.getValue()),
-        ctx.getLocation());
+    m_diag_manager.report(DiagID::UndefinedName, ctx.getLocation(),
+                          {ctx.getValue().str()});
     return std::optional<const Type>{};
   }
 
@@ -96,12 +93,10 @@ std::any TypeChecker::visit(const ast::BinaryExpression<ast::Expression>& ctx) {
     [[fallthrough]];
   case TokenType::OR:
     if (!lhs_type->isBoolean() || !rhs_type->isBoolean()) {
-      m_diag_manager.addError(
-          llvm::formatv(
-              "unsupported operand type(s) for '{0}': '{1}' and '{2}'",
-              ctx.getOperator().getText(), lhs_type->toString(),
-              rhs_type->toString()),
-          ctx.getLocation());
+      m_diag_manager.report(DiagID::UnsupportedBinaryOperandType,
+                            ctx.getLocation(),
+                            {ctx.getOperator().getText().str(),
+                             lhs_type->toString(), rhs_type->toString()});
       return std::optional<const Type>{};
     }
 

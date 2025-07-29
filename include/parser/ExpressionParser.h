@@ -1,8 +1,8 @@
 #pragma once
 
-#include "DiagnosticsManager.h"
 #include "TokenStream.h"
 #include "ast/Expression.h"
+#include "diagnostics/DiagnosticsManager.h"
 #include "lexer/TokenType.h"
 
 #include <memory>

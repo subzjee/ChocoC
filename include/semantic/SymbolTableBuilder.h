@@ -1,9 +1,9 @@
 #pragma once
 
-#include "DiagnosticsManager.h"
 #include "SymbolTable.h"
 #include "ast/ASTVisitor.h"
 #include "ast/VariableDefinition.h"
+#include "diagnostics/DiagnosticsManager.h"
 
 namespace chocopy {
 class SymbolTableBuilder : public ASTVisitor {

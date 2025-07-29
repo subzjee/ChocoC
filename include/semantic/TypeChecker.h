@@ -1,12 +1,12 @@
 #pragma once
 
-#include "DiagnosticsManager.h"
 #include "ast/ASTVisitor.h"
 #include "ast/AssignmentStatement.h"
 #include "ast/GroupingExpression.h"
 #include "ast/Identifier.h"
 #include "ast/Literal.h"
 #include "ast/VariableDefinition.h"
+#include "diagnostics/DiagnosticsManager.h"
 #include "semantic/TypeEnvironment.h"
 
 namespace chocopy {
