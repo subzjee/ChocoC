@@ -1,0 +1,6 @@
+x: int = 1
+y: bool = False
+x = (-1)
+x = (-x)
+y = (not True)
+y = (not y)
