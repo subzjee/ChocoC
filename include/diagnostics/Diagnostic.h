@@ -23,11 +23,22 @@ public:
         std::move(ranges), std::move(fixits));
   }
 
+  /// Get the diagnostic ID of the diagnostic.
+  /// @return The diagnostic ID.
   [[nodiscard]] DiagID getDiagId() const { return m_diag_id; }
+
+  /// Get the severity of the diagnostic.
+  /// @returns The severity.
   [[nodiscard]] llvm::SourceMgr::DiagKind getSeverity() const {
     return m_severity;
   }
 
+  /// Get the formatted message of a diagnostic ID's message.
+  /// It will format based on index, where the argument's index is given as {idx}.
+  /// For example: "{1} and {0}" with {"a", "b"} will return "b and a".
+  /// @param diag_id The diagnostic ID.
+  /// @param format_args The format arguments.
+  /// @returns The formatted message.
   [[nodiscard]] static std::string
   getFormattedMessage(DiagID diag_id, llvm::ArrayRef<std::string> format_args) {
     const auto& diag_info = getDiagInfo(diag_id);
@@ -48,6 +59,7 @@ public:
     return result;
   }
 
+  /// Print the diagnostic.
   void print() const { m_diagnostic.print("", llvm::errs()); }
 
 private:
