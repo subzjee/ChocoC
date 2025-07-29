@@ -2,18 +2,12 @@
 
 namespace chocopy {
 llvm::Value* IRGen::createLoadOrConstant(llvm::Value* allocation) {
-  // If the allocation is a constant, we do not need to load it.
-  if (llvm::isa<llvm::Constant>(allocation)) {
-    return allocation;
-  }
-
   if (auto global = llvm::dyn_cast<llvm::GlobalVariable>(allocation)) {
     return cast<llvm::Value>(
         m_builder.CreateLoad(global->getValueType(), allocation));
   }
 
-  return cast<llvm::Value>(
-      m_builder.CreateLoad(allocation->getType(), allocation));
+  return allocation;
 }
 
 void IRGen::prologue() {
