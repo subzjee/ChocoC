@@ -1,16 +1,4 @@
 #include "ir/LLVM.h"
-#include "ast/BinaryExpression.h"
-#include "ast/ConstantExpression.h"
-#include "ast/GroupingExpression.h"
-#include "ast/Identifier.h"
-#include "semantic/SymbolTable.h"
-
-#include "llvm/IR/GlobalVariable.h"
-#include "llvm/Support/Casting.h"
-
-#include <any>
-#include <utility>
-#include <variant>
 
 namespace chocopy {
 llvm::Value* IRGen::createLoadOrConstant(llvm::Value* allocation) {

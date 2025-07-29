@@ -1,6 +1,4 @@
 #include "diagnostics/DiagInfo.h"
-#include "diagnostics/DiagID.h"
-#include <llvm-21/llvm/Support/SourceMgr.h>
 
 [[nodiscard]] const DiagInfo& getDiagInfo(DiagID diag_id) {
   /* Lexer */

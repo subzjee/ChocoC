@@ -1,8 +1,4 @@
 #include "semantic/SymbolTableBuilder.h"
-#include "ast/VariableDefinition.h"
-#include "diagnostics/DiagID.h"
-
-#include "llvm/Support/FormatVariadic.h"
 
 namespace chocopy {
 std::any SymbolTableBuilder::visit(const ast::VariableDefinition& ctx) {

@@ -1,9 +1,4 @@
 #include "semantic/TypeEnvironment.h"
-#include "ast/Identifier.h"
-#include "semantic/Variable.h"
-
-#include <utility>
-#include <variant>
 
 namespace chocopy {
 [[nodiscard]] OptionalRef<const Type>

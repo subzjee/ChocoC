@@ -4,7 +4,8 @@
 #include "diagnostics/DiagInfo.h"
 
 #include "llvm/ADT/ArrayRef.h"
-#include "llvm/Support/FormatVariadic.h"
+#include "llvm/ADT/StringExtras.h"
+#include "llvm/Support/raw_ostream.h"
 #include "llvm/Support/SourceMgr.h"
 
 class Diagnostic {
@@ -19,7 +20,7 @@ public:
     m_severity = severity;
     m_diagnostic = source_manager.GetMessage(
         location.Start, severity,
-        getFormattedMessage(diag_id, std::move(format_arguments)),
+        createFormattedMessage(diag_id, std::move(format_arguments)),
         std::move(ranges), std::move(fixits));
   }
 
@@ -33,6 +34,10 @@ public:
     return m_severity;
   }
 
+  /// Get the formatted message of the diagnostic.
+  /// @returns The formatted message.
+  [[nodiscard]] llvm::StringRef getFormattedMessage() const { return m_diagnostic.getMessage(); }
+
   /// Get the formatted message of a diagnostic ID's message.
   /// It will format based on index, where the argument's index is given as {idx}.
   /// For example: "{1} and {0}" with {"a", "b"} will return "b and a".
@@ -41,7 +46,7 @@ public:
   /// @param format_args The format arguments.
   /// @returns The formatted message.
   [[nodiscard]] static std::string
-  getFormattedMessage(DiagID diag_id, llvm::ArrayRef<std::string> format_args) {
+  createFormattedMessage(DiagID diag_id, llvm::ArrayRef<std::string> format_args) {
     const auto& diag_info = getDiagInfo(diag_id);
 
     std::string result;
@@ -49,7 +54,7 @@ public:
 
     while (i < diag_info.format.size()) {
       if (diag_info.format[i] == '{' &&
-          i + 1 < diag_info.format.size() - 1 && std::isdigit(diag_info.format[i+1]) && diag_info.format[i + 2] == '}') {
+          i + 1 < diag_info.format.size() - 1 && llvm::isDigit(diag_info.format[i+1]) && diag_info.format[i + 2] == '}') {
         std::size_t arg_index = diag_info.format[i + 1] - '0';
 
         if (arg_index < format_args.size()) {

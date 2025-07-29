@@ -2,10 +2,7 @@
 
 #include "ast/ConstantExpression.h"
 #include "ast/Expression.h"
-#include "ast/WithLocation.h"
 #include "lexer/Token.h"
-
-#include "llvm/ADT/StringRef.h"
 
 #include <memory>
 #include <vector>

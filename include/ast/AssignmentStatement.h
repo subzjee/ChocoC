@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ast/ASTNode.h"
 #include "ast/Expression.h"
 #include "ast/SimpleStatement.h"
 #include "ast/Target.h"
@@ -19,9 +18,7 @@ public:
 
   /// Get all targets to be assigned to.
   /// @returns The targets.
-  [[nodiscard]] llvm::ArrayRef<std::unique_ptr<Target>> getTargets() const {
-    return m_targets;
-  }
+  [[nodiscard]] llvm::ArrayRef<std::unique_ptr<Target>> getTargets() const { return m_targets; }
 
   /// Get the expression on the right-hand side.
   /// @returns The expression.

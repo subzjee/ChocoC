@@ -1,9 +1,6 @@
 #include "lexer/Lexer.h"
-#include "lexer/TokenType.h"
 
 #include "llvm/ADT/StringExtras.h"
-#include "llvm/Support/SMLoc.h"
-#include "llvm/Support/SourceMgr.h"
 
 using namespace llvm;
 

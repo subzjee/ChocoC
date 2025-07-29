@@ -5,9 +5,6 @@
 #include "ast/Identifier.h"
 #include "ast/Literal.h"
 #include "ast/UnaryExpression.h"
-#include "diagnostics/DiagID.h"
-
-#include <memory>
 
 namespace chocopy {
 [[nodiscard]] std::unique_ptr<ast::Expression>

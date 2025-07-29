@@ -3,7 +3,6 @@
 #include "lexer/TokenType.h"
 
 #include "llvm/Support/SMLoc.h"
-#include "llvm/Support/SourceMgr.h"
 
 #include <variant>
 

@@ -1,10 +1,4 @@
 #include "ast/PrettyPrinter.h"
-#include "ast/ASTVisitor.h"
-#include "ast/AssignmentStatement.h"
-#include "ast/BinaryExpression.h"
-#include "ast/Identifier.h"
-#include "ast/VariableDefinition.h"
-#include <utility>
 
 namespace chocopy::ast {
 std::any PrettyPrinter::visit(const Program& ctx) {
