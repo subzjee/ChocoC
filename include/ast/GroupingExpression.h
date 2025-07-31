@@ -1,18 +1,17 @@
 #pragma once
 
-#include "ast/ConstantExpression.h"
 #include "ast/Expression.h"
 #include "lexer/Token.h"
 
 #include <memory>
 
 namespace chocopy::ast {
-class GroupingExpression : public ConstantExpression {
+class GroupingExpression : public Expression {
 public:
   GroupingExpression(const Token& left_paren,
                      std::unique_ptr<ast::Expression> expression,
                      const Token& right_paren)
-      : m_expr(std::move(expression)),
+      : Expression(/*is_constant_expression*/ true), m_expr(std::move(expression)),
         m_location{left_paren.getLocation().Start,
                    right_paren.getLocation().End} {}
 

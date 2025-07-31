@@ -72,29 +72,7 @@ std::any PrettyPrinter::visit(const Identifier& ctx) {
   return {};
 }
 
-std::any PrettyPrinter::visit(const BinaryExpression<ast::Expression>& ctx) {
-  out << '(';
-  ctx.getLHS()->accept(*this);
-
-  switch (ctx.getOperator().getType()) {
-  case TokenType::AND:
-    out << " and ";
-    break;
-  case TokenType::OR:
-    out << " or ";
-    break;
-  default:
-    std::unreachable();
-  }
-
-  ctx.getRHS()->accept(*this);
-  out << ')';
-
-  return {};
-}
-
-std::any
-PrettyPrinter::visit(const BinaryExpression<ast::ConstantExpression>& ctx) {
+std::any PrettyPrinter::visit(const BinaryExpression& ctx) {
   out << '(';
   ctx.getLHS()->accept(*this);
 
@@ -132,22 +110,11 @@ PrettyPrinter::visit(const BinaryExpression<ast::ConstantExpression>& ctx) {
   case TokenType::GREATEQ:
     out << " >= ";
     break;
-  default:
-    std::unreachable();
-  }
-
-  ctx.getRHS()->accept(*this);
-  out << ')';
-
-  return {};
-}
-
-std::any PrettyPrinter::visit(const UnaryExpression<ast::Expression>& ctx) {
-  out << '(';
-
-  switch (ctx.getOperator().getType()) {
-  case TokenType::NOT:
-    out << "not ";
+  case TokenType::AND:
+    out << " and ";
+    break;
+  case TokenType::OR:
+    out << " or ";
     break;
   default:
     std::unreachable();
@@ -159,13 +126,15 @@ std::any PrettyPrinter::visit(const UnaryExpression<ast::Expression>& ctx) {
   return {};
 }
 
-std::any
-PrettyPrinter::visit(const UnaryExpression<ast::ConstantExpression>& ctx) {
+std::any PrettyPrinter::visit(const UnaryExpression& ctx) {
   out << '(';
 
   switch (ctx.getOperator().getType()) {
   case TokenType::MINUS:
     out << "-";
+    break;
+  case TokenType::NOT:
+    out << "not ";
     break;
   default:
     std::unreachable();

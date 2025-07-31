@@ -2,13 +2,7 @@
 #include "ast/ASTVisitor.h"
 
 namespace chocopy::ast {
-template <>
-std::any
-BinaryExpression<ast::ConstantExpression>::accept(ASTVisitor& visitor) const {
-  return visitor.visit(*this);
-}
-template <>
-std::any BinaryExpression<ast::Expression>::accept(ASTVisitor& visitor) const {
+std::any BinaryExpression::accept(ASTVisitor& visitor) const {
   return visitor.visit(*this);
 }
 } // namespace chocopy::ast

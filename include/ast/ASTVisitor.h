@@ -3,8 +3,6 @@
 #include "ast/AssignmentStatement.h"
 #include "ast/BinaryExpression.h"
 #include "ast/Block.h"
-#include "ast/ConstantExpression.h"
-#include "ast/Expression.h"
 #include "ast/GroupingExpression.h"
 #include "ast/Identifier.h"
 #include "ast/Program.h"
@@ -22,12 +20,9 @@ struct ASTVisitor {
   virtual std::any visit(const ast::AssignmentStatement& ctx);
   virtual std::any visit(const ast::Type& ctx);
   virtual std::any visit(const ast::Literal& ctx);
-  virtual std::any visit(const ast::BinaryExpression<ast::Expression>& ctx);
+  virtual std::any visit(const ast::BinaryExpression& ctx);
   virtual std::any
-  visit(const ast::BinaryExpression<ast::ConstantExpression>& ctx);
-  virtual std::any visit(const ast::UnaryExpression<ast::Expression>& ctx);
-  virtual std::any
-  visit(const ast::UnaryExpression<ast::ConstantExpression>& ctx);
+  visit(const ast::UnaryExpression& ctx);
   virtual std::any visit(const ast::Target& ctx);
   virtual std::any visit(const ast::Identifier& ctx);
   virtual std::any visit(const ast::Block& ctx);

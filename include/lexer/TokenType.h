@@ -77,7 +77,7 @@ enum class TokenType {
 /// Get the string representation of an ErrorType.
 /// @param type The TokenType to get the string representation of.
 /// @returns The string representation of the TokenType.
-constexpr std::string_view toString(TokenType type) {
+constexpr std::string toString(TokenType type) {
   switch (type) {
 #define TOKEN_TYPE(name)                                                       \
   case TokenType::name:                                                        \

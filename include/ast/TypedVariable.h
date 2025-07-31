@@ -2,7 +2,6 @@
 
 #include "ast/Identifier.h"
 #include "ast/Type.h"
-#include "lexer/Token.h"
 
 #include <memory>
 

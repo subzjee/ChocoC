@@ -1,14 +1,14 @@
 #pragma once
 
-#include "ast/ConstantExpression.h"
+#include "ast/Expression.h"
 #include "lexer/Token.h"
 #include <utility>
 #include <variant>
 
 namespace chocopy::ast {
-class Literal : public ConstantExpression {
+class Literal : public Expression {
 public:
-  Literal(const Token& value) : m_value(value) {
+  Literal(const Token& value) : Expression(/*is_constant_expression*/ true), m_value(value) {
     assert(value.isLiteral());
 
 #ifndef NDEBUG

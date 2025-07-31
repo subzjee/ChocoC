@@ -3,7 +3,6 @@
 #include "ast/ASTNode.h"
 #include "ast/Literal.h"
 #include "ast/TypedVariable.h"
-#include "lexer/Token.h"
 
 #include <memory>
 

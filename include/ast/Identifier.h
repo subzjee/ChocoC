@@ -1,13 +1,13 @@
 #pragma once
 
-#include "ast/ConstantExpression.h"
+#include "ast/Expression.h"
 #include "ast/Target.h"
 #include "lexer/Token.h"
 
 namespace chocopy::ast {
-class Identifier : public Target, public ConstantExpression {
+class Identifier : public Target, public Expression {
 public:
-  Identifier(const Token& identifier) : m_identifier(identifier) {
+  Identifier(const Token& identifier) : Expression(/*is_constant_expression*/ true), m_identifier(identifier) {
     assert(identifier.getType() == TokenType::ID);
   };
 

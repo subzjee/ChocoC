@@ -3,7 +3,6 @@
 #include "ast/ASTVisitor.h"
 #include "ast/AssignmentStatement.h"
 #include "ast/BinaryExpression.h"
-#include "ast/ConstantExpression.h"
 #include "ast/GroupingExpression.h"
 #include "ast/Identifier.h"
 #include "ast/UnaryExpression.h"
@@ -44,13 +43,9 @@ public:
   virtual std::any visit(const ast::VariableDefinition& ctx) override;
   virtual std::any visit(const ast::AssignmentStatement& ctx) override;
   virtual std::any
-  visit(const ast::BinaryExpression<ast::Expression>& ctx) override;
+  visit(const ast::BinaryExpression& ctx) override;
   virtual std::any
-  visit(const ast::BinaryExpression<ast::ConstantExpression>& ctx) override;
-  virtual std::any
-  visit(const ast::UnaryExpression<ast::Expression>& ctx) override;
-  virtual std::any
-  visit(const ast::UnaryExpression<ast::ConstantExpression>& ctx) override;
+  visit(const ast::UnaryExpression& ctx) override;
   virtual std::any visit(const ast::GroupingExpression& ctx) override;
   virtual std::any visit(const ast::Identifier& ctx) override;
 

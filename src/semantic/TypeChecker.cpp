@@ -71,7 +71,7 @@ std::any TypeChecker::visit(const ast::Literal& ctx) {
   return std::optional<const Type>{};
 }
 
-std::any TypeChecker::visit(const ast::BinaryExpression<ast::Expression>& ctx) {
+std::any TypeChecker::visit(const ast::BinaryExpression& ctx) {
   const auto lhs_type =
       std::any_cast<std::optional<const Type>>(ctx.getLHS()->accept(*this));
   const auto rhs_type =
@@ -97,20 +97,6 @@ std::any TypeChecker::visit(const ast::BinaryExpression<ast::Expression>& ctx) {
   default:
     return std::optional<const Type>{};
   }
-}
-
-std::any
-TypeChecker::visit(const ast::BinaryExpression<ast::ConstantExpression>& ctx) {
-  const auto lhs_type =
-      std::any_cast<std::optional<const Type>>(ctx.getLHS()->accept(*this));
-  const auto rhs_type =
-      std::any_cast<std::optional<const Type>>(ctx.getRHS()->accept(*this));
-
-  if (!lhs_type || !rhs_type) {
-    return std::optional<const Type>{};
-  }
-
-  return std::optional<const Type>{};
 }
 
 std::any TypeChecker::visit(const ast::GroupingExpression& ctx) {

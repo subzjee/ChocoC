@@ -113,26 +113,8 @@ std::any IRGen::visit(const ast::AssignmentStatement& ctx) {
   return {};
 }
 
-std::any IRGen::visit(const ast::BinaryExpression<ast::Expression>& ctx) {
-  llvm::Value* lhs = createLoadOrConstant(
-      std::any_cast<llvm::Value*>(ctx.getLHS()->accept(*this)));
-  llvm::Value* rhs = createLoadOrConstant(
-      std::any_cast<llvm::Value*>(ctx.getRHS()->accept(*this)));
-
-  switch (ctx.getOperator().getType()) {
-  case TokenType::AND:
-    return m_builder.CreateAnd(lhs, rhs);
-  case TokenType::OR:
-    return m_builder.CreateOr(lhs, rhs);
-  default:
-    std::unreachable();
-  }
-
-  return {};
-}
-
 std::any
-IRGen::visit(const ast::BinaryExpression<ast::ConstantExpression>& ctx) {
+IRGen::visit(const ast::BinaryExpression& ctx) {
   llvm::Value* lhs = createLoadOrConstant(
       std::any_cast<llvm::Value*>(ctx.getLHS()->accept(*this)));
   llvm::Value* rhs = createLoadOrConstant(
@@ -161,6 +143,10 @@ IRGen::visit(const ast::BinaryExpression<ast::ConstantExpression>& ctx) {
     return m_builder.CreateICmpSLE(lhs, rhs);
   case TokenType::GREATEQ:
     return m_builder.CreateICmpSGE(lhs, rhs);
+  case TokenType::AND:
+    return m_builder.CreateAnd(lhs, rhs);
+  case TokenType::OR:
+    return m_builder.CreateOr(lhs, rhs);
   default:
     std::unreachable();
   }
@@ -168,28 +154,15 @@ IRGen::visit(const ast::BinaryExpression<ast::ConstantExpression>& ctx) {
   return {};
 }
 
-std::any IRGen::visit(const ast::UnaryExpression<ast::Expression>& ctx) {
-  llvm::Value* rhs = createLoadOrConstant(
-      std::any_cast<llvm::Value*>(ctx.getRHS()->accept(*this)));
-
-  switch (ctx.getOperator().getType()) {
-  case TokenType::NOT:
-    return m_builder.CreateNot(rhs);
-  default:
-    std::unreachable();
-  }
-
-  return {};
-}
-
-std::any
-IRGen::visit(const ast::UnaryExpression<ast::ConstantExpression>& ctx) {
+std::any IRGen::visit(const ast::UnaryExpression& ctx) {
   llvm::Value* rhs = createLoadOrConstant(
       std::any_cast<llvm::Value*>(ctx.getRHS()->accept(*this)));
 
   switch (ctx.getOperator().getType()) {
   case TokenType::MINUS:
     return m_builder.CreateNeg(rhs);
+  case TokenType::NOT:
+    return m_builder.CreateNot(rhs);
   default:
     std::unreachable();
   }

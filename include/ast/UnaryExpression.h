@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ast/ConstantExpression.h"
 #include "ast/Expression.h"
 #include "lexer/Token.h"
 
@@ -9,25 +8,20 @@
 
 namespace chocopy::ast {
 
-template <typename ExpressionKind>
-  requires std::is_same_v<std::decay_t<ExpressionKind>, ast::Expression> ||
-           std::is_same_v<std::decay_t<ExpressionKind>, ast::ConstantExpression>
-class UnaryExpression : public ExpressionKind {
+class UnaryExpression : public Expression {
 public:
-  UnaryExpression(const Token& op, std::unique_ptr<ExpressionKind> rhs)
-      : m_op(op), m_rhs(std::move(rhs)) {
+  UnaryExpression(const Token& op, std::unique_ptr<Expression> rhs)
+      : Expression(/*is_constant_expression*/ op.getType() == TokenType::MINUS), m_op(op), m_rhs(std::move(rhs)) {
 #ifndef NDEBUG
-    if constexpr (std::is_same_v<std::decay_t<ExpressionKind>,
-                                 ast::Expression>) {
-      assert(op.getType() == TokenType::NOT);
-    } else {
-      assert(op.getType() == TokenType::MINUS);
+    assert(op.isUnaryOp());
+    if (op.getType() == TokenType::MINUS) {
+      assert(m_rhs->isConstantExpression());
     }
 #endif
   };
 
   [[nodiscard]] const Token& getOperator() const { return m_op; }
-  [[nodiscard]] const std::unique_ptr<ExpressionKind>& getRHS() const {
+  [[nodiscard]] const std::unique_ptr<Expression>& getRHS() const {
     return m_rhs;
   };
 
@@ -39,6 +33,6 @@ public:
 
 private:
   const Token& m_op;
-  std::unique_ptr<ExpressionKind> m_rhs;
+  std::unique_ptr<Expression> m_rhs;
 };
 } // namespace chocopy::ast
