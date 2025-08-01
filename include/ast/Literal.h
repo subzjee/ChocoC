@@ -8,7 +8,7 @@
 namespace chocopy::ast {
 class Literal : public Expression {
 public:
-  Literal(const Token& value) : Expression(/*is_constant_expression*/ true), m_value(value) {
+  Literal(const Token& value) : Expression(ExpressionKind::EK_Literal, /*is_cexpr*/ true), m_value(value) {
     assert(value.isLiteral());
 
 #ifndef NDEBUG
@@ -35,13 +35,13 @@ public:
 #endif
   };
 
-  /// Get the value of the literal.
+  /// Get the value.
   /// @returns The value.
   [[nodiscard]] const TokenValue& getValue() const {
     return m_value.getValue();
   };
 
-  /// Get the type of the literal.
+  /// Get the type.
   /// @return The type.
   [[nodiscard]] const llvm::StringRef getType() const {
     switch (m_value.getType()) {
@@ -62,13 +62,19 @@ public:
     }
   };
 
-  /// Get the location of the literal.
-  /// @returns The location.
+  /// Get the source location.
+  /// @returns The source location.
   [[nodiscard]] llvm::SMRange getLocation() const override {
     return m_value.getLocation();
   };
 
   std::any accept(ASTVisitor& visitor) const override;
+
+  /// Check whether this class is an expression for LLVM's RTTI.
+  /// @returns Whether this class is an expression.
+  static bool classof(const Expression* expr ) {
+    return expr->getKind() == ExpressionKind::EK_Literal;
+  }
 
 private:
   const Token& m_value;

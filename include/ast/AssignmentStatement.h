@@ -14,7 +14,7 @@ class AssignmentStatement : public Statement {
 public:
   AssignmentStatement(std::vector<std::unique_ptr<Target>> targets,
                       std::unique_ptr<Expression> expr)
-      : m_targets(std::move(targets)), m_expr(std::move(expr)) {};
+      : Statement(StatementKind::SK_Assignment), m_targets(std::move(targets)), m_expr(std::move(expr)) {};
 
   /// Get all targets to be assigned to.
   /// @returns The targets.
@@ -31,6 +31,8 @@ public:
   }
 
   std::any accept(ASTVisitor& visitor) const override;
+
+  static bool classof(const Statement* statement) { return statement->getKind() == StatementKind::SK_Assignment; }
 
 private:
   const std::vector<std::unique_ptr<Target>> m_targets;
