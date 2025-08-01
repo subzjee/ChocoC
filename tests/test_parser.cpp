@@ -48,5 +48,8 @@ static const std::vector<std::string> test_names = {
 INSTANTIATE_TEST_SUITE_P(
   ParserFileTests,
   ParserTest,
-  testing::ValuesIn(test_names)
+  testing::ValuesIn(test_names),
+  [](const testing::TestParamInfo<std::string>& param_info) {
+    return param_info.param;
+  }
 );
