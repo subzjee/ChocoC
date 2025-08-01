@@ -8,6 +8,7 @@ struct ASTVisitor;
 namespace ast {
 struct ASTNode {
   virtual ~ASTNode() = default;
+  
   virtual std::any accept(ASTVisitor& visitor) const = 0;
 };
 } // namespace ast
