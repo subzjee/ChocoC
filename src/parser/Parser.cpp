@@ -184,7 +184,7 @@ std::unique_ptr<ast::Literal> Parser::parseLiteral() {
   return nullptr;
 }
 
-[[nodiscard]] std::unique_ptr<ast::SimpleStatement>
+[[nodiscard]] std::unique_ptr<ast::Statement>
 Parser::parseSimpleStatement() {
   if (m_token_stream.peek(1) == TokenType::ASSIGN) {
     return parseAssignmentStatement();

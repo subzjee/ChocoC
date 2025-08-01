@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ast/Expression.h"
-#include "ast/SimpleStatement.h"
+#include "ast/Statement.h"
 #include "ast/Target.h"
 
 #include "llvm/ADT/ArrayRef.h"
@@ -10,7 +10,7 @@
 #include <vector>
 
 namespace chocopy::ast {
-class AssignmentStatement : public SimpleStatement {
+class AssignmentStatement : public Statement {
 public:
   AssignmentStatement(std::vector<std::unique_ptr<Target>> targets,
                       std::unique_ptr<Expression> expr)

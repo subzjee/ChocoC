@@ -1,10 +1,9 @@
 #pragma once
 
-#include "ast/ASTNode.h"
-#include "ast/WithLocation.h"
+#include "ast/Statement.h"
 
 namespace chocopy::ast {
-class Expression : public ASTNode, public WithLocation {
+class Expression : public Statement {
 public:
   virtual ~Expression() = default;
   virtual llvm::SMRange getLocation() const = 0;

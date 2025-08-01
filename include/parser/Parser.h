@@ -5,7 +5,6 @@
 #include "ast/Expression.h"
 #include "ast/Literal.h"
 #include "ast/Program.h"
-#include "ast/SimpleStatement.h"
 #include "ast/Statement.h"
 #include "ast/Target.h"
 #include "ast/TypedVariable.h"
@@ -59,7 +58,7 @@ public:
 
   /// Parse a simple statement.
   /// @returns AST node for a simple statement.
-  [[nodiscard]] std::unique_ptr<ast::SimpleStatement> parseSimpleStatement();
+  [[nodiscard]] std::unique_ptr<ast::Statement> parseSimpleStatement();
 
   /// Parse an assignment statement.
   /// @returns AST node for an assignment statement.

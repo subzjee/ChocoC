@@ -4,7 +4,6 @@
 #include "lexer/Token.h"
 
 #include <memory>
-#include <type_traits>
 
 namespace chocopy::ast {
 
