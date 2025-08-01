@@ -112,13 +112,13 @@ ExpressionParser::parseExpression(unsigned int min_power) {
         op->get(), std::move(rhs));
   } 
   
-  if (expect(TokenType::NOT)) {
+  if (expect(TokenType::NOT, TokenType::MINUS)) {
     const auto& op = m_token_stream.peek(-1);
     auto rhs = parseExpression(getPrefixPower(op->get().getType())->second);
 
-    if (!rhs) {
+    if (!rhs || (op->get().getType() == TokenType::MINUS && !rhs->isConstantExpression())) {
       m_diag_manager.report(DiagID::MissingUnaryOperand,
-                            op->get().getLocation(), {"not"});
+                            op->get().getLocation(), {op->get().getText().str()});
       return nullptr;
     }
 
