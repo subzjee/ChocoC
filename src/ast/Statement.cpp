@@ -4,6 +4,6 @@
 
 namespace chocopy::ast {
 bool Statement::classof(const ASTNode* node) {
-  return llvm::isa<Expression>(node) || node->getKind() == NK_AssignmentStatement;
+  return llvm::isa<Expression>(node) || (node->getKind() > NK_Statement && node->getKind() < NK_SentinelStatement);
 }
 };
