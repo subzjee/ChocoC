@@ -1,13 +1,13 @@
 #pragma once
 
+#include "ast/ASTNode.h"
 #include "ast/Expression.h"
-#include "ast/Target.h"
 #include "lexer/Token.h"
 
 namespace chocopy::ast {
-class Identifier : public Target, public Expression {
+class Identifier : public Expression {
 public:
-  Identifier(const Token& identifier) : Target(TargetKind::TK_Identifier), Expression(ExpressionKind::EK_Identifier, /*is_cexpr*/ true), m_identifier(identifier) {
+  Identifier(const Token& identifier) : Expression(NK_Identifier, /*is_cexpr*/ true), m_identifier(identifier) {
     assert(identifier.getType() == TokenType::ID);
   };
 
@@ -25,17 +25,9 @@ public:
 
   std::any accept(ASTVisitor& visitor) const override;
 
-  /// Check whether \p expr is an Identifier.
-  /// @returns Whether \p expr is an Identifier.
-  static bool classof(const Expression* expr) {
-    return expr->getKind() == ExpressionKind::EK_Identifier;
-  }
-
-  /// Check whether \p target is an Identifier.
-  /// @returns Whether \p target is an Identifier.
-  static bool classof(const Target* target) {
-    return target->getKind() == TargetKind::TK_Identifier;
-  }
+  /// Check whether \p node is an Identifier.
+  /// @returns Whether \p node is an Identifier.
+  static bool classof(const ASTNode* node);
 
 private:
   const Token& m_identifier;

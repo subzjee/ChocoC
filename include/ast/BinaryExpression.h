@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ast/ASTNode.h"
 #include "ast/Expression.h"
 #include "lexer/Token.h"
 
@@ -11,7 +12,7 @@ class BinaryExpression : public Expression {
 public:
   BinaryExpression(std::unique_ptr<Expression> lhs, const Token& op,
                    std::unique_ptr<Expression> rhs)
-      : Expression(ExpressionKind::EK_BinaryExpression, /*is_cexpr*/ op.isBinOp() && op.getType() != TokenType::AND &&
+      : Expression(NK_BinaryExpression, /*is_cexpr*/ op.isBinOp() && op.getType() != TokenType::AND &&
              op.getType() != TokenType::OR), m_lhs(std::move(lhs)), m_op(op), m_rhs(std::move(rhs)) {
 #ifndef NDEBUG
     assert(op.isBinOp());
@@ -45,11 +46,9 @@ public:
 
   std::any accept(ASTVisitor& visitor) const override;
 
-  /// Check whether \p expr is a BinaryExpression.
-  /// @returns Whether \p expr is a BinaryExpression.
-  static bool classof(const Expression* expr ) {
-    return expr->getKind() == ExpressionKind::EK_BinaryExpression;
-  }
+  /// Check whether \p node is a BinaryExpression.
+  /// @returns Whether \p node is a BinaryExpression.
+  static bool classof(const ASTNode* node);
 
 private:
   std::unique_ptr<Expression> m_lhs;

@@ -57,10 +57,6 @@ std::any ASTVisitor::visit(const ast::UnaryExpression& ctx) {
   return {};
 }
 
-std::any ASTVisitor::visit(const ast::Target& ctx [[maybe_unused]]) {
-  return {};
-}
-
 std::any ASTVisitor::visit(const ast::Identifier& ctx [[maybe_unused]]) {
   return {};
 }

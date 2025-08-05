@@ -23,7 +23,6 @@ struct ASTVisitor {
   virtual std::any visit(const ast::BinaryExpression& ctx);
   virtual std::any
   visit(const ast::UnaryExpression& ctx);
-  virtual std::any visit(const ast::Target& ctx);
   virtual std::any visit(const ast::Identifier& ctx);
   virtual std::any visit(const ast::Block& ctx);
   virtual std::any visit(const ast::GroupingExpression& ctx);

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ast/ASTNode.h"
 #include "ast/Expression.h"
 #include "lexer/Token.h"
 #include <utility>
@@ -8,7 +9,7 @@
 namespace chocopy::ast {
 class Literal : public Expression {
 public:
-  Literal(const Token& value) : Expression(ExpressionKind::EK_Literal, /*is_cexpr*/ true), m_value(value) {
+  Literal(const Token& value) : Expression(NK_Literal, /*is_cexpr*/ true), m_value(value) {
     assert(value.isLiteral());
 
 #ifndef NDEBUG
@@ -70,11 +71,9 @@ public:
 
   std::any accept(ASTVisitor& visitor) const override;
 
-  /// Check whether \p expr is a Literal.
-  /// @returns Whether \p expr is a Literal.
-  static bool classof(const Expression* expr) {
-    return expr->getKind() == ExpressionKind::EK_Literal;
-  }
+  /// Check whether \p node is a Literal.
+  /// @returns Whether \p node is a Literal.
+  static bool classof(const ASTNode* node);
 
 private:
   const Token& m_value;

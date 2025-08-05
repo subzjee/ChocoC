@@ -1,4 +1,5 @@
 #include "parser/Parser.h"
+#include "ast/Expression.h"
 
 using namespace llvm;
 
@@ -129,7 +130,7 @@ std::unique_ptr<ast::Literal> Parser::parseLiteral() {
   return std::make_unique<ast::Literal>(*m_token_stream.peek(-1));
 }
 
-[[nodiscard]] std::unique_ptr<ast::Target> Parser::parseTarget() {
+[[nodiscard]] std::unique_ptr<ast::Expression> Parser::parseTarget() {
   if (!expect(TokenType::ID)) {
     m_diag_manager.report(DiagID::ExpectedToken,
                           m_token_stream.peek(-1)->get().getLocation(),
@@ -195,7 +196,7 @@ Parser::parseSimpleStatement() {
 
 [[nodiscard]] std::unique_ptr<ast::AssignmentStatement>
 Parser::parseAssignmentStatement() {
-  std::vector<std::unique_ptr<ast::Target>> targets{};
+  std::vector<std::unique_ptr<ast::Expression>> targets{};
 
   while (match(TokenType::ID) && m_token_stream.peek(1) == TokenType::ASSIGN) {
     auto target = parseTarget();

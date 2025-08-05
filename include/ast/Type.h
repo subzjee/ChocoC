@@ -8,7 +8,7 @@ namespace chocopy::ast {
 class Type : public ASTNode, public WithLocation {
 public:
   Type(const Token& base_type, unsigned int dimension = 0)
-      : m_base_type(base_type), m_dimension(dimension) {};
+      : ASTNode(NK_Type), m_base_type(base_type), m_dimension(dimension) {};
 
   /// Get the base type.
   /// @returns The base type.
@@ -30,6 +30,10 @@ public:
   };
 
   std::any accept(ASTVisitor& visitor) const override;
+
+  /// Check whether \p node is a Type.
+  /// @returns Whether \p node is a Type.
+  static bool classof(const ASTNode* node);
 
 private:
   const Token& m_base_type;

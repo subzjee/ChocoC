@@ -15,7 +15,7 @@ using ProgramChildren =
 namespace ast {
 class Program : public ASTNode {
 public:
-  Program(ProgramChildren& children) : m_children(std::move(children)) {};
+  Program(ProgramChildren& children) : ASTNode(NK_Program), m_children(std::move(children)) {};
 
   /// Get all children nodes.
   /// @returns The children nodes.
@@ -24,6 +24,10 @@ public:
   };
 
   std::any accept(ASTVisitor& visitor) const override;
+
+  /// Check whether \p node is a Program.
+  /// @returns Whether \p node is a Program.
+  static bool classof(const ASTNode* node);
 
 private:
   const ProgramChildren m_children;

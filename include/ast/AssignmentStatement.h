@@ -1,8 +1,8 @@
 #pragma once
 
+#include "ast/ASTNode.h"
 #include "ast/Expression.h"
 #include "ast/Statement.h"
-#include "ast/Target.h"
 
 #include "llvm/ADT/ArrayRef.h"
 
@@ -12,13 +12,19 @@
 namespace chocopy::ast {
 class AssignmentStatement : public Statement {
 public:
-  AssignmentStatement(std::vector<std::unique_ptr<Target>> targets,
+  AssignmentStatement(std::vector<std::unique_ptr<Expression>> targets,
                       std::unique_ptr<Expression> expr)
-      : Statement(StatementKind::SK_Assignment), m_targets(std::move(targets)), m_expr(std::move(expr)) {};
+      : Statement(NK_AssignmentStatement), m_targets(std::move(targets)), m_expr(std::move(expr)) {
+        #ifndef NDEBUG
+          for (const auto& target : m_targets) {
+            assert(target->isValidTarget() && "Expression is not a valid target");
+          }
+        #endif
+      };
 
   /// Get all targets to be assigned to.
   /// @returns The targets.
-  [[nodiscard]] llvm::ArrayRef<std::unique_ptr<Target>> getTargets() const { return m_targets; }
+  [[nodiscard]] llvm::ArrayRef<std::unique_ptr<Expression>> getTargets() const { return m_targets; }
 
   /// Get the expression on the right-hand side.
   /// @returns The expression.
@@ -32,12 +38,12 @@ public:
 
   std::any accept(ASTVisitor& visitor) const override;
 
-  /// Check whether \p statement is an AssignmentStatement.
-  /// @returns Whether \p statement is an AssignmentStatement.
-  static bool classof(const Statement* statement) { return statement->getKind() == StatementKind::SK_Assignment; }
+  /// Check whether \p node is an AssignmentStatement.
+  /// @returns Whether \p node is an AssignmentStatement.
+  static bool classof(const ASTNode* node);
 
 private:
-  const std::vector<std::unique_ptr<Target>> m_targets;
+  const std::vector<std::unique_ptr<Expression>> m_targets;
   const std::unique_ptr<Expression> m_expr;
 };
 } // namespace chocopy::ast

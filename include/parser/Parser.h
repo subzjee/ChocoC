@@ -6,7 +6,6 @@
 #include "ast/Literal.h"
 #include "ast/Program.h"
 #include "ast/Statement.h"
-#include "ast/Target.h"
 #include "ast/TypedVariable.h"
 #include "ast/VariableDefinition.h"
 #include "diagnostics/DiagnosticsManager.h"
@@ -46,7 +45,7 @@ public:
 
   /// Parse a target.
   /// @returns AST node for a target.
-  [[nodiscard]] std::unique_ptr<ast::Target> parseTarget();
+  [[nodiscard]] std::unique_ptr<ast::Expression> parseTarget();
 
   /// Parse an expression.
   /// @returns AST node for an expression.

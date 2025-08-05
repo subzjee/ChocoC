@@ -6,19 +6,13 @@
 namespace chocopy::ast {
 class Statement : public ASTNode, public WithLocation {
 public:
-  enum StatementKind {
-    SK_Expression,
-    SK_Assignment
-  };
-
   virtual ~Statement() = default;
 
-  [[nodiscard]] StatementKind getKind() const { return m_kind; }
+  /// Check whether \p node is a Statement.
+  /// @returns Whether \p node is a Statement.
+  static bool classof(const ASTNode* node);
 
 protected:
-  Statement(StatementKind kind) : m_kind{kind} {};
-  
-private:
-  const StatementKind m_kind;
+  Statement(NodeKind kind) : ASTNode(kind) {};
 };
 } // namespace chocopy::ast

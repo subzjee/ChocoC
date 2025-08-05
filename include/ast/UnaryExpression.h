@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ast/ASTNode.h"
 #include "ast/Expression.h"
 #include "lexer/Token.h"
 
@@ -10,7 +11,7 @@ namespace chocopy::ast {
 class UnaryExpression : public Expression {
 public:
   UnaryExpression(const Token& op, std::unique_ptr<Expression> rhs)
-      : Expression(ExpressionKind::EK_UnaryExpression, /*is_cexpr*/ op.getType() == TokenType::MINUS), m_op(op), m_rhs(std::move(rhs)) {
+      : Expression(NK_UnaryExpression, /*is_cexpr*/ op.getType() == TokenType::MINUS), m_op(op), m_rhs(std::move(rhs)) {
 #ifndef NDEBUG
     assert(op.isUnaryOp());
     if (op.getType() == TokenType::MINUS) {
@@ -37,11 +38,9 @@ public:
 
   std::any accept(ASTVisitor& visitor) const override;
 
-  /// Check whether \p expr is a UnaryExpression.
-  /// @returns Whether \p expr is a UnaryExpression.
-  static bool classof(const Expression* expr) {
-    return expr->getKind() == ExpressionKind::EK_UnaryExpression;
-  }
+  /// Check whether \p node is a UnaryExpression.
+  /// @returns Whether \p node is a UnaryExpression.
+  static bool classof(const ASTNode* node);
 
 private:
   const Token& m_op;

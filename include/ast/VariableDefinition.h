@@ -11,7 +11,7 @@ class VariableDefinition : public ASTNode {
 public:
   VariableDefinition(std::unique_ptr<TypedVariable> typed_var,
                      std::unique_ptr<Literal> value)
-      : m_name(std::move(typed_var->getName())),
+      : ASTNode(NK_VariableDefinition), m_name(std::move(typed_var->getName())),
         m_type(std::move(typed_var->getType())), m_value(std::move(value)) {};
 
   /// Get the name of the variable.
@@ -31,6 +31,10 @@ public:
   };
 
   std::any accept(ASTVisitor& visitor) const override;
+
+  /// Check whether \p node is a VariableDefinition.
+  /// @returns Whether \p node is a VariableDefinition.
+  static bool classof(const ASTNode* node);
 
 private:
   std::unique_ptr<Identifier> m_name;

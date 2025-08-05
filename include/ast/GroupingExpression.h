@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ast/ASTNode.h"
 #include "ast/Expression.h"
 #include "lexer/Token.h"
 
@@ -11,7 +12,7 @@ public:
   GroupingExpression(const Token& left_paren,
                      std::unique_ptr<ast::Expression> expression,
                      const Token& right_paren)
-      : Expression(ExpressionKind::EK_GroupingExpression, /*is_cexpr*/ true), m_expr(std::move(expression)),
+      : Expression(NK_GroupingExpression, /*is_cexpr*/ true), m_expr(std::move(expression)),
         m_location{left_paren.getLocation().Start,
                    right_paren.getLocation().End} {}
 
@@ -29,11 +30,9 @@ public:
 
   std::any accept(ASTVisitor& visitor) const override;
 
-  /// Check whether \p expr is a GroupingExpression.
-  /// @returns Whether \p expr is a GroupingExpression.
-  static bool classof(const Expression* expr) {
-    return expr->getKind() == ExpressionKind::EK_GroupingExpression;
-  }
+  /// Check whether \p node is a GroupingExpression.
+  /// @returns Whether \p node is a GroupingExpression.
+  static bool classof(const ASTNode* node);
 
 private:
   std::unique_ptr<ast::Expression> m_expr;
