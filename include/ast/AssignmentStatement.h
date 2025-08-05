@@ -32,6 +32,8 @@ public:
 
   std::any accept(ASTVisitor& visitor) const override;
 
+  /// Check whether \p statement is an AssignmentStatement.
+  /// @returns Whether \p statement is an AssignmentStatement.
   static bool classof(const Statement* statement) { return statement->getKind() == StatementKind::SK_Assignment; }
 
 private:

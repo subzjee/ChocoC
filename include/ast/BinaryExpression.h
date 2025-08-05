@@ -45,8 +45,8 @@ public:
 
   std::any accept(ASTVisitor& visitor) const override;
 
-  /// Check whether this class is an expression for LLVM's RTTI.
-  /// @returns Whether this class is an expression.
+  /// Check whether \p expr is a BinaryExpression.
+  /// @returns Whether \p expr is a BinaryExpression.
   static bool classof(const Expression* expr ) {
     return expr->getKind() == ExpressionKind::EK_BinaryExpression;
   }

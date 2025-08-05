@@ -25,12 +25,14 @@ public:
 
   std::any accept(ASTVisitor& visitor) const override;
 
-  /// Check whether this class is an expression for LLVM's RTTI.
-  /// @returns Whether this class is an expression.
+  /// Check whether \p expr is an Identifier.
+  /// @returns Whether \p expr is an Identifier.
   static bool classof(const Expression* expr) {
     return expr->getKind() == ExpressionKind::EK_Identifier;
   }
 
+  /// Check whether \p target is an Identifier.
+  /// @returns Whether \p target is an Identifier.
   static bool classof(const Target* target) {
     return target->getKind() == TargetKind::TK_Identifier;
   }

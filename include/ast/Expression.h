@@ -19,6 +19,8 @@ public:
   [[nodiscard]] bool isConstantExpression() const { return m_is_constant_expression; }
   [[nodiscard]] ExpressionKind getKind() const { return m_kind; }
 
+  /// Check whether \p statement is an Expression.
+  /// @returns Whether \p statement is an Expression.
   static bool classof(const Statement* statement) { return statement->getKind() == StatementKind::SK_Expression; }
 
 protected:
