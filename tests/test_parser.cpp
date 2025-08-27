@@ -7,7 +7,10 @@
 #include "llvm/Support/SourceMgr.h"
 #include "llvm/Support/MemoryBuffer.h"
 
+#include <filesystem>
+
 using namespace chocopy;
+using namespace chocopy::parser;
 
 class ParserTest : public testing::Test, public testing::WithParamInterface<std::string> {
 protected:

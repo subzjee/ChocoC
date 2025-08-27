@@ -54,7 +54,7 @@ int main(int argc, char* argv[]) {
     TokenStream token_stream{tokens};
 
     /* Syntax analysis */
-    Parser parser{token_stream, diag_manager};
+    parser::Parser parser{token_stream, diag_manager};
     const auto root = parser.parse();
 
     diag_manager.printAll();

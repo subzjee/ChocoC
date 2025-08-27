@@ -16,7 +16,6 @@ add_library(chocopc_lib
     diagnostics/DiagnosticsManager.cpp
     ir/LLVM.cpp
     lexer/Lexer.cpp
-    parser/ExpressionParser.cpp
     parser/Parser.cpp
     semantic/SymbolTable.cpp
     semantic/SymbolTableBuilder.cpp

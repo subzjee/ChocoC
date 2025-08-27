@@ -9,14 +9,18 @@
 #include "ast/TypedVariable.h"
 #include "ast/VariableDefinition.h"
 #include "diagnostics/DiagnosticsManager.h"
-#include "parser/ExpressionParser.h"
 
-namespace chocopy {
+namespace chocopy::parser {
+using BindingPower = std::optional<std::pair<unsigned int, unsigned int>>;
+
+[[nodiscard]] BindingPower getPrefixPower(TokenType op);
+
+[[nodiscard]] BindingPower getInfixPower(TokenType op);
+
 class Parser {
 public:
   Parser(TokenStream& token_stream, DiagnosticsManager& diagnostics_manager)
-      : m_expression_parser{token_stream, diagnostics_manager},
-        m_token_stream(token_stream), m_diag_manager(diagnostics_manager) {};
+      : m_token_stream(token_stream), m_diag_manager(diagnostics_manager) {};
 
   [[nodiscard]] std::unique_ptr<ast::Program> parse() {
     return parseProgram();
@@ -49,7 +53,7 @@ public:
 
   /// Parse an expression.
   /// @returns AST node for an expression.
-  [[nodiscard]] std::unique_ptr<ast::Expression> parseExpression();
+  [[nodiscard]] std::unique_ptr<ast::Expression> parseExpression(unsigned int min_power = 0);
 
   /// Parse a statement.
   /// @returns AST node for a statement.
@@ -65,6 +69,10 @@ public:
   parseAssignmentStatement();
 
 private:
+  /// Parse a prefix.
+  /// @returns The prefix expression.
+  [[nodiscard]] std::unique_ptr<ast::Expression> parsePrefix();
+
   /// Check whether the current token in the stream matches one of the given token types.
   /// @returns Whether current token matches.
   template <typename... TokenTypes>
@@ -96,7 +104,6 @@ private:
     return true;
   }
 
-  ExpressionParser m_expression_parser;
   TokenStream& m_token_stream;
   DiagnosticsManager& m_diag_manager;
 };
