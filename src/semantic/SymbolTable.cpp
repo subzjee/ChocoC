@@ -1,10 +1,9 @@
 #include "semantic/SymbolTable.h"
 
 namespace chocopy {
-std::pair<llvm::StringMapIterator<SymbolTableEntry>, bool>
-SymbolTable::addEntry(const llvm::StringRef name,
+void SymbolTable::addEntry(const llvm::StringRef name,
                       const SymbolTableEntry& entry) {
-  return m_entries.try_emplace(name, entry);
+  m_entries.try_emplace(name, entry);
 }
 
 OptionalRef<SymbolTableEntry>

@@ -21,9 +21,7 @@ public:
   /// Add an entry to the symbol table.
   /// @param name The name of the symbol.
   /// @param entry The symbol table entry.
-  /// @returns The entry and a success value as a pair.
-  std::pair<llvm::StringMapIterator<SymbolTableEntry>, bool>
-  addEntry(const llvm::StringRef name, const SymbolTableEntry& entry);
+  void addEntry(const llvm::StringRef name, const SymbolTableEntry& entry);
 
   /// Get an entry from the symbol table.
   /// @param name The name of the symbol to get.
