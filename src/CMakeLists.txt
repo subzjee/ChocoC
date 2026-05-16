@@ -1,4 +1,4 @@
-add_library(chocopc_lib
+add_library(libchoco
     TokenStream.cpp
     ast/AssignmentStatement.cpp
     ast/ASTVisitor.cpp
@@ -24,9 +24,26 @@ add_library(chocopc_lib
     semantic/TypeEnvironment.cpp
 )
 
-target_link_libraries(chocopc_lib PUBLIC c++abi ${llvm_libs})
-target_include_directories(chocopc_lib PUBLIC ${PROJECT_SOURCE_DIR}/include)
+find_package(LLVM REQUIRED CONFIG)
 
-add_executable(chocopc chocopc.cpp)
+message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
+message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
 
-target_link_libraries(chocopc chocopc_lib)
+llvm_map_components_to_libnames(llvm_libs support core irreader)
+
+set_target_properties(libchoco PROPERTIES PREFIX "")
+target_link_libraries(libchoco PUBLIC ${llvm_libs})
+
+separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
+target_add_definitions(libchoco PUBLIC ${LLVM_DEFINITIONS_LIST})
+
+target_include_directories(libchoco
+    SYSTEM AFTER PUBLIC
+        ${LLVM_INCLUDE_DIRS}
+    PUBLIC
+        ${PROJECT_SOURCE_DIR}/include
+)
+
+add_executable(chococ chocopc.cpp)
+
+target_link_libraries(chococ PRIVATE libchoco)
