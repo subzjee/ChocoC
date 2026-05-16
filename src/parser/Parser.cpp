@@ -101,8 +101,9 @@ std::unique_ptr<ast::Type> Parser::parseType() {
     }
 
     if (!expect(TokenType::CLOSEBRACK)) {
-      m_diag_manager.report(DiagID::ExpectedToken,
-                            m_token_stream.peek()->get().getLocation(), {"]"});
+      m_diag_manager.report(DiagID::ExpectedToken)
+          .at(m_token_stream.peek()->get().getLocation().Start)
+          .args("]");
       return nullptr;
     }
 
@@ -110,17 +111,18 @@ std::unique_ptr<ast::Type> Parser::parseType() {
                                        type_ctx->getDimension() + 1);
   }
 
-  m_diag_manager.report(DiagID::ExpectedToken,
-                        m_token_stream.peek()->get().getLocation(), {"a type"});
+  m_diag_manager.report(DiagID::ExpectedToken)
+      .at(m_token_stream.peek()->get().getLocation().Start)
+      .args("a type");
 
   return nullptr;
 }
 
 std::unique_ptr<ast::TypedVariable> Parser::parseTypedVariable() {
   if (!expect(TokenType::ID)) [[unlikely]] {
-    m_diag_manager.report(DiagID::ExpectedToken,
-                          m_token_stream.peek()->get().getLocation(),
-                          {"an identifier"});
+    m_diag_manager.report(DiagID::ExpectedToken)
+        .at(m_token_stream.peek()->get().getLocation().Start)
+        .args("an identifier");
     return nullptr;
   }
 
@@ -128,8 +130,9 @@ std::unique_ptr<ast::TypedVariable> Parser::parseTypedVariable() {
       std::make_unique<ast::Identifier>(*m_token_stream.peek(-1));
 
   if (!expect(TokenType::COLON)) [[unlikely]] {
-    m_diag_manager.report(DiagID::ExpectedToken,
-                          m_token_stream.peek()->get().getLocation(), {":"});
+    m_diag_manager.report(DiagID::ExpectedToken)
+        .at(m_token_stream.peek()->get().getLocation().Start)
+        .args(":");
     return nullptr;
   }
 
@@ -149,8 +152,9 @@ std::unique_ptr<ast::VariableDefinition> Parser::parseVariableDefinition() {
   }
 
   if (!expect(TokenType::ASSIGN)) {
-    m_diag_manager.report(DiagID::ExpectedToken,
-                          m_token_stream.peek()->get().getLocation(), {"="});
+    m_diag_manager.report(DiagID::ExpectedToken)
+        .at(m_token_stream.peek()->get().getLocation().Start)
+        .args("=");
     return nullptr;
   }
 
@@ -160,9 +164,9 @@ std::unique_ptr<ast::VariableDefinition> Parser::parseVariableDefinition() {
   }
 
   if (!expect(TokenType::NEWLINE)) {
-    m_diag_manager.report(DiagID::ExpectedToken,
-                          m_token_stream.peek(-1)->get().getLocation(),
-                          {"a new line after"});
+    m_diag_manager.report(DiagID::ExpectedToken)
+        .at(m_token_stream.peek(-1)->get().getLocation().Start)
+        .args("a new line after");
     return nullptr;
   }
 
@@ -173,9 +177,9 @@ std::unique_ptr<ast::VariableDefinition> Parser::parseVariableDefinition() {
 std::unique_ptr<ast::Literal> Parser::parseLiteral() {
   if (!expect(TokenType::NONE, TokenType::FALSE, TokenType::TRUE,
               TokenType::INTLIT, TokenType::IDSTRING, TokenType::STRING)) {
-    m_diag_manager.report(DiagID::ExpectedToken,
-                          m_token_stream.peek()->get().getLocation(),
-                          {"a literal value"});
+    m_diag_manager.report(DiagID::ExpectedToken)
+        .at(m_token_stream.peek()->get().getLocation().Start)
+        .args("a literal value");
     return nullptr;
   }
 
@@ -184,9 +188,9 @@ std::unique_ptr<ast::Literal> Parser::parseLiteral() {
 
 [[nodiscard]] std::unique_ptr<ast::Expression> Parser::parseTarget() {
   if (!expect(TokenType::ID)) {
-    m_diag_manager.report(DiagID::ExpectedToken,
-                          m_token_stream.peek(-1)->get().getLocation(),
-                          {"an identifier"});
+    m_diag_manager.report(DiagID::ExpectedToken)
+        .at(m_token_stream.peek(-1)->get().getLocation().Start)
+        .args("an identifier");
     return nullptr;
   }
 
@@ -234,21 +238,21 @@ Parser::parseExpression(unsigned int min_power) {
     }
 
     if (!lhs->isConstantExpression()) {
-      m_diag_manager.report(DiagID::ExpectedToken, lhs.get()->getLocation(),
-                            {"a constant expression"});
+      m_diag_manager.report(DiagID::ExpectedToken)
+          .at(lhs.get()->getLocation().Start)
+          .args("a constant expression");
       return nullptr;
     }
 
     if (!rhs->isConstantExpression()) {
-      m_diag_manager.report(DiagID::ExpectedToken, rhs.get()->getLocation(),
-                            {"a constant expression"});
+      m_diag_manager.report(DiagID::ExpectedToken)
+          .at(rhs.get()->getLocation().Start)
+          .args("a constant expression");
       return nullptr;
     }
 
-    lhs = std::make_unique<ast::BinaryExpression>(
-        std::move(lhs),
-        token->get(),
-        std::move(rhs));
+    lhs = std::make_unique<ast::BinaryExpression>(std::move(lhs), token->get(),
+                                                  std::move(rhs));
   }
 
   return lhs;
@@ -267,35 +271,33 @@ Parser::parseExpression(unsigned int min_power) {
     return nullptr;
   }
 
-  if (match(TokenType::PASS, TokenType::RETURN, TokenType::ID,
-                   TokenType::NOT, TokenType::TRUE, TokenType::FALSE,
-                   TokenType::NONE, TokenType::INTLIT, TokenType::IDSTRING,
-                   TokenType::STRING, TokenType::OPENBRACK,
-                   TokenType::OPENPAREN, TokenType::MINUS)) {
+  if (match(TokenType::PASS, TokenType::RETURN, TokenType::ID, TokenType::NOT,
+            TokenType::TRUE, TokenType::FALSE, TokenType::NONE,
+            TokenType::INTLIT, TokenType::IDSTRING, TokenType::STRING,
+            TokenType::OPENBRACK, TokenType::OPENPAREN, TokenType::MINUS)) {
     auto simple_stmt = parseSimpleStatement();
     if (!simple_stmt) {
       return nullptr;
     }
 
     if (!expect(TokenType::NEWLINE)) {
-      m_diag_manager.report(DiagID::ExpectedToken,
-                            m_token_stream.peek(-1)->get().getLocation(),
-                            {"a new line after"});
+      m_diag_manager.report(DiagID::ExpectedToken)
+          .at(m_token_stream.peek(-1)->get().getLocation().Start)
+          .args("a new line after");
       return nullptr;
     }
 
     return simple_stmt;
   }
 
-  m_diag_manager.report(DiagID::ExpectedToken,
-                        m_token_stream.peek()->get().getLocation(),
-                        {"a statement"});
+  m_diag_manager.report(DiagID::ExpectedToken)
+      .at(m_token_stream.peek()->get().getLocation().Start)
+      .args("a statement");
 
   return nullptr;
 }
 
-[[nodiscard]] std::unique_ptr<ast::Statement>
-Parser::parseSimpleStatement() {
+[[nodiscard]] std::unique_ptr<ast::Statement> Parser::parseSimpleStatement() {
   if (m_token_stream.peek(1) == TokenType::ASSIGN) {
     return parseAssignmentStatement();
   }
@@ -316,8 +318,9 @@ Parser::parseAssignmentStatement() {
     targets.push_back(std::move(target));
 
     if (!expect(TokenType::ASSIGN)) {
-      m_diag_manager.report(DiagID::ExpectedToken,
-                            m_token_stream.peek()->get().getLocation(), {"="});
+      m_diag_manager.report(DiagID::ExpectedToken)
+          .at(m_token_stream.peek()->get().getLocation().Start)
+          .args("=");
       return nullptr;
     }
   }
@@ -352,8 +355,8 @@ Parser::parseAssignmentStatement() {
     auto expr = parseExpression(0);
 
     if (!expect(TokenType::CLOSEPAREN)) {
-      m_diag_manager.report(DiagID::UnclosedParenthesis,
-                            token->get().getLocation());
+      m_diag_manager.report(DiagID::UnclosedParenthesis)
+          .at(token->get().getLocation().Start);
       return nullptr;
     }
     auto right_paren = m_token_stream.peek(-1);
@@ -362,21 +365,21 @@ Parser::parseAssignmentStatement() {
         left_paren->get(), std::move(expr), right_paren->get());
   }
 
-
   if (expect(TokenType::NOT, TokenType::MINUS)) {
     const auto& op = m_token_stream.peek(-1);
     auto rhs = parseExpression(getPrefixPower(op->get().getType())->second);
 
-    if (!rhs || (op->get().getType() == TokenType::MINUS && !rhs->isConstantExpression())) {
-      m_diag_manager.report(DiagID::MissingUnaryOperand,
-                            op->get().getLocation(), {op->get().getText().str()});
+    if (!rhs || (op->get().getType() == TokenType::MINUS &&
+                 !rhs->isConstantExpression())) {
+      m_diag_manager.report(DiagID::MissingUnaryOperand)
+          .at(op->get().getLocation().Start)
+          .args(op->get().getText().str());
       return nullptr;
     }
 
-    return std::make_unique<ast::UnaryExpression>(
-        op->get(), std::move(rhs));
+    return std::make_unique<ast::UnaryExpression>(op->get(), std::move(rhs));
   }
 
   return nullptr;
 }
-} // namespace chocopy
+} // namespace chocopy::parser

@@ -13,8 +13,9 @@ std::any TypeChecker::visit(const ast::VariableDefinition& ctx) {
   }
 
   if (!rhs_type->isAssignmentCompatible(*lhs_type)) {
-    m_diag_manager.report(DiagID::TypeMismatch, ctx.getValue()->getLocation(),
-                          {lhs_type->get().toString(), rhs_type->toString()});
+    m_diag_manager.report(DiagID::TypeMismatch)
+        .at(ctx.getValue()->getLocation().Start)
+        .args(lhs_type->get().toString(), rhs_type->toString());
   }
 
   return {};
@@ -33,10 +34,10 @@ std::any TypeChecker::visit(const ast::AssignmentStatement& ctx) {
     }
 
     if (rhs_type && !rhs_type->isAssignmentCompatible(*lhs_type)) {
-      m_diag_manager.report(
-          DiagID::TypeMismatch, ctx.getExpr()->getLocation(),
-          {lhs_type->toString(), rhs_type->toString()},
-          {target->getLocation(), ctx.getExpr()->getLocation()});
+      m_diag_manager.report(DiagID::TypeMismatch)
+          .at(ctx.getExpr()->getLocation().Start)
+          .args(lhs_type->toString(), rhs_type->toString())
+          .range({target->getLocation(), ctx.getExpr()->getLocation()});
     }
   }
 
@@ -47,8 +48,9 @@ std::any TypeChecker::visit(const ast::Identifier& ctx) {
   const auto type = m_local_env.typeOf(ctx);
 
   if (!type) {
-    m_diag_manager.report(DiagID::UndefinedName, ctx.getLocation(),
-                          {ctx.getValue().str()});
+    m_diag_manager.report(DiagID::UndefinedName)
+        .at(ctx.getLocation().Start)
+        .args(ctx.getValue().str());
     return std::optional<const Type>{};
   }
 
@@ -86,10 +88,10 @@ std::any TypeChecker::visit(const ast::BinaryExpression& ctx) {
     [[fallthrough]];
   case TokenType::OR:
     if (!lhs_type->isBoolean() || !rhs_type->isBoolean()) {
-      m_diag_manager.report(DiagID::UnsupportedBinaryOperandType,
-                            ctx.getLocation(),
-                            {ctx.getOperator().getText().str(),
-                             lhs_type->toString(), rhs_type->toString()});
+      m_diag_manager.report(DiagID::UnsupportedBinaryOperandType)
+          .at(ctx.getLocation().Start)
+          .args(ctx.getOperator().getText().str(), lhs_type->toString(),
+                rhs_type->toString());
       return std::optional<const Type>{};
     }
 

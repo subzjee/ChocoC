@@ -6,16 +6,17 @@ std::any SymbolTableBuilder::visit(const ast::VariableDefinition& ctx) {
 
   // Check for redefinition within the same table.
   if (m_symbol_table.getEntry(name)) {
-    m_diag_manager.report(DiagID::Redefinition, ctx.getName()->getLocation(),
-                          {name.str()});
+    m_diag_manager.report(DiagID::Redefinition)
+        .at(ctx.getName()->getLocation().Start)
+        .args(name.str());
     return {};
   }
 
   const auto type_entry = m_symbol_table.getEntry(ctx.getType()->getText());
 
   if (!type_entry || !std::holds_alternative<Type>(type_entry->get())) {
-    m_diag_manager.report(DiagID::UndefinedType,
-                          ctx.getType()->getBaseType().getLocation());
+    m_diag_manager.report(DiagID::UndefinedType)
+        .at(ctx.getType()->getBaseType().getLocation().Start);
     return {};
   }
 

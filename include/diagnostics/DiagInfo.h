@@ -13,4 +13,23 @@ struct DiagInfo {
   std::string_view format;
 };
 
+/// Get the severity of a diagnostic ID.
+///
+/// @param The diagnostic ID.
+///
+/// @returns The severity.
+[[nodiscard]] const llvm::SourceMgr::DiagKind& getSeverity(DiagID diag_id);
+
+/// Get the severity of a diagnostic ID.
+///
+/// @param The diagnostic ID.
+///
+/// @returns The format.
+[[nodiscard]] std::string_view getFormat(DiagID diag_id);
+
+/// Get the diagnostic info of a diagnostic ID.
+///
+/// @param The diagnostic ID.
+///
+/// @returns The diagnostic info.
 [[nodiscard]] const DiagInfo& getDiagInfo(DiagID diag_id);

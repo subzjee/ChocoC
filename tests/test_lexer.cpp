@@ -1,8 +1,10 @@
-#include "gtest/gtest.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/Support/SourceMgr.h"
+#include "gtest/gtest.h"
 
 #include "lexer/Lexer.h"
+
+#include "lexer/Token.h"
 
 using namespace llvm;
 using namespace chocopy;
@@ -38,11 +40,11 @@ TEST_F(LexerTest, KeywordRecognition) {
   // Filter out NEWLINE tokens because they are only there for readability in
   // the test file.
   const auto filtered_tokens =
-      make_filter_range(lexer.lex(), [](const Token &token) {
+      make_filter_range(lexer.lex(), [](const Token& token) {
         return token.getType() != TokenType::NEWLINE;
       });
 
-  for (const auto &[token, expected_type] :
+  for (const auto& [token, expected_type] :
        zip_equal(filtered_tokens, expected_token_types)) {
     EXPECT_EQ(token.getType(), expected_type);
   }
@@ -66,11 +68,11 @@ TEST_F(LexerTest, OperatorRecognition) {
   // Filter out NEWLINE tokens because they are only there for readability in
   // the test file.
   const auto filtered_tokens =
-      make_filter_range(lexer.lex(), [](const Token &token) {
+      make_filter_range(lexer.lex(), [](const Token& token) {
         return token.getType() != TokenType::NEWLINE;
       });
 
-  for (const auto &[token, expected_type] :
+  for (const auto& [token, expected_type] :
        zip_equal(filtered_tokens, expected_token_types)) {
     EXPECT_EQ(token.getType(), expected_type);
   }
@@ -89,11 +91,11 @@ TEST_F(LexerTest, IntegerLiterals) {
   // Filter out NEWLINE tokens because they are only there for readability in
   // the test file.
   const auto filtered_tokens =
-      make_filter_range(lexer.lex(), [](const Token &token) {
+      make_filter_range(lexer.lex(), [](const Token& token) {
         return token.getType() != TokenType::NEWLINE;
       });
 
-  for (const auto &[token, expected_type] :
+  for (const auto& [token, expected_type] :
        zip_equal(filtered_tokens, expected_token_types)) {
     EXPECT_EQ(token.getType(), expected_type);
   }
@@ -113,11 +115,11 @@ TEST_F(LexerTest, StringLiterals) {
   // Filter out NEWLINE tokens because they are only there for readability in
   // the test file.
   const auto filtered_tokens =
-      make_filter_range(lexer.lex(), [](const Token &token) {
+      make_filter_range(lexer.lex(), [](const Token& token) {
         return token.getType() != TokenType::NEWLINE;
       });
 
-  for (const auto &[token, expected_type] :
+  for (const auto& [token, expected_type] :
        zip_equal(filtered_tokens, expected_token_types)) {
     EXPECT_EQ(token.getType(), expected_type);
   }
@@ -142,7 +144,7 @@ TEST_F(LexerTest, Indentation) {
 
   const auto tokens = lexer.lex();
 
-  for (const auto &[token, expected_type] :
+  for (const auto& [token, expected_type] :
        zip_equal(tokens, expected_token_types)) {
     EXPECT_EQ(token.getType(), expected_type);
   }
@@ -164,11 +166,11 @@ TEST_F(LexerTest, UnexpectedCharacters) {
   // Filter out NEWLINE tokens because they are only there for readability in
   // the test file.
   const auto filtered_tokens =
-      make_filter_range(lexer.lex(), [](const Token &token) {
+      make_filter_range(lexer.lex(), [](const Token& token) {
         return token.getType() != TokenType::NEWLINE;
       });
 
-  for (const auto &[token, expected_type] :
+  for (const auto& [token, expected_type] :
        zip_equal(filtered_tokens, expected_token_types)) {
     EXPECT_EQ(token.getType(), expected_type);
   }

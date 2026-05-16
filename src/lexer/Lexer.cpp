@@ -122,8 +122,8 @@ std::span<const Token> Lexer::lex() {
       } else if (isDigit(current_char)) {
         scanNumber();
       } else {
-        m_diag_manager.report(DiagID::UnexpectedCharacter,
-                              getCurrentLexemeLocation());
+        m_diag_manager.report(DiagID::UnexpectedCharacter)
+            .at(getCurrentLexemeStartLocation());
         addToken(TokenType::INVALID);
       }
     }
@@ -160,8 +160,8 @@ bool Lexer::expect(const char ch) {
     return true;
   }
 
-  m_diag_manager.report(DiagID::UnexpectedCharacter,
-                        getCurrentLexemeLocation());
+  m_diag_manager.report(DiagID::UnexpectedCharacter)
+      .at(getCurrentLexemeStartLocation());
 
   return false;
 }
@@ -202,14 +202,15 @@ void Lexer::scanNumber() {
 
   if ((value.starts_with('0') && value.size() > 1)) {
     token_type = TokenType::INVALID;
-    m_diag_manager.report(DiagID::LeadingZeros, getCurrentLexemeLocation());
+    m_diag_manager.report(DiagID::LeadingZeros)
+        .at(getCurrentLexemeStartLocation());
   }
 
   std::int32_t value_as_int;
   if (!to_integer(value, value_as_int, 10)) {
     token_type = TokenType::INVALID;
-    m_diag_manager.report(DiagID::IntegerOutOfRange,
-                          getCurrentLexemeLocation());
+    m_diag_manager.report(DiagID::IntegerOutOfRange)
+        .at(getCurrentLexemeStartLocation());
   }
 
   if (token_type == TokenType::INTLIT) {
@@ -271,9 +272,8 @@ void Lexer::scanString() {
         break;
       default:
         token_type = TokenType::INVALID;
-        SMRange location = {getCurrentLexemeEndLocation(),
-                            getCurrentLexemeEndLocation()};
-        m_diag_manager.report(DiagID::InvalidEscapeCharacter, location);
+        m_diag_manager.report(DiagID::InvalidEscapeCharacter)
+            .at(getCurrentLexemeEndLocation());
       }
     } else {
       value += peek().value();
@@ -285,8 +285,9 @@ void Lexer::scanString() {
   if (!match('"')) {
     token_type = TokenType::INVALID;
     SMFixIt fixit{getCurrentLexemeLocation(), getCurrentLexeme().str() + '"'};
-    m_diag_manager.report(DiagID::UnterminatedString,
-                          getCurrentLexemeLocation(), {}, {}, {fixit});
+    m_diag_manager.report(DiagID::UnterminatedString)
+        .at(getCurrentLexemeStartLocation())
+        .fixit({fixit});
   }
 
   advance();

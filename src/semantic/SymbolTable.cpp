@@ -2,7 +2,7 @@
 
 namespace chocopy {
 void SymbolTable::addEntry(const llvm::StringRef name,
-                      const SymbolTableEntry& entry) {
+                           const SymbolTableEntry& entry) {
   m_entries.try_emplace(name, entry);
 }
 
