@@ -1,10 +1,10 @@
 #pragma once
 
-#include "lexer/TokenType.h"
+#include <variant>
 
 #include "llvm/Support/SMLoc.h"
 
-#include <variant>
+#include "lexer/TokenType.h"
 
 namespace chocopy {
 using TokenValue =

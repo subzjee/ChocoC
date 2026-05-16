@@ -1,4 +1,5 @@
 #include "parser/Parser.h"
+
 #include "ast/BinaryExpression.h"
 #include "ast/Expression.h"
 #include "ast/GroupingExpression.h"
@@ -257,7 +258,7 @@ Parser::parseExpression(unsigned int min_power) {
   if (match(TokenType::IF)) { // TODO: If-elif-else statements
     return nullptr;
   }
-  
+
   if (match(TokenType::WHILE)) { // TODO: While statements
     return nullptr;
   }
@@ -340,12 +341,12 @@ Parser::parseAssignmentStatement() {
   if (expect(TokenType::STRING, TokenType::IDSTRING, TokenType::FALSE,
              TokenType::TRUE, TokenType::INTLIT, TokenType::NONE)) {
     return std::make_unique<ast::Literal>(*token);
-  } 
+  }
 
   if (expect(TokenType::ID)) {
     return std::make_unique<ast::Identifier>(*token);
   }
-  
+
   if (expect(TokenType::OPENPAREN)) {
     auto left_paren = m_token_stream.peek(-1);
     auto expr = parseExpression(0);
@@ -361,7 +362,7 @@ Parser::parseAssignmentStatement() {
         left_paren->get(), std::move(expr), right_paren->get());
   }
 
-  
+
   if (expect(TokenType::NOT, TokenType::MINUS)) {
     const auto& op = m_token_stream.peek(-1);
     auto rhs = parseExpression(getPrefixPower(op->get().getType())->second);

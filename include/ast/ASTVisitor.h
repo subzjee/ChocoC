@@ -1,5 +1,7 @@
 #pragma once
 
+#include <any>
+
 #include "ast/AssignmentStatement.h"
 #include "ast/BinaryExpression.h"
 #include "ast/Block.h"
@@ -8,8 +10,6 @@
 #include "ast/Program.h"
 #include "ast/UnaryExpression.h"
 #include "ast/VariableDefinition.h"
-
-#include <any>
 
 namespace chocopy {
 struct ASTVisitor {

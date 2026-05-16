@@ -1,10 +1,10 @@
 #pragma once
 
-#include "ast/ASTNode.h"
-#include "ast/Statement.h"
-
 #include <memory>
 #include <vector>
+
+#include "ast/ASTNode.h"
+#include "ast/Statement.h"
 
 namespace chocopy::ast {
 class Block : public ASTNode {

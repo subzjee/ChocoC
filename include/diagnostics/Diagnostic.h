@@ -1,12 +1,12 @@
 #pragma once
 
-#include "diagnostics/DiagID.h"
-#include "diagnostics/DiagInfo.h"
-
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Support/SourceMgr.h"
+
+#include "diagnostics/DiagID.h"
+#include "diagnostics/DiagInfo.h"
 
 class Diagnostic {
 public:
@@ -17,7 +17,6 @@ public:
              llvm::SmallVector<llvm::SMFixIt> fixits = {})
       : m_diag_id(diag_id) {
     const auto& [severity, message] = getDiagInfo(diag_id);
-    m_severity = severity;
     m_diagnostic = source_manager.GetMessage(
         location.Start, severity,
         createFormattedMessage(diag_id, std::move(format_arguments)),
@@ -31,7 +30,7 @@ public:
   /// Get the severity of the diagnostic.
   /// @returns The severity.
   [[nodiscard]] llvm::SourceMgr::DiagKind getSeverity() const {
-    return m_severity;
+    return m_diagnostic.getKind();
   }
 
   /// Get the formatted message of the diagnostic.
@@ -79,6 +78,5 @@ public:
 
 private:
   DiagID m_diag_id;
-  llvm::SourceMgr::DiagKind m_severity;
   llvm::SMDiagnostic m_diagnostic;
 };

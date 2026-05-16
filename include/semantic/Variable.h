@@ -1,8 +1,8 @@
 #pragma once
 
-#include "semantic/Type.h"
-
 #include "llvm/IR/Value.h"
+
+#include "semantic/Type.h"
 
 namespace chocopy::sema {
 struct Variable {

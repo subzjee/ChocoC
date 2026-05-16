@@ -1,8 +1,8 @@
 #pragma once
 
-#include "diagnostics/DiagID.h"
-
 #include "llvm/Support/SourceMgr.h"
+
+#include "diagnostics/DiagID.h"
 
 struct DiagInfo {
   constexpr DiagInfo(llvm::SourceMgr::DiagKind severity,

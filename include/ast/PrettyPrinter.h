@@ -1,12 +1,12 @@
 #pragma once
 
+#include <sstream>
+
 #include "ast/ASTVisitor.h"
 #include "ast/AssignmentStatement.h"
 #include "ast/BinaryExpression.h"
 #include "ast/Identifier.h"
 #include "ast/VariableDefinition.h"
-
-#include <sstream>
 
 namespace chocopy::ast {
 class PrettyPrinter : public ASTVisitor {

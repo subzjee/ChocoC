@@ -1,7 +1,5 @@
 #pragma once
 
-#include "llvm/Support/Casting.h"
-
 #include <any>
 
 namespace chocopy {
@@ -35,7 +33,7 @@ public:
   virtual ~ASTNode() = default;
 
   [[nodiscard]] NodeKind getKind() const { return m_kind; }
-  
+
   virtual std::any accept(ASTVisitor& visitor) const = 0;
 
 private:

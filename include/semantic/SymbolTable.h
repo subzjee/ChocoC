@@ -1,8 +1,6 @@
 #pragma once
 
-#include "semantic/Type.h"
-#include "semantic/Variable.h"
-#include "utility/OptionalRef.h"
+#include <variant>
 
 #include "llvm/ADT/StringMap.h"
 #include "llvm/ADT/StringRef.h"
@@ -10,7 +8,9 @@
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Type.h"
 
-#include <variant>
+#include "semantic/Type.h"
+#include "semantic/Variable.h"
+#include "utility/OptionalRef.h"
 
 namespace chocopy {
 using namespace sema;

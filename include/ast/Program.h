@@ -1,12 +1,12 @@
 #pragma once
 
-#include "ast/ASTNode.h"
-#include "ast/Statement.h"
-#include "ast/VariableDefinition.h"
-
 #include <memory>
 #include <variant>
 #include <vector>
+
+#include "ast/ASTNode.h"
+#include "ast/Statement.h"
+#include "ast/VariableDefinition.h"
 
 namespace chocopy {
 using ProgramChildren =

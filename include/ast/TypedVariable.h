@@ -1,9 +1,9 @@
 #pragma once
 
+#include <memory>
+
 #include "ast/Identifier.h"
 #include "ast/Type.h"
-
-#include <memory>
 
 namespace chocopy::ast {
 class TypedVariable {

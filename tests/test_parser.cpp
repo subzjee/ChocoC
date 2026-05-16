@@ -1,13 +1,11 @@
-#include "ast/PrettyPrinter.h"
-#include "diagnostics/DiagnosticsManager.h"
-#include "lexer/Lexer.h"
-#include "parser/Parser.h"
-
 #include "gtest/gtest.h"
 #include "llvm/Support/SourceMgr.h"
 #include "llvm/Support/MemoryBuffer.h"
 
-#include <filesystem>
+#include "ast/PrettyPrinter.h"
+#include "diagnostics/DiagnosticsManager.h"
+#include "lexer/Lexer.h"
+#include "parser/Parser.h"
 
 using namespace chocopy;
 using namespace chocopy::parser;
@@ -37,7 +35,7 @@ TEST_P(ParserTest, Parser) {
   ASSERT_NE(root, nullptr);
 
   const std::string pretty_print = std::any_cast<std::string>(root->accept(pretty_printer));
-  
+
   EXPECT_EQ(pretty_print, (std::string{golden_file->get()->getBufferStart(), golden_file->get()->getBufferEnd()}));
 }
 

@@ -17,7 +17,7 @@ target_link_libraries(test_chocopc
 
 target_include_directories(test_chocopc PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
-// Prevent Google Test from including `cxxabi.h` from LLVM's include directory.
+# Prevent Google Test from including `cxxabi.h` from LLVM's include directory.
 target_compile_definitions(test_chocopc PRIVATE GTEST_HAS_CXXABI_H_=0)
 
 include(GoogleTest)

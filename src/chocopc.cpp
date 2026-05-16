@@ -1,3 +1,8 @@
+#include "llvm/Support/CommandLine.h"
+#include "llvm/Support/MemoryBuffer.h"
+#include "llvm/Support/SourceMgr.h"
+#include "llvm/Support/raw_ostream.h"
+
 #include "ast/PrettyPrinter.h"
 #include "diagnostics/DiagnosticsManager.h"
 #include "ir/LLVM.h"
@@ -5,11 +10,6 @@
 #include "parser/Parser.h"
 #include "semantic/SymbolTableBuilder.h"
 #include "semantic/TypeChecker.h"
-
-#include "llvm/Support/CommandLine.h"
-#include "llvm/Support/MemoryBuffer.h"
-#include "llvm/Support/SourceMgr.h"
-#include "llvm/Support/raw_ostream.h"
 
 using namespace llvm;
 using namespace chocopy;

@@ -1,11 +1,12 @@
 #pragma once
 
-#include "diagnostics/DiagID.h"
-#include "diagnostics/Diagnostic.h"
+#include <span>
+#include <vector>
 
 #include "llvm/Support/SourceMgr.h"
 
-#include <vector>
+#include "diagnostics/DiagID.h"
+#include "diagnostics/Diagnostic.h"
 
 class DiagnosticsManager {
 public:

@@ -1,9 +1,9 @@
 #pragma once
 
+#include <stack>
+
 #include "diagnostics/DiagnosticsManager.h"
 #include "lexer/Token.h"
-
-#include <stack>
 
 namespace chocopy {
 class Lexer {

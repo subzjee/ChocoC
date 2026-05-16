@@ -35,7 +35,7 @@ set_target_properties(libchoco PROPERTIES PREFIX "")
 target_link_libraries(libchoco PUBLIC ${llvm_libs})
 
 separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
-target_add_definitions(libchoco PUBLIC ${LLVM_DEFINITIONS_LIST})
+target_compile_definitions(libchoco PUBLIC ${LLVM_DEFINITIONS_LIST})
 
 target_include_directories(libchoco
     SYSTEM AFTER PUBLIC

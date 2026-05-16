@@ -1,13 +1,5 @@
 #pragma once
 
-#include "ast/ASTVisitor.h"
-#include "ast/AssignmentStatement.h"
-#include "ast/BinaryExpression.h"
-#include "ast/GroupingExpression.h"
-#include "ast/Identifier.h"
-#include "ast/UnaryExpression.h"
-#include "semantic/SymbolTable.h"
-
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/Function.h"
@@ -18,6 +10,14 @@
 #include "llvm/IR/Verifier.h"
 #include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/Signals.h"
+
+#include "ast/ASTVisitor.h"
+#include "ast/AssignmentStatement.h"
+#include "ast/BinaryExpression.h"
+#include "ast/GroupingExpression.h"
+#include "ast/Identifier.h"
+#include "ast/UnaryExpression.h"
+#include "semantic/SymbolTable.h"
 
 namespace chocopy {
 class IRGen : public ASTVisitor {

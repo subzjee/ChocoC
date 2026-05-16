@@ -1,9 +1,9 @@
 #pragma once
 
+#include <span>
+
 #include "lexer/Token.h"
 #include "utility/OptionalRef.h"
-
-#include <span>
 
 namespace chocopy {
 class TokenStream {

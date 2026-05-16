@@ -1,10 +1,11 @@
 #pragma once
 
+#include <utility>
+#include <variant>
+
 #include "ast/ASTNode.h"
 #include "ast/Expression.h"
 #include "lexer/Token.h"
-#include <utility>
-#include <variant>
 
 namespace chocopy::ast {
 class Literal : public Expression {

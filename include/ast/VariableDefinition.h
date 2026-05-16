@@ -1,10 +1,10 @@
 #pragma once
 
+#include <memory>
+
 #include "ast/ASTNode.h"
 #include "ast/Literal.h"
 #include "ast/TypedVariable.h"
-
-#include <memory>
 
 namespace chocopy::ast {
 class VariableDefinition : public ASTNode {

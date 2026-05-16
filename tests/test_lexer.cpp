@@ -1,8 +1,8 @@
-#include "lexer/Lexer.h"
-
+#include "gtest/gtest.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/Support/SourceMgr.h"
-#include "gtest/gtest.h"
+
+#include "lexer/Lexer.h"
 
 using namespace llvm;
 using namespace chocopy;

@@ -1,10 +1,10 @@
 #pragma once
 
+#include <memory>
+
 #include "ast/ASTNode.h"
 #include "ast/Expression.h"
 #include "lexer/Token.h"
-
-#include <memory>
 
 namespace chocopy::ast {
 
