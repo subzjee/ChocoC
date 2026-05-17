@@ -1,6 +1,3 @@
-2147483647      # Maximum value
-0
-
 2147483648      # Too large
 00              # Leading zeros
 02147483648     # Leading zeros, too large

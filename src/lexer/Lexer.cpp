@@ -127,6 +127,10 @@ std::span<const Token> Lexer::lex() {
         addToken(TokenType::INVALID);
       }
     }
+
+    if (is_at_end()) {
+      break;
+    }
   }
 
   while (m_indentation_levels.top() > 0) {
@@ -248,7 +252,7 @@ void Lexer::scanString() {
   auto token_type = isDigit(*peek()) ? TokenType::STRING : TokenType::IDSTRING;
   std::string value{};
 
-  while (!match('"', '\0', '\r', '\n')) {
+  while (!is_at_end() && !match('"', '\0', '\r', '\n')) {
     if (token_type != TokenType::INVALID && !isAlnum(*peek()) &&
         *peek() != '_') {
       token_type = TokenType::STRING;
@@ -287,7 +291,7 @@ void Lexer::scanString() {
     SMFixIt fixit{getCurrentLexemeLocation(), getCurrentLexeme().str() + '"'};
     m_diag_manager.report(DiagID::UnterminatedString)
         .at(getCurrentLexemeStartLocation())
-        .fixit({fixit});
+        .fixit(fixit);
   }
 
   advance();

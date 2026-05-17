@@ -164,9 +164,8 @@ std::unique_ptr<ast::VariableDefinition> Parser::parseVariableDefinition() {
   }
 
   if (!expect(TokenType::NEWLINE)) {
-    m_diag_manager.report(DiagID::ExpectedToken)
-        .at(m_token_stream.peek(-1)->get().getLocation().Start)
-        .args("a new line after");
+    m_diag_manager.report(DiagID::ExpectedNewLine)
+        .at(m_token_stream.peek(-1)->get().getLocation().Start);
     return nullptr;
   }
 
@@ -281,9 +280,8 @@ Parser::parseExpression(unsigned int min_power) {
     }
 
     if (!expect(TokenType::NEWLINE)) {
-      m_diag_manager.report(DiagID::ExpectedToken)
-          .at(m_token_stream.peek(-1)->get().getLocation().Start)
-          .args("a new line after");
+      m_diag_manager.report(DiagID::ExpectedNewLine)
+          .at(m_token_stream.peek(-1)->get().getLocation().Start);
       return nullptr;
     }
 

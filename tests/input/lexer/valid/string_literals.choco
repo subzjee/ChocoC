@@ -9,9 +9,3 @@
 "\\"
 "\t"
 "\""
-
-# Invalid escape character
-"\b"
-
-# Unterminated string
-"abc

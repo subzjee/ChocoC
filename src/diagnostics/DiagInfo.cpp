@@ -21,6 +21,7 @@ const std::unordered_map<DiagID, DiagInfo> table = {
 
     // Parser
     {DiagID::ExpectedToken, {DK_Error, "expected {0}"}},
+    {DiagID::ExpectedNewLine, {DK_Error, "expected a new line after"}},
     {DiagID::UnclosedParenthesis, {DK_Error, "unclosed '('"}},
     {DiagID::MissingUnaryOperand,
      {DK_Error, "missing operand for unary '{0}'"}},

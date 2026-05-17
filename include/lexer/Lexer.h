@@ -34,7 +34,8 @@ private:
   /// @param chars The characters to compare the current character to.
   /// @returns Whether the current character matches any of the characters in \p
   /// chs
-  template <typename... Chars> [[nodiscard]] bool match(const Chars&... chs) {
+  template <typename... Chars>
+  [[nodiscard]] bool match(const Chars&... chs) {
     const auto current_char = peek();
 
     if (!current_char) {
@@ -57,6 +58,10 @@ private:
   /// @param ch The character to compare the current character to.
   /// @returns Whether the current character matches \p ch.
   [[nodiscard]] bool expect(const char ch);
+
+  [[nodiscard]] bool is_at_end() const {
+    return m_lexeme_start + m_lexeme_length >= m_buffer_end;
+  }
 
   /// Add a token to the found tokens.
   /// @param type The type of the token.

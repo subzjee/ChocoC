@@ -10,6 +10,7 @@ enum class DiagID {
 
   /* Parser */
   ExpectedToken, // Generic `expected {0}` format.
+  ExpectedNewLine,
   UnclosedParenthesis,
   MissingUnaryOperand,
   MissingBinaryOperand,
