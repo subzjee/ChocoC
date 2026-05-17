@@ -2,8 +2,8 @@
 #include "llvm/Support/SourceMgr.h"
 #include "gtest/gtest.h"
 
+#include "diagnostics/DiagID.h"
 #include "lexer/Lexer.h"
-
 #include "lexer/Token.h"
 
 using namespace llvm;
@@ -29,7 +29,10 @@ protected:
     });
   }
 
-  void TearDown() override { diagnostics_manager.clear(); }
+  void TearDown() override {
+    lexer.reset();
+    diagnostics_manager.clear();
+  }
 };
 
 TEST_F(LexerTest, KeywordRecognition) {
@@ -95,7 +98,7 @@ TEST_F(LexerTest, InvalidIntegerLiterals) {
   auto tokens = filterNewLines(lexFromFile("invalid/integer_literals.choco"));
 
   constexpr std::array<TokenType, 3> expected_token_types = {
-      TokenType::INVALID, TokenType::INVALID};
+      TokenType::INVALID, TokenType::INVALID, TokenType::INVALID};
 
   for (const auto& [token, expected_type] :
        zip_equal(tokens, expected_token_types)) {
@@ -103,6 +106,15 @@ TEST_F(LexerTest, InvalidIntegerLiterals) {
   }
 
   ASSERT_TRUE(diagnostics_manager.hadError());
+
+  constexpr std::array<DiagID, 4> expected_diags = {
+      DiagID::IntegerOutOfRange, DiagID::LeadingZeros, DiagID::LeadingZeros,
+      DiagID::IntegerOutOfRange};
+
+  for (const auto& [diagnostic, expected_diag] :
+       zip_equal(diagnostics_manager.getDiagnostics(), expected_diags)) {
+    EXPECT_EQ(diagnostic.getDiagId(), expected_diag);
+  }
 }
 
 TEST_F(LexerTest, ValidStringLiterals) {
@@ -132,6 +144,14 @@ TEST_F(LexerTest, InvalidStringLiterals) {
   }
 
   ASSERT_TRUE(diagnostics_manager.hadError());
+
+  constexpr std::array<DiagID, 2> expected_diags = {
+      DiagID::InvalidEscapeCharacter, DiagID::UnterminatedString};
+
+  for (const auto& [diagnostic, expected_diag] :
+       zip_equal(diagnostics_manager.getDiagnostics(), expected_diags)) {
+    EXPECT_EQ(diagnostic.getDiagId(), expected_diag);
+  }
 }
 
 TEST_F(LexerTest, Indentation) {
@@ -172,4 +192,8 @@ TEST_F(LexerTest, UnexpectedCharacters) {
   }
 
   ASSERT_TRUE(diagnostics_manager.hadError());
+
+  for (const auto& diagnostic : diagnostics_manager.getDiagnostics()) {
+    EXPECT_EQ(diagnostic.getDiagId(), DiagID::UnexpectedCharacter);
+  }
 }
